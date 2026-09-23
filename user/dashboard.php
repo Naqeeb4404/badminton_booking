@@ -141,23 +141,23 @@ if(isset($_POST['court'])) {
             color: var(--text-main);
         }
 
-        .btn-book-now {
-            border: 1px solid var(--credix-border);
-            color: var(--text-main);
+        .btn-logout {
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
             border-radius: 50px;
-            padding: 8px 24px;
+            padding: 8px 20px;
             font-weight: 700;
             font-size: 0.85rem;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(239, 68, 68, 0.05);
             text-decoration: none;
             transition: all 0.2s;
         }
 
-        .btn-book-now:hover {
-            background: var(--credix-accent);
-            border-color: var(--credix-accent);
+        .btn-logout:hover {
+            background: #ef4444;
+            border-color: #ef4444;
             color: #fff;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
         }
 
         /* Hero Section */
@@ -367,9 +367,12 @@ if(isset($_POST['court'])) {
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <a href="booking.php" class="btn-book-now active">Book Now</a>
             <a href="dashboard.php" class="btn btn-dark rounded-pill fw-bold btn-sm px-3 py-2" style="border: 1px solid var(--credix-border);">
                 <i class="fa-solid fa-gauge me-1"></i> Dashboard
+            </a>
+            <!-- Ditukar dari Book Now kepada butang Log Out -->
+            <a href="../auth/logout.php" class="btn-logout">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Log Out
             </a>
         </div>
     </nav>
