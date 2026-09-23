@@ -17,8 +17,75 @@ $result=mysqli_query($conn,"SELECT p.*, b.booking_date,b.booking_time,b.status A
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    body{margin:0;background:#f1f5f9;font-family:Arial,sans-serif}
-    .table td,.table th{vertical-align:middle}
+    body {
+        margin: 0;
+        background: #f1f5f9;
+        font-family: Arial, sans-serif;
+    }
+    .table td, .table th {
+        vertical-align: middle;
+    }
+    
+    /* Topbar & Search Bar Fixing CSS */
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+        padding: 15px 25px;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        margin-bottom: 25px;
+        border: 1px solid #e5e7eb;
+    }
+    .search-form {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 300px;
+    }
+    .search-form i {
+        position: absolute;
+        left: 14px;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+    .search-input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        background-color: #f8fafc;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .search-input:focus {
+        border-color: #2563eb;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f8fafc;
+        padding: 6px 14px 6px 6px;
+        border-radius: 50px;
+        border: 1px solid #e5e7eb;
+    }
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #0f172a;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
 </style>
 <link rel="stylesheet" href="sidebar.css">
 </head>
@@ -35,7 +102,7 @@ $result=mysqli_query($conn,"SELECT p.*, b.booking_date,b.booking_time,b.status A
         <div class="d-flex align-items-center gap-3">
             <div class="user-pill">
                 <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['user']['name'] ?? 'A', 0, 1))); ?></div>
-                <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div>
+                <div class="fw-bold fs-7 pe-2 text-dark"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div>
             </div>
             <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
