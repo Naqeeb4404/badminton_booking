@@ -9,7 +9,7 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Center Badminton - Next-Gen Court Booking</title>
+    <title>Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,13 +17,18 @@ include __DIR__ . '/config/db.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/animations.css">
 
     <style>
         :root {
             --credix-bg: #090a0f;
-            --credix-card: rgba(19, 21, 31, 0.8);
-            --credix-border: rgba(255, 255, 255, 0.12);
+            --credix-card: #13151f;
+            --credix-border: rgba(255, 255, 255, 0.08);
+            --credix-glow: rgba(99, 102, 241, 0.15);
             --credix-accent: #6366f1;
+            --credix-accent-hover: #4f46e5;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -37,27 +42,7 @@ include __DIR__ . '/config/db.php';
             overflow-x: hidden;
         }
 
-        /* Latar Belakang Animasi Berterusan */
-        .animated-bg-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
-                        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, #090a0f 100%);
-            animation: bgPulse 12s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes bgPulse {
-            0% { transform: scale(1) translate(0px, 0px); }
-            50% { transform: scale(1.05) translate(-15px, -10px); }
-            100% { transform: scale(1.1) translate(15px, 10px); }
-        }
-
+        /* Top Announcement Bar */
         .top-announcement-bar {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -70,13 +55,14 @@ include __DIR__ . '/config/db.php';
             backdrop-filter: blur(10px);
         }
 
+        /* Credix Glass Navbar */
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 18px 40px;
             border-bottom: 1px solid var(--credix-border);
-            background: rgba(9, 10, 15, 0.85);
+            background: rgba(9, 10, 15, 0.8);
             backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
@@ -148,227 +134,265 @@ include __DIR__ . '/config/db.php';
             font-size: 0.85rem;
             background: rgba(255, 255, 255, 0.03);
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s;
         }
 
         .btn-book-now:hover {
             background: var(--credix-accent);
             border-color: var(--credix-accent);
             color: #fff;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
-            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
 
-        /* Hero Section Susun Atur Moden */
+        /* Hero Section */
         .hero-section {
-            padding: 80px 0 120px 0;
+            position: relative;
+            padding: 30px 20px;
+            border-bottom: 1px solid var(--credix-border);
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 60%);
+        }
+
+        /* Satu Kotak Kad Besar (Merangkumi Teks & Video) */
+        .hero-master-card {
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 28px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.1);
             position: relative;
             overflow: hidden;
         }
 
-        .hero-content-wrapper {
-            position: relative;
-            z-index: 3;
-            transition: transform 0.2s ease-out;
-        }
-
-        .badge-pill {
-            display: inline-block;
-            padding: 6px 14px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 50px;
+        .open-badge {
             font-size: 0.72rem;
-            font-weight: 700;
+            font-weight: 800;
+            background: rgba(99, 102, 241, 0.15);
             color: #818cf8;
-            letter-spacing: 0.5px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 6px 14px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
-            letter-spacing: -1.5px;
-            color: var(--text-main);
             line-height: 1.1;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            color: var(--text-main);
         }
 
         .hero-desc {
             color: var(--text-muted);
-            font-size: 1.05rem;
-            max-width: 500px;
+            font-size: 0.98rem;
+            margin-bottom: 30px;
             line-height: 1.6;
         }
 
-        .btn-primary-custom {
-            background: var(--credix-accent);
-            color: #fff;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 28px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
         }
 
-        .btn-primary-custom:hover {
-            background: #4f46e5;
+        .btn-check-availability {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            font-weight: 700;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-check-availability:hover {
+            opacity: 0.9;
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
         }
 
-        .btn-secondary-custom {
-            background: rgba(255, 255, 255, 0.03);
+        .btn-call-centre {
+            background-color: rgba(255, 255, 255, 0.03);
             color: var(--text-main);
-            border: 1px solid var(--credix-border);
-            border-radius: 50px;
-            padding: 12px 24px;
             font-weight: 700;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .btn-secondary-custom:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-main);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Bingkai Video Terapung di Sebelah Kanan dengan Kesan Bertindih */
-        .video-floating-container {
-            position: relative;
-            z-index: 2;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform;
-        }
-
-        .video-preview-card {
-            background: var(--credix-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--credix-border);
-            border-radius: 24px;
-            overflow: hidden;
-            height: 400px;
-            padding: 20px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 12px 26px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: all 0.2s;
         }
 
-        .hero-video-element {
+        .btn-call-centre:hover {
+            border-color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        /* Bingkai Video di Sebelah Kanan (di dalam kad yang sama) */
+        .hero-video-wrapper {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--credix-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            height: 100%;
+            display: flex;
+            background: #000;
+        }
+
+        .hero-video-wrapper video {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            border-radius: 12px;
-            pointer-events: none;
+            object-fit: cover;
+            display: block;
+            min-height: 340px;
         }
 
-        .site-footer {
-            background-color: rgba(19, 21, 31, 0.9);
-            backdrop-filter: blur(15px);
-            padding: 70px 40px 35px 40px;
-            border-top: 1px solid var(--credix-border);
-            margin-top: 100px;
-            color: var(--text-muted);
-            position: relative;
-            z-index: 5;
-        }
-
-        .footer-container {
-            max-width: 1100px;
+        .content-container {
+            max-width: 1140px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr;
-            gap: 40px;
-            margin-bottom: 50px;
+            padding: 70px 20px;
         }
 
-        .footer-col h6 {
-            font-size: 0.85rem;
-            font-weight: 700;
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
             color: var(--text-main);
-            margin-bottom: 15px;
         }
 
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
+        .section-subtitle-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #818cf8;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        /* Step Cards */
+        .step-card {
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-card span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #818cf8;
+            display: block;
+            margin-bottom: 15px;
+            letter-spacing: 1.2px;
+        }
+
+        .step-card h5 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .step-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* Rate Cards */
+        .rate-card {
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .rate-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .rate-card span {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 12px;
+            letter-spacing: 1.2px;
+        }
+
+        .rate-card h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .rate-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
             margin: 0;
         }
 
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-col ul li a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.88rem;
-            transition: color 0.2s;
-        }
-
-        .footer-col ul li a:hover {
-            color: var(--text-main);
-        }
-
-        .footer-bottom {
-            max-width: 1100px;
-            margin: 0 auto;
+        /* Footer */
+        footer {
             border-top: 1px solid var(--credix-border);
-            padding-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.78rem;
+            padding: 40px 20px;
+            text-align: center;
             color: var(--text-muted);
-        }
-
-        @media (max-width: 991px) {
-            .video-floating-container {
-                margin-top: 40px;
-            }
-            .hero-title {
-                font-size: 2.8rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.3rem;
-            }
-            .video-preview-card {
-                height: 260px;
-                padding: 12px;
-            }
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                gap: 10px;
-            }
+            font-size: 0.85rem;
+            background: var(--credix-card);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Latar Belakang Animasi Berterusan -->
-    <div class="animated-bg-layer"></div>
-
     <div class="top-announcement-bar d-none d-md-flex">
-        <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
+        <div><i class="fa-solid fa-bolt me-1 text-indigo"></i> CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
             <?php if(isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
@@ -381,11 +405,11 @@ include __DIR__ . '/config/db.php';
     <nav class="custom-navbar">
         <a href="index.php" class="brand-container">
             <div class="brand-logo-icon">
-                <i class="fa-solid fa-bolt"></i>
+                <i class="fa-solid fa-feather"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -398,113 +422,125 @@ include __DIR__ . '/config/db.php';
             <a href="rules.php">Rules</a>
             <a href="location.php">Location</a>
         </div>
-
-        <?php if(isset($_SESSION['user'])): ?>
-            <a href="booking.php" class="btn-book-now">Book Now</a>
-        <?php else: ?>
-            <a href="auth/login.php" class="btn-book-now">Book Now</a>
-        <?php endif; ?>
+        <a href="booking.php" class="btn-book-now">Book Now</a>
     </nav>
 
-    <!-- Hero Section dengan Susunan Kiri-Kanan Seimbang -->
+    <!-- Hero Section: Teks & Video dalam Satu Kad Master yang Sama -->
     <section class="hero-section">
-        <div class="container">
-            <div class="row align-items-center g-5">
-                
-                <!-- Lajur Kiri: Teks & Butang -->
-                <div class="col-lg-6 hero-content-wrapper" id="textLayer">
-                    <div class="badge-pill mb-3">
-                        <span>NEXT-GEN COURT BOOKING PLATFORM</span>
+        <div style="max-width: 1140px; margin: 0 auto;">
+            <div class="hero-master-card">
+                <div class="row align-items-center g-4">
+                    
+                    <!-- Sebelah Kiri: Teks & Butang -->
+                    <div class="col-lg-7">
+                        <span class="open-badge"><i class="fa-solid fa-sparkles me-1"></i> Next-Gen Court Booking Platform</span>
+                        <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
+                        <p class="hero-desc">Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time dengan reka bentuk antara muka yang pantas dan lancar.</p>
+                        <div class="hero-buttons">
+                            <a href="booking.php" class="btn-check-availability">Check availability &rarr;</a>
+                            <a href="tel:+601163519188" class="btn-call-centre"><i class="fa-solid fa-phone me-2"></i>Call Centre</a>
+                        </div>
                     </div>
-                    <h1 class="hero-title mb-3">
-                        Book a court.<br>Bring your game.
-                    </h1>
-                    <p class="hero-desc mb-4">
-                        Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time dengan reka bentuk antara muka yang pantas dan lancar.
-                    </p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <?php if(isset($_SESSION['user'])): ?>
-                            <a href="booking.php" class="btn btn-primary-custom">
-                                Check availability <i class="fa-solid fa-arrow-right ms-2"></i>
-                            </a>
-                        <?php else: ?>
-                            <a href="auth/login.php" class="btn btn-primary-custom">
-                                Check availability <i class="fa-solid fa-arrow-right ms-2"></i>
-                            </a>
-                        <?php endif; ?>
-                        <a href="tel:+601163519188" class="btn btn-secondary-custom">
-                            <i class="fa-solid fa-phone me-2"></i> Call Centre
-                        </a>
-                    </div>
-                </div>
 
-                <!-- Lajur Kanan: Bingkai Video Terapung Besar -->
-                <div class="col-lg-6 video-floating-container" id="videoLayer">
-                    <div class="video-preview-card">
-                        <video class="hero-video-element" autoplay muted loop playsinline>
-                            <source src="video/videoiklan.mp4" type="videoiklan/mp4">
-                            Your browser does not support the video tag.
-                        </video>
+                    <!-- Sebelah Kanan: Video di dalam Kad yang sama (Laluan Betul) -->
+                    <div class="col-lg-5">
+                        <div class="hero-video-wrapper">
+                            <video autoplay muted loop playsinline>
+                                <source src="videoiklan.mp4" type="video/mp4">
+                                Pelayar anda tidak menyokong paparan video.
+                            </video>
+                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-col">
-                <a href="index.php" class="brand-container mb-3 d-inline-flex">
-                    <div class="brand-logo-icon">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div>
-                    <div class="brand-text">
-                        <span>SPORTS CENTER</span>
-                        <small>Badminton • Kuala Terengganu</small>
-                    </div>
-                </a>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
-                    Dewan Kampung Panji, Kampung Panji<br>20050 Kuala Terengganu, Terengganu
-                </p>
-            </div>
-            <div class="footer-col">
-                <h6>Pautan Pantas</h6>
-                <ul>
-                    <li><a href="rates.php">Rates</a></li>
-                    <li><a href="facility.php">Facility</a></li>
-                    <li><a href="about.php">About</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h6>Sokongan</h6>
-                <ul>
-                    <li><a href="faq.php">FAQ</a></li>
-                    <li><a href="rules.php">Rules</a></li>
-                    <li><a href="location.php">Location</a></li>
-                </ul>
+    <div class="content-container">
+        
+        <!-- Dashboard Live Banner -->
+        <div style="background: var(--credix-card); border: 1px solid var(--credix-border); border-radius: 28px; padding: 40px; margin-bottom: 60px; position: relative; overflow: hidden;">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="section-subtitle-label">Instant Sync Engine</div>
+                    <h3 style="font-weight: 800; font-size: 1.85rem; margin-bottom: 12px; color: var(--text-main);">Pilih tarikh, masa & gelanggang pilihan anda</h3>
+                    <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">Sistem pintar mengawal status ketersediaan secara langsung tanpa konflik jadual.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="booking.php" class="btn btn-light rounded-pill px-4 py-3 fw-bold w-100 w-lg-auto shadow-sm" style="background:#fff; color:#000;">Check availability →</a>
+                </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <div>&copy; Sports Center • Badminton court booking</div>
-            <div>Powered by aestivo.ai</div>
+
+        <!-- Three Steps Section -->
+        <div class="mb-5">
+            <div class="section-subtitle-label">Workflow</div>
+            <h3 class="section-title mb-4">Three steps to play</h3>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <span>01</span>
+                        <h5>Find your date and time</h5>
+                        <p>Pilih tarikh pilihan anda dan semak slot masa kosong yang tersedia di sistem.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <span>02</span>
+                        <h5>Make a booking</h5>
+                        <p>Sahkan slot tempahan anda dan lakukan pembayaran secara online dengan pantas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <span>03</span>
+                        <h5>Turn up and play</h5>
+                        <p>Hadir ke dewan dengan kasut bertapak getah (non-marking) dan mulakan perlawanan anda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rates Section -->
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div class="section-subtitle-label">Pricing Matrix</div>
+                    <h3 class="section-title m-0">Rates & Courts</h3>
+                </div>
+                <a href="rates.php" style="font-size: 0.88rem; font-weight: 700; color: #818cf8; text-decoration: none;">Full rate card &rarr;</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="rate-card">
+                        <span>Court Hire Rate</span>
+                        <h2>RM 15</h2>
+                        <p>per court, per hour — kadar standard setiap jam</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="rate-card">
+                        <span>Available Courts</span>
+                        <h2>Dewan Utama</h2>
+                        <p>Gelanggang badminton berkualiti tinggi sedia ditempah</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; <?php echo date('Y'); ?> Badminton Kampung Panji, Kuala Terengganu. Credix UI Edition. Hak Cipta Terpelihara.</p>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS & Script Parallax Skrol -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener("scroll", function () {
-            const scrollPosition = window.pageYOffset;
-            const textLayer = document.getElementById("textLayer");
-            const videoLayer = document.getElementById("videoLayer");
-
-            if (window.innerWidth > 991) {
-                textLayer.style.transform = `translateY(${scrollPosition * 0.05}px)`;
-                videoLayer.style.transform = `translateY(${scrollPosition * -0.08}px)`;
-            }
-        });
-    </script>
+    <!-- Custom JS -->
+    <script src="assets/scroll-animations.js"></script>
 </body>
 
 </html>
