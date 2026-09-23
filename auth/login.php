@@ -23,6 +23,7 @@ if(isset($_POST['login'])){
                 $q = http_build_query([
                     'date' => $_GET['date'] ?? '',
                     'time' => $_GET['time'] ?? '',
+                    'duration' => $_GET['duration'] ?? 1,
                     'court_id' => $_GET['court_id'] ?? '',
                     'confirm' => 1
                 ]);
@@ -71,29 +72,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 .container-login {
-    width: 1000px;
-    height: 650px;
+    width: 100%;
+    max-width: 950px;
     display: flex;
     overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    background: #eef2f3;
 }
 
 .left {
-    width: 45%;
+    width: 50%;
     background: #eef2f3;
-    padding: 50px 60px;
+    padding: 40px 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .right {
-    width: 55%;
+    width: 50%;
     background: #000;
 }
 
@@ -101,11 +104,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    min-height: 450px;
 }
 
 h1 {
-    font-size: 55px;
-    margin-bottom: 30px;
+    font-size: 45px;
+    margin-bottom: 25px;
     font-weight: bold;
 }
 
@@ -120,7 +124,7 @@ label {
     border-bottom: 1px solid #bbb;
     border-radius: 0;
     background: transparent;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .form-control:focus {
@@ -136,7 +140,7 @@ label {
     color: #fff;
     border: none;
     border-radius: 5px;
-    margin-top: 15px;
+    margin-top: 10px;
     transition: 0.3s;
 }
 
@@ -147,13 +151,33 @@ label {
 .register {
     margin-top: 20px;
     text-align: center;
+    font-size: 14px;
 }
 
 .logo {
-    font-size: 60px;
-    opacity: .2;
-    margin-top: 20px;
+    margin-top: 15px;
     text-align: center;
+}
+
+/* RESPONSIVE DESIGN UNTUK TELEFON & TABLET KECIL */
+@media (max-width: 768px) {
+    .container-login {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    
+    .left {
+        width: 100%;
+        padding: 30px 25px;
+    }
+    
+    .right {
+        display: none; /* Sembunyikan gambar pada telefon untuk paparan yang lebih kemas & jimat ruang */
+    }
+    
+    h1 {
+        font-size: 35px;
+    }
 }
 
 </style>
@@ -201,22 +225,22 @@ label {
             </button>
 
             <div class="register">
-                Belum ada akaun? <a href="register.php">Daftar</a>
+                Belum ada akaun? <a href="register.php" class="text-dark fw-bold">Daftar</a>
             </div>
 
-          <div class="logo">
-    <img src="images/logobadminton.jpg" 
-         alt="logobadminton" 
-         class="logobadminton-img"
-         width="70">
-</div>
+            <div class="logo">
+                <img src="images/logobadminton.jpg" 
+                     alt="logobadminton" 
+                     class="logobadminton-img"
+                     width="60">
+            </div>
+
         </form>
 
     </div>
 
     <!-- Bahagian Kanan (Gambar Badminton) -->
     <div class="right">
-        <!-- Pastikan nama fail ini padan dengan nama sebenar (cth: badminton.jpg atau badminton.png) -->
         <img src="images/badminton.jpg" alt="Badminton" class="badminton-img">
     </div>
 
