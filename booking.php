@@ -579,7 +579,7 @@ if (isset($_SESSION['user'])) {
                 <!-- Step 2: Choose Duration -->
                 <div class="step">2. Choose duration (hours)</div>
                 <div class="durations mb-4">
-                    <?php for($dCount = 1; $dCount <= 4; $dCount++): ?>
+                    <?php for($dCount = 1; $dCount <= 6; $dCount++): ?>
                         <a class="duration-btn <?= $selectedDuration === $dCount ? 'active' : '' ?>" href="booking.php?date=<?= urlencode($selectedDate) ?>&duration=<?= $dCount ?>&time=<?= urlencode($selectedTime) ?>">
                             <?= $dCount ?> Hour<?= $dCount > 1 ? 's' : '' ?>
                         </a>
