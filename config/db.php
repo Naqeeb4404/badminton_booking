@@ -1,14 +1,24 @@
 <?php
 
-$host = 'localhost';
-$port = 3306;
-$database = 'badminton_booking';
-$user = 'root';
-$password = '';
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT');
+$database = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
 
-// Sambungan terus ke MySQL Laragon tanpa SSL
-$conn = mysqli_connect($host, $user, $password, $database, $port);
+$conn = mysqli_init();
 
-if (!$conn) {
+mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
+
+if (!mysqli_real_connect(
+    $conn,
+    $host,
+    $user,
+    $password,
+    $database,
+    $port,
+    NULL,
+    MYSQLI_CLIENT_SSL
+)) {
     die("Database connection failed: " . mysqli_connect_error());
 }
