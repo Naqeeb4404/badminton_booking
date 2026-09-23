@@ -185,6 +185,7 @@ if (isset($_SESSION['user'])) {
             max-width: 1140px;
             margin: 40px auto 20px;
             padding: 0 20px;
+            text-align: center; /* Ditukar ke tengah */
         }
 
         .hero h1 {
@@ -199,6 +200,7 @@ if (isset($_SESSION['user'])) {
             color: var(--text-muted);
             font-size: 0.98rem;
             max-width: 620px;
+            margin: 0 auto; /* Menengahkan perenggan */
             line-height: 1.6;
         }
 
