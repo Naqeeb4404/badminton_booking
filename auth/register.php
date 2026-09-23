@@ -1,5 +1,5 @@
 <?php
-include "../config/db.php";
+include __DIR__ . '/../config/db.php';
 
 if(isset($_POST['register'])){
     $name = trim($_POST['name'] ?? '');

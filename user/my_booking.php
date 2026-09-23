@@ -2,7 +2,7 @@
 
 session_start();
 
-include "../config/db.php";
+include __DIR__ . '/../config/db.php';
 
 
 if(!isset($_SESSION['user']) || $_SESSION['user']['role']!="user"){

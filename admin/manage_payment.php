@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "../config/db.php";
+include __DIR__ . '/../config/db.php';
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') { header('Location: ../auth/login.php'); exit(); }
 // Payment status is now driven entirely by the booking's Approve/Reject
 // decision on the Bookings page (manage_booking.php), so that a booking

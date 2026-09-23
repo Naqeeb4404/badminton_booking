@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "config/db.php";
+include __DIR__ . '/config/db.php';
 
 $selectedDate = $_GET['date'] ?? date('Y-m-d');
 $selectedTime = $_GET['time'] ?? '';
