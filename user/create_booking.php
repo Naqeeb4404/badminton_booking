@@ -53,7 +53,7 @@ try {
         exit();
     }
 
-    // MASUKKAN KOD DURATION DI SINI (Pastikan jadual bookings ada kolum duration)
+    // Masukkan data termasuk duration
     $stmt = $conn->prepare("INSERT INTO bookings (user_id, court_id, booking_date, booking_time, duration, status) VALUES (?, ?, ?, ?, ?, 'Pending')");
     $stmt->bind_param("iissi", $user_id, $court_id, $date, $time, $duration);
     $stmt->execute();
@@ -68,14 +68,13 @@ try {
 
 }catch(mysqli_sql_exception $e){
     $conn->rollback();
-    // 1062 = duplicate key on the active_slot_key unique index (see schema_updates.sql):
-    // a second request for the exact same court/date/time slipped past the row
-    // lock above and hit the database's own uniqueness guarantee instead.
-    if($e->getCode() === 1062){
-        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&duration=".urlencode($duration)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
-    }else{
-        header("Location: ../booking.php?error=".urlencode('Booking gagal. Sila cuba lagi.'));
-    }
+    
+    // PAPARKAN RALAT SEBENAR PADA SKRIN UNTUK KITA SEMAK
+    echo "<div style='background: #ffe6e6; color: #cc0000; padding: 20px; border: 2px solid red; font-family: monospace; margin: 20px; border-radius: 5px;'>";
+    echo "<h3>DEBUG SQL ERROR:</h3>";
+    echo "<b>Error Code:</b> " . $e->getCode() . "<br>";
+    echo "<b>Error Message:</b> " . $e->getMessage() . "<br>";
+    echo "</div>";
     exit();
 }
 ?>
