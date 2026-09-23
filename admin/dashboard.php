@@ -365,8 +365,8 @@ $pendingBookings = (int)$pendingRow['total'];
 
 <body>
 
-    <!-- SIDEBAR MENU LENGKAP -->
-    <aside class="sidebar">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
         <a href="dashboard.php" class="sidebar-brand">
             <i class="fa-solid fa-shuttlecock text-warning"></i>
             <span>TailAdmin</span>
@@ -392,16 +392,22 @@ $pendingBookings = (int)$pendingRow['total'];
                     <span>Profile</span>
                 </div>
             </a>
+            <a href="manage_booking.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Bookings</span>
+                </div>
+            </a>
             <a href="manage_court.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Forms</span>
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                    <span>Courts</span>
                 </div>
             </a>
             <a href="manage_users.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-table"></i>
-                    <span>Tables</span>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Users</span>
                 </div>
             </a>
 
@@ -411,16 +417,15 @@ $pendingBookings = (int)$pendingRow['total'];
                     <i class="fa-solid fa-comments"></i>
                     <span>Message</span>
                 </div>
-                <span class="badge bg-danger rounded-pill fs-8">2</span>
             </a>
             <a href="manage_payment.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Invoice</span>
+                    <span>Invoice / Payments</span>
                 </div>
             </a>
         </div>
-    </aside>
+    </div>
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">
