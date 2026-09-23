@@ -109,6 +109,7 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
             background: #94a3b8;
         }
 
+        /* SIDEBAR STYLING */
         .sidebar {
             width: 280px;
             background-color: var(--sidebar-bg);
@@ -183,6 +184,7 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
             text-align: center;
         }
 
+        /* MAIN CONTENT AREA */
         .main-content {
             margin-left: 280px;
             flex-grow: 1;
@@ -191,6 +193,7 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
             min-height: 100vh;
         }
 
+        /* TOPBAR STYLING */
         .topbar {
             height: 80px;
             background: #ffffff;
@@ -366,6 +369,7 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
 
 <body>
 
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <a href="dashboard.php" class="sidebar-brand">
             <i class="fa-solid fa-shuttlecock text-warning"></i>
@@ -392,16 +396,22 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
                     <span>Profile</span>
                 </div>
             </a>
+            <a href="manage_booking.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Bookings</span>
+                </div>
+            </a>
             <a href="manage_court.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Forms</span>
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                    <span>Courts</span>
                 </div>
             </a>
             <a href="manage_users.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-table"></i>
-                    <span>Tables</span>
+                    <i class="fa-solid fa-users"></i>
+                    <span>Users</span>
                 </div>
             </a>
 
@@ -411,24 +421,25 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
                     <i class="fa-solid fa-comments"></i>
                     <span>Message</span>
                 </div>
-                <span class="badge bg-danger rounded-pill fs-8">2</span>
             </a>
             <a href="manage_payment.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Invoice</span>
+                    <span>Invoice / Payments</span>
                 </div>
             </a>
         </div>
     </div>
 
+    <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">
         
+        <!-- TOPBAR -->
         <header class="topbar">
-            <div class="search-form">
+            <form action="" method="GET" class="search-form">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" class="form-control search-input" placeholder="Type to search..." autocomplete="off">
-            </div>
+                <input type="text" name="search" class="form-control search-input" placeholder="Taip untuk cari..." autocomplete="off">
+            </form>
 
             <div class="d-flex align-items-center gap-3">
                 <div class="user-pill">
@@ -436,11 +447,12 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
                     <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($user['name']); ?></div>
                 </div>
                 <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar
                 </a>
             </div>
         </header>
 
+        <!-- CONTENT BODY -->
         <div class="content-body">
             
             <div class="card shadow">
