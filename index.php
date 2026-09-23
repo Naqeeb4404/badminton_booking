@@ -21,8 +21,8 @@ include __DIR__ . '/config/db.php';
     <style>
         :root {
             --credix-bg: #090a0f;
-            --credix-card: #13151f;
-            --credix-border: rgba(255, 255, 255, 0.08);
+            --credix-card: rgba(19, 21, 31, 0.75);
+            --credix-border: rgba(255, 255, 255, 0.12);
             --credix-accent: #6366f1;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -35,6 +35,27 @@ include __DIR__ . '/config/db.php';
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+        }
+
+        /* Latar Belakang Animasi Berterusan (Moving Background) */
+        .animated-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, #090a0f 100%);
+            animation: bgPulse 12s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1) translate(0px, 0px); }
+            50% { transform: scale(1.05) translate(-15px, -10px); }
+            100% { transform: scale(1.1) translate(15px, 10px); }
         }
 
         .top-announcement-bar {
@@ -138,9 +159,17 @@ include __DIR__ . '/config/db.php';
             transform: translateY(-2px);
         }
 
-        /* Hero Section Styling */
+        /* Hero Section dengan Kesan Bertindih (Overlapping & Parallax Layering) */
         .hero-section {
-            padding: 100px 0 120px 0;
+            padding: 120px 0 160px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content-wrapper {
+            position: relative;
+            z-index: 3;
+            transition: transform 0.2s ease-out;
         }
 
         .badge-pill {
@@ -156,11 +185,12 @@ include __DIR__ . '/config/db.php';
         }
 
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             font-weight: 800;
             letter-spacing: -1.5px;
             color: var(--text-main);
             line-height: 1.1;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .hero-desc {
@@ -212,15 +242,26 @@ include __DIR__ . '/config/db.php';
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Kotak Video / Preview */
+        /* Bingkai Video Terapung & Bertindih (Floating & Overlapping Video Frame) */
+        .video-floating-container {
+            position: relative;
+            z-index: 2;
+            margin-left: -60px; /* Kesan bertindih dengan lajur teks */
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+        }
+
         .video-preview-card {
             background: var(--credix-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--credix-border);
-            border-radius: 16px;
+            border-radius: 24px;
             overflow: hidden;
-            height: 320px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            position: relative;
+            height: 380px;
+            padding: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -229,30 +270,20 @@ include __DIR__ . '/config/db.php';
         .hero-video-element {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            border-radius: 12px;
+            pointer-events: none;
         }
-
-        /* Interactive Scroll Animation Classes */
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(35px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform;
-        }
-
-        .reveal-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .delay-1 { transition-delay: 0.2s; }
 
         .site-footer {
-            background-color: var(--credix-card);
+            background-color: rgba(19, 21, 31, 0.9);
+            backdrop-filter: blur(15px);
             padding: 70px 40px 35px 40px;
             border-top: 1px solid var(--credix-border);
             margin-top: 100px;
             color: var(--text-muted);
+            position: relative;
+            z-index: 5;
         }
 
         .footer-container {
@@ -303,12 +334,23 @@ include __DIR__ . '/config/db.php';
             color: var(--text-muted);
         }
 
+        @media (max-width: 991px) {
+            .video-floating-container {
+                margin-left: 0;
+                margin-top: 40px;
+            }
+            .hero-title {
+                font-size: 2.8rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2.5rem;
+                font-size: 2.3rem;
             }
             .video-preview-card {
-                height: 240px;
+                height: 260px;
+                padding: 15px;
             }
             .footer-container {
                 grid-template-columns: 1fr;
@@ -323,6 +365,9 @@ include __DIR__ . '/config/db.php';
 </head>
 
 <body>
+
+    <!-- Latar Belakang Animasi Berterusan (Bergerak bebas di belakang) -->
+    <div class="animated-bg-layer"></div>
 
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
@@ -363,13 +408,13 @@ include __DIR__ . '/config/db.php';
         <?php endif; ?>
     </nav>
 
-    <!-- Hero Section with Video Preview Side-by-Side -->
+    <!-- Hero Section dengan Kesan Parallax dan Bertindih -->
     <section class="hero-section">
         <div class="container">
-            <div class="row align-items-center g-5">
+            <div class="row align-items-center">
                 
-                <!-- Bahagian Teks & Butang (Kiri) -->
-                <div class="col-lg-7 reveal-on-scroll">
+                <!-- Lajur Teks (Lapisan Hadapan / Overlapping Text) -->
+                <div class="col-lg-7 hero-content-wrapper" id="textLayer">
                     <div class="badge-pill mb-3">
                         <span>NEXT-GEN COURT BOOKING PLATFORM</span>
                     </div>
@@ -395,8 +440,8 @@ include __DIR__ . '/config/db.php';
                     </div>
                 </div>
 
-                <!-- Bahagian Kotak Video (Kanan) -->
-                <div class="col-lg-5 reveal-on-scroll delay-1">
+                <!-- Bingkai Video Terapung & Bertindih (Floating Parallax Video Frame) -->
+                <div class="col-lg-6 video-floating-container" id="videoLayer">
                     <div class="video-preview-card">
                         <video class="hero-video-element" autoplay muted loop playsinline>
                             <source src="video/videosport.mp4" type="video/mp4">
@@ -448,29 +493,19 @@ include __DIR__ . '/config/db.php';
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS & Scroll Observer Script -->
+    <!-- Bootstrap 5 JS & Script Parallax Skrol -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px 0px -50px 0px',
-                threshold: 0.15
-            };
+        document.addEventListener("scroll", function () {
+            const scrollPosition = window.pageYOffset;
+            const textLayer = document.getElementById("textLayer");
+            const videoLayer = document.getElementById("videoLayer");
 
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    } else {
-                        entry.target.classList.remove('is-visible');
-                    }
-                });
-            }, observerOptions);
-
-            document.querySelectorAll('.reveal-on-scroll').forEach(element => {
-                observer.observe(element);
-            });
+            // Kesan pergerakan kelajuan berbeza (Parallax Effect) antara teks dan video
+            if (window.innerWidth > 991) {
+                textLayer.style.transform = `translateY(${scrollPosition * 0.08}px)`;
+                videoLayer.style.transform = `translateY(${scrollPosition * -0.12}px)`;
+            }
         });
     </script>
 </body>
