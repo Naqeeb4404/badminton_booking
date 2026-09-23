@@ -1,3 +1,4 @@
+
 <?php
 
 $host = getenv('DB_HOST');
@@ -8,7 +9,14 @@ $password = getenv('DB_PASSWORD');
 
 $conn = mysqli_init();
 
-mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
+mysqli_ssl_set(
+    $conn,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+);
 
 if (!mysqli_real_connect(
     $conn,
@@ -20,5 +28,11 @@ if (!mysqli_real_connect(
     NULL,
     MYSQLI_CLIENT_SSL
 )) {
-    die("Database connection failed: " . mysqli_connect_error());
+    die(
+        "Database connection failed: " .
+        mysqli_connect_error()
+    );
 }
+
+mysqli_set_charset($conn, "utf8mb4");
+
