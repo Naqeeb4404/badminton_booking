@@ -9,7 +9,7 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Credix Style - Badminton Kampung Panji</title>
+    <title>CALL +60 11 6351 9188  | - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -360,7 +360,7 @@ include __DIR__ . '/config/db.php';
 <body>
 
     <div class="top-announcement-bar d-none d-md-flex">
-        <div><i class="fa-solid fa-bolt me-1 text-indigo"></i> LIVE SYSTEM &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
+        <div><i class="fa-solid fa-bolt me-1 text-indigo"></i> CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
             <?php if(isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
@@ -376,7 +376,7 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-feather"></i>
             </div>
             <div class="brand-text">
-                <span>CREDIX BADMINTON</span>
+                <span>BADMINTON</span>
                 <small>Kampung Panji</small>
             </div>
         </a>
