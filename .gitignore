@@ -1,0 +1,7 @@
+config/db.php
+
+user/uploads/receipt/
+
+*.sql
+
+.env
