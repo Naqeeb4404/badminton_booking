@@ -25,8 +25,8 @@ if ($month > 12) {
 // Format bulan & tahun dengan betul (contoh: 01, 02)
 $monthFormatted = str_pad($month, 2, "0", STR_PAD_LEFT);
 
-// Jumlah hari dalam bulan terpilih
-$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+// Jumlah hari dalam bulan terpilih (Menggunakan date('t') untuk mengelakkan ralat cal_days_in_month)
+$daysInMonth = intval(date('t', strtotime("$year-$monthFormatted-01")));
 
 // Ambil booking mengikut bulan dan tahun yang dipilih
 $query = "SELECT * FROM bookings WHERE MONTH(booking_date) = $month AND YEAR(booking_date) = $year";
