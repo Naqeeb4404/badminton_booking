@@ -1,8 +1,8 @@
 <?php
 session_start();
+include __DIR__ . '../config/db.php';
 
-include __DIR__ . '/../config/db.php';
-
+// Semak sama ada pengguna adalah admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
     header("Location: ../auth/login.php");
     exit();
@@ -10,12 +10,13 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
 
 $user = $_SESSION['user'];
 
-// Dapatkan jumlah mesej untuk notifikasi badge pada sidebar
+// Kira jumlah mesej untuk notifikasi
 $msg_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM messages");
 $msg_row = mysqli_fetch_assoc($msg_query);
 $total_messages = $msg_row['total'];
+mysqli_free_result($msg_query);
 
-// ADD COURT
+// 1. TAMBAH GELANGGANG (ADD COURT)
 if (isset($_POST['add'])) {
     $court_name = trim($_POST['court_name'] ?? '');
     $status = ($_POST['status'] ?? '') === 'Available' ? 'Available' : 'Not Available';
@@ -31,7 +32,7 @@ if (isset($_POST['add'])) {
     exit();
 }
 
-// EDIT COURT (name / price)
+// 2. KEMASKINI GELANGGANG (EDIT)
 if (isset($_POST['edit'])) {
     $id = (int)($_POST['id'] ?? 0);
     $court_name = trim($_POST['court_name'] ?? '');
@@ -47,7 +48,7 @@ if (isset($_POST['edit'])) {
     exit();
 }
 
-// DELETE COURT
+// 3. PADAM GELANGGANG (DELETE)
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM courts WHERE id=?");
@@ -58,9 +59,9 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// UPDATE STATUS
-if (isset($_GET['status'])) {
-    $id = (int)($_GET['id'] ?? 0);
+// 4. TUKAR STATUS (Available / Not Available)
+if (isset($_GET['status']) && isset($_GET['id'])) {
+    $id = (int)$_GET['id'];
     $status = $_GET['status'] === 'Available' ? 'Available' : 'Not Available';
 
     $stmt = $conn->prepare("UPDATE courts SET status=? WHERE id=?");
@@ -71,18 +72,20 @@ if (isset($_GET['status'])) {
     exit();
 }
 
-$result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
-
-// If ?edit_id=X is set, load that court so the form below can be pre-filled.
+// 5. AMBIL DATA GELANGGANG UNTUK DI-EDIT (JIKA ?edit_id WUJUD)
 $editCourt = null;
 if (isset($_GET['edit_id'])) {
-    $editId = (int)$_GET['edit_id'];
-    $stmt = $conn->prepare("SELECT * FROM courts WHERE id=? LIMIT 1");
-    $stmt->bind_param("i", $editId);
-    $stmt->execute();
-    $editCourt = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
+    $edit_id = (int)$_GET['edit_id'];
+    $edit_stmt = $conn->prepare("SELECT * FROM courts WHERE id = ?");
+    $edit_stmt->bind_param("i", $edit_id);
+    $edit_stmt->execute();
+    $edit_result = $edit_stmt->get_result();
+    $editCourt = $edit_result->fetch_assoc();
+    $edit_stmt->close();
 }
+
+// Ambil senarai gelanggang dari database
+$result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
@@ -117,7 +120,6 @@ if (isset($_GET['edit_id'])) {
             display: flex;
         }
 
-        /* CUSTOM SCROLLBAR YANG CANTIK & KEMAS */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -133,7 +135,6 @@ if (isset($_GET['edit_id'])) {
             background: #94a3b8;
         }
 
-        /* SIDEBAR STYLING */
         .sidebar {
             width: 280px;
             background-color: var(--sidebar-bg);
@@ -208,7 +209,6 @@ if (isset($_GET['edit_id'])) {
             text-align: center;
         }
 
-        /* MAIN CONTENT AREA */
         .main-content {
             margin-left: 280px;
             flex-grow: 1;
@@ -217,7 +217,6 @@ if (isset($_GET['edit_id'])) {
             min-height: 100vh;
         }
 
-        /* TOPBAR STYLING */
         .topbar {
             height: 80px;
             background: #ffffff;
@@ -281,7 +280,6 @@ if (isset($_GET['edit_id'])) {
             font-size: 0.9rem;
         }
 
-        /* CONTENT BODY & CARDS */
         .content-body {
             padding: 40px;
             flex-grow: 1;
