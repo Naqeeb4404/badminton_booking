@@ -9,7 +9,7 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Center - Badminton Labuan F.T</title>
+    <title>Sports Center - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -21,9 +21,9 @@ include __DIR__ . '/config/db.php';
     <style>
         :root {
             --bg-app: #ffffff;
-            --text-dark: #111111;
-            --text-muted: #666666;
-            --accent-gold: #c59b27;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --accent-gold: #f59e0b;
             --border-color: #e2e8f0;
         }
 
@@ -37,20 +37,25 @@ include __DIR__ . '/config/db.php';
 
         .top-announcement-bar {
             font-size: 0.75rem;
-            color: #777;
-            padding: 8px 40px;
+            color: #64748b;
+            padding: 10px 40px;
             border-bottom: 1px solid #f1f5f9;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #fafafa;
         }
 
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 40px;
+            padding: 18px 40px;
             border-bottom: 1px solid #f1f5f9;
+            background: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .brand-container {
@@ -61,58 +66,58 @@ include __DIR__ . '/config/db.php';
         }
 
         .brand-logo-icon {
-            width: 40px;
-            height: 40px;
-            background: #f59e0b;
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            background: #0f172a;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color: #f59e0b;
             font-weight: 800;
+            font-size: 1.1rem;
         }
 
         .brand-text span {
             display: block;
             font-weight: 800;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            color: #111;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            color: #0f172a;
             line-height: 1.1;
         }
 
         .brand-text small {
             font-size: 0.65rem;
-            color: #b45309;
+            color: #d97706;
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
         }
 
         .nav-links {
             display: flex;
-            gap: 22px;
+            gap: 24px;
             align-items: center;
         }
 
         .nav-links a {
             color: var(--text-dark);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.88rem;
             transition: color 0.2s;
         }
 
         .nav-links a:hover, .nav-links a.active {
             color: #d97706;
-            font-weight: 700;
         }
 
         .btn-book-now {
-            border: 1.5px solid #d1d5db;
-            color: #111;
+            border: 1.5px solid #0f172a;
+            color: #0f172a;
             border-radius: 50px;
-            padding: 6px 20px;
+            padding: 8px 22px;
             font-weight: 700;
             font-size: 0.85rem;
             background: transparent;
@@ -121,57 +126,59 @@ include __DIR__ . '/config/db.php';
         }
 
         .btn-book-now:hover {
-            border-color: #111;
-            background: #111;
+            background: #0f172a;
             color: #fff;
         }
 
         .hero-section {
             position: relative;
-            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.92)), url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;
-            padding: 80px 40px;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;
+            padding: 90px 40px;
             border-bottom: 1px solid #f1f5f9;
         }
 
         .open-badge {
             font-size: 0.72rem;
-            font-weight: 700;
+            font-weight: 800;
             background: #fef3c7;
             color: #b45309;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             display: inline-block;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .hero-title {
-            font-size: 3.2rem;
+            font-size: 3.5rem;
             font-weight: 800;
             line-height: 1.1;
-            letter-spacing: -1px;
-            margin-bottom: 15px;
-            color: #111;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            color: #0f172a;
         }
 
         .hero-desc {
-            color: #4b5563;
-            font-size: 1rem;
-            max-width: 480px;
-            margin-bottom: 30px;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 500px;
+            margin-bottom: 35px;
+            line-height: 1.6;
         }
 
         .hero-buttons {
             display: flex;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .btn-check-availability {
-            background-color: #fef3c7;
-            color: #b45309;
+            background-color: #0f172a;
+            color: #fff;
             font-weight: 700;
-            border: 1.5px solid #fcd34d;
-            padding: 10px 24px;
+            border: 1.5px solid #0f172a;
+            padding: 12px 28px;
             border-radius: 50px;
             font-size: 0.9rem;
             text-decoration: none;
@@ -179,15 +186,16 @@ include __DIR__ . '/config/db.php';
         }
 
         .btn-check-availability:hover {
-            background-color: #fde68a;
+            background-color: #1e293b;
+            color: #fff;
         }
 
         .btn-call-centre {
             background-color: transparent;
-            color: #374151;
+            color: #0f172a;
             font-weight: 700;
-            border: 1.5px solid #d1d5db;
-            padding: 10px 24px;
+            border: 1.5px solid #cbd5e1;
+            padding: 12px 28px;
             border-radius: 50px;
             font-size: 0.9rem;
             text-decoration: none;
@@ -195,241 +203,117 @@ include __DIR__ . '/config/db.php';
         }
 
         .btn-call-centre:hover {
-            border-color: #374151;
+            border-color: #0f172a;
+            background: #f8fafc;
         }
 
         .content-container {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         .section-title {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 5px;
+            letter-spacing: -0.8px;
+            margin-bottom: 8px;
+            color: #0f172a;
         }
 
         .section-subtitle-label {
             font-size: 0.72rem;
             font-weight: 800;
-            letter-spacing: 1px;
-            color: #b45309;
+            letter-spacing: 1.2px;
+            color: #d97706;
             text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .legend-container {
-            display: flex;
-            gap: 15px;
-            font-size: 0.8rem;
-            color: #64748b;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .legend-box {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
-            border: 1px solid #cbd5e1;
-        }
-
-        .date-slider-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-        }
-
-        .date-card {
-            min-width: 65px;
-            height: 80px;
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 5px;
-        }
-
-        .date-card span {
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #64748b;
-        }
-
-        .date-card h4 {
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin: 2px 0;
-            color: #1e293b;
-        }
-
-        .date-card.active, .date-card:hover {
-            border-color: #d97706;
-            background-color: #fffbeb;
-        }
-
-        .date-card.active h4, .date-card.active span {
-            color: #b45309;
-        }
-
-        .schedule-grid-wrapper {
-            overflow-x: auto;
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .time-header-row {
-            display: grid;
-            grid-template-columns: 100px repeat(15, 1fr);
-            gap: 6px;
-            margin-bottom: 12px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .court-row {
-            display: grid;
-            grid-template-columns: 100px repeat(15, 1fr);
-            gap: 6px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-
-        .court-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #334155;
-        }
-
-        .slot-cell {
-            height: 42px;
-            border: 1.5px dashed #cbd5e1;
-            border-radius: 6px;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .slot-cell:hover {
-            border-color: #d97706;
-            background: #fffbeb;
-        }
-
-        .slot-cell.booked {
-            background: #fee2e2;
-            border: 1.5px solid #fca5a5;
-            cursor: not-allowed;
-        }
-
-        .slot-cell.selected {
-            background: #fef3c7 !important;
-            border: 1.5px solid #d97706 !important;
-        }
-
-        .selection-box {
-            border: 1.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px 25px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 40px;
-        }
-
-        .btn-continue {
-            border: none;
-            background: #d97706;
-            color: #fff;
-            font-weight: 700;
-            padding: 10px 24px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .btn-continue:hover {
-            background: #b45309;
+            margin-bottom: 6px;
         }
 
         .step-card {
             background: #fff;
             border: 1.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
+            border-radius: 20px;
+            padding: 35px 30px;
             height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
         }
 
         .step-card span {
             font-size: 0.75rem;
             font-weight: 800;
-            color: #b45309;
+            color: #d97706;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
         }
 
         .step-card h5 {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 800;
             margin-bottom: 12px;
+            color: #0f172a;
         }
 
         .step-card p {
-            font-size: 0.88rem;
-            color: #64748b;
+            font-size: 0.9rem;
+            color: var(--text-muted);
             margin: 0;
+            line-height: 1.5;
         }
 
         .rate-card {
             background: #fff;
             border: 1.5px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
+            border-radius: 20px;
+            padding: 35px 30px;
             height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .rate-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
         }
 
         .rate-card span {
             font-size: 0.72rem;
             font-weight: 800;
-            color: #64748b;
+            color: var(--text-muted);
             text-transform: uppercase;
             display: block;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
         .rate-card h2 {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            color: #0f172a;
         }
 
         .rate-card p {
-            font-size: 0.88rem;
-            color: #64748b;
+            font-size: 0.9rem;
+            color: var(--text-muted);
             margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: #fafafa;
         }
     </style>
 </head>
@@ -437,8 +321,14 @@ include __DIR__ . '/config/db.php';
 <body>
 
     <div class="top-announcement-bar d-none d-md-flex">
-        <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
-        <div><a href="auth/login.php" class="text-decoration-none text-dark fw-bold">Login / Register</a></div>
+        <div><i class="fa-solid fa-phone me-1 text-warning"></i> CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
+        <div>
+            <?php if(isset($_SESSION['user'])): ?>
+                <a href="user/dashboard.php" class="text-decoration-none text-dark fw-bold">Dashboard</a>
+            <?php else: ?>
+                <a href="auth/login.php" class="text-decoration-none text-dark fw-bold">Login / Register</a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <nav class="custom-navbar">
@@ -447,13 +337,13 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON KAMPUNG PANJI</span>
+                <small>Kuala Terengganu</small>
             </div>
         </a>
 
         <div class="nav-links d-none d-lg-flex">
-            <a href="index.php">Home</a>
+            <a href="index.php" class="active">Home</a>
             <a href="rates.php">Rates</a>
             <a href="facility.php">Facility</a>
             <a href="about.php">About</a>
@@ -466,108 +356,83 @@ include __DIR__ . '/config/db.php';
 
     <section class="hero-section">
         <div style="max-width: 1100px; margin: 0 auto;">
-            <span class="open-badge">Open daily • Sungai Bangat</span>
+            <span class="open-badge"><i class="fa-solid fa-circle-check me-1"></i> Open Daily • Dewan Kampung Panji</span>
             <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
-            <p class="hero-desc">Courts by the hour, seven days a week. See what's free tonight and book it online in under a minute.</p>
+            <p class="hero-desc">Tempah gelanggang badminton anda secara online dengan mudah. Semak kekosongan masa secara langsung dan buat tempahan dalam masa seminit.</p>
             <div class="hero-buttons">
                 <a href="booking.php" class="btn-check-availability">Check availability</a>
-                <a href="tel:+60168355533" class="btn-call-centre">Call the centre</a>
+                <a href="tel:+601163519188" class="btn-call-centre"><i class="fa-solid fa-phone me-2"></i>Call Centre</a>
             </div>
         </div>
     </section>
 
-    <div class="content-container" id="availability-section">
+    <div class="content-container">
         
-        <div class="mb-4">
-            <div class="section-subtitle-label">Live Availability</div>
-            <h2 class="section-title">Pick a court and an hour</h2>
-        </div>
-
-        <div class="legend-container">
-            <div class="legend-item"><div class="legend-box" style="background: #f8fafc;"></div> Available</div>
-            <div class="legend-item"><div class="legend-box" style="background: #fef3c7; border-color: #d97706;"></div> Selected</div>
-            <div class="legend-item"><div class="legend-box" style="background: #fee2e2;"></div> Booked</div>
-        </div>
-
-        <!-- Tarikh Slider -->
-        <div class="date-slider-container" id="dateSlider">
-            <?php
-            for ($i = 0; $i < 10; $i++) {
-                $currentDate = date('Y-m-d', strtotime("+$i days"));
-                $dayName = ($i == 0) ? 'TODAY' : strtoupper(date('D', strtotime($currentDate)));
-                $dayNum = date('d', strtotime($currentDate));
-                $monthName = date('M', strtotime($currentDate));
-                $activeClass = ($i == 0) ? 'active' : '';
-                
-                echo '
-                <div class="date-card ' . $activeClass . '" data-date="' . $currentDate . '">
-                    <span>' . $dayName . '</span>
-                    <h4>' . $dayNum . '</h4>
-                    <span>' . $monthName . '</span>
-                </div>';
-            }
-            ?>
-        </div>
-
-        <!-- Pautan ke sistem booking sebenar -->
-        <div class="live-booking-card" style="background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:28px;margin-bottom:45px;">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#d97706;margin-bottom:6px;">Live Availability</div>
-                    <h3 style="font-weight:800;margin-bottom:7px;">Choose your date, time and court</h3>
-                    <p style="color:#64748b;margin:0;">Sistem akan semak status gelanggang dan booking sebenar sebelum anda teruskan.</p>
+        <!-- Live Availability Banner Section -->
+        <div style="background:#ffffff; border:1.5px solid var(--border-color); border-radius:24px; padding:35px; margin-bottom:50px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <div class="section-subtitle-label">Live Availability System</div>
+                    <h3 style="font-weight: 800; font-size: 1.8rem; margin-bottom: 10px; color: #0f172a;">Pilih tarikh, masa & gelanggang pilihan anda</h3>
+                    <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">Sistem kami memaparkan status ketersediaan gelanggang secara real-time bagi mengelakkan pertindihan tempahan.</p>
                 </div>
-                <a href="booking.php" class="btn btn-dark rounded-pill px-4 py-3 fw-bold">Check availability →</a>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="booking.php" class="btn btn-dark rounded-pill px-4 py-3 fw-bold w-100 w-lg-auto shadow-sm">Semak Gelanggang Sekarang &rarr;</a>
+                </div>
             </div>
         </div>
 
-        <!-- Tiga Langkah -->
+        <!-- Three Steps Section -->
         <div class="mb-5">
-            <h3 class="section-title mb-4">Three steps</h3>
+            <div class="section-subtitle-label">Prosedur Ringkas</div>
+            <h3 class="section-title mb-4">Three steps to play</h3>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="step-card">
                         <span>01</span>
                         <h5>Find your date and time</h5>
-                        <p>The grid above shows every court, hour by hour, seven days out.</p>
+                        <p>Pilih tarikh pilihan anda dan semak slot masa kosong yang tersedia di sistem.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="step-card">
                         <span>02</span>
                         <h5>Make a booking</h5>
-                        <p>Confirm your slots and pay online. You get the confirmation immediately.</p>
+                        <p>Sahkan slot tempahan anda dan lakukan pembayaran secara online dengan pantas.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="step-card">
                         <span>03</span>
                         <h5>Turn up and play</h5>
-                        <p>Bring non-marking court shoes. Change at the shoe rack outside the court.</p>
+                        <p>Hadir ke dewan dengan kasut bertapak getah (non-marking) dan mulakan perlawanan anda.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bahagian Kadar Harga -->
-        <div class="mb-5">
+        <!-- Rates Section -->
+        <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="section-title m-0">Rates</h3>
-                <a href="rates.php" style="font-size: 0.85rem; font-weight: 700; color: #d97706; text-decoration: none;">Full rate card &rarr;</a>
+                <div>
+                    <div class="section-subtitle-label">Harga & Fasiliti</div>
+                    <h3 class="section-title m-0">Rates & Courts</h3>
+                </div>
+                <a href="rates.php" style="font-size: 0.88rem; font-weight: 700; color: #d97706; text-decoration: none;">Full rate card &rarr;</a>
             </div>
             <div class="row g-4">
                 <div class="col-md-6">
                     <div class="rate-card">
-                        <span>Court Hire</span>
+                        <span>Court Hire Rate</span>
                         <h2>RM 15</h2>
-                        <p>per court, per hour — every hour, every season</p>
+                        <p>per court, per hour — kadar standard setiap jam</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="rate-card">
-                        <span>Courts</span>
-                        <h2>6</h2>
-                        <p>bookable individually, by the hour</p>
+                        <span>Available Courts</span>
+                        <h2>Dewan Utama</h2>
+                        <p>Gelanggang badminton berkualiti tinggi sedia ditempah</p>
                     </div>
                 </div>
             </div>
@@ -575,11 +440,14 @@ include __DIR__ . '/config/db.php';
 
     </div>
 
-    <!-- Bootstrap 5 JS & Skrip Interaktif -->
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; <?php echo date('Y'); ?> Badminton Kampung Panji, Kuala Terengganu. Hak Cipta Terpelihara.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Availability and booking selection are handled by booking.php.
-    </script>
 </body>
 
 </html>
