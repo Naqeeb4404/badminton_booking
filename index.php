@@ -369,11 +369,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
-                <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
-            <?php else: ?>
-                <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
-            <?php endif; ?>
+            <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
         </div>
     </div>
 
