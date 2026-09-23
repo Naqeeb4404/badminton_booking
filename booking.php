@@ -365,30 +365,37 @@ if (isset($_SESSION['user'])) {
             color: #f87171;
         }
 
-        /* Summary & Notices */
+        /* Summary Box & Compact Button */
         .summary {
-            background: rgba(99, 102, 241, 0.08);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 18px;
-            padding: 22px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 22px;
+            padding: 24px 28px;
             margin-top: 30px;
             color: var(--text-main);
         }
 
-        .continue {
-            width: 100%;
-            border: 0;
-            border-radius: 50px;
+        .btn-confirm-selection {
             background: linear-gradient(135deg, #6366f1, #a855f7);
             color: #fff;
-            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 28px;
+            font-size: 0.9rem;
             font-weight: 800;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-            transition: opacity 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .continue:hover {
-            opacity: 0.9;
+        .btn-confirm-selection:hover {
+            opacity: 0.92;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
         }
 
         .notice {
@@ -508,7 +515,7 @@ if (isset($_SESSION['user'])) {
                         <input type="hidden" name="date" value="<?= htmlspecialchars($selectedDate) ?>">
                         <input type="hidden" name="time" value="<?= htmlspecialchars($selectedTime) ?>">
                         <input type="hidden" name="court_id" value="<?= htmlspecialchars($selectedCourt) ?>">
-                        <button class="continue py-3" type="submit">Confirm Booking →</button>
+                        <button class="btn-confirm-selection w-100 py-3" type="submit">Confirm Booking →</button>
                     </form>
                 <?php endif; ?>
             </div>
@@ -569,15 +576,15 @@ if (isset($_SESSION['user'])) {
                 <?php endif; ?>
 
                 <?php if($selectedCourt): ?>
-                    <div class="summary d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <div class="summary d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-4">
                         <div>
-                            <span class="d-block text-muted small fw-bold text-uppercase mb-1" style="letter-spacing:1px;">Selected Slot</span>
+                            <span class="d-block fw-bold text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 1.5px; color: #a855f7;">Selected Slot</span>
                             <strong class="text-white" style="font-size: 1.05rem;">
                                 <?= htmlspecialchars(date('d M Y',strtotime($selectedDate))) ?> • <?= htmlspecialchars($selectedTime) ?> • 
                                 <?php foreach($courts as $c) if((string)$c['id']===(string)$selectedCourt) echo htmlspecialchars($c['court_name']); ?>
                             </strong>
                         </div>
-                        <a class="btn btn-light rounded-pill px-4 py-3 fw-bold text-dark text-decoration-none shadow-sm w-100 w-md-auto" href="<?= htmlspecialchars($continueUrl) ?>" style="background:#fff;">Confirm Selection →</a>
+                        <a class="btn-confirm-selection" href="<?= htmlspecialchars($continueUrl) ?>">Confirm Selection →</a>
                     </div>
                 <?php endif; ?>
             </div>
