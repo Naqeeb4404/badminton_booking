@@ -17,6 +17,9 @@ include __DIR__ . '/config/db.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS (Jika ada) -->
+    <link rel="stylesheet" href="assets/animations.css">
 
     <style>
         :root {
@@ -144,7 +147,7 @@ include __DIR__ . '/config/db.php';
         /* Hero Section ala Credix Landing */
         .hero-section {
             position: relative;
-            padding: 100px 40px 80px;
+            padding: 80px 40px;
             border-bottom: 1px solid var(--credix-border);
             background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
         }
@@ -164,7 +167,7 @@ include __DIR__ . '/config/db.php';
         }
 
         .hero-title {
-            font-size: 3.8rem;
+            font-size: 3.2rem;
             font-weight: 800;
             line-height: 1.1;
             letter-spacing: -2px;
@@ -174,9 +177,9 @@ include __DIR__ . '/config/db.php';
 
         .hero-desc {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             max-width: 540px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             line-height: 1.6;
         }
 
@@ -221,6 +224,24 @@ include __DIR__ . '/config/db.php';
             border-color: var(--text-muted);
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
+        }
+
+        /* Hero Video Wrapper Style */
+        .hero-video-container {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--credix-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.15);
+            background: var(--credix-card);
+        }
+
+        .hero-video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 420px;
         }
 
         .content-container {
@@ -393,14 +414,30 @@ include __DIR__ . '/config/db.php';
         <a href="booking.php" class="btn-book-now">Book Now</a>
     </nav>
 
+    <!-- Hero Section dengan Video Iklan -->
     <section class="hero-section">
         <div style="max-width: 1140px; margin: 0 auto;">
-            <span class="open-badge"><i class="fa-solid fa-sparkles me-1"></i> Next-Gen Court Booking Platform</span>
-            <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
-            <p class="hero-desc">Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time dengan reka bentuk antara muka yang pantas dan lancar.</p>
-            <div class="hero-buttons">
-                <a href="booking.php" class="btn-check-availability">Check availability &rarr;</a>
-                <a href="tel:+601163519188" class="btn-call-centre"><i class="fa-solid fa-phone me-2"></i>Call Centre</a>
+            <div class="row align-items-center g-5">
+                <!-- Bahagian Teks Kiri -->
+                <div class="col-lg-7">
+                    <span class="open-badge"><i class="fa-solid fa-sparkles me-1"></i> Next-Gen Court Booking Platform</span>
+                    <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
+                    <p class="hero-desc">Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time dengan reka bentuk antara muka yang pantas dan lancar.</p>
+                    <div class="hero-buttons">
+                        <a href="booking.php" class="btn-check-availability">Check availability &rarr;</a>
+                        <a href="tel:+601163519188" class="btn-call-centre"><i class="fa-solid fa-phone me-2"></i>Call Centre</a>
+                    </div>
+                </div>
+
+                <!-- Bahagian Video Kanan -->
+                <div class="col-lg-5">
+                    <div class="hero-video-container">
+                        <video autoplay muted loop playsinline>
+                            <source src="assets/videoiklan.mp4" type="video/mp4">
+                            Pelayar anda tidak menyokong paparan video.
+                        </video>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -487,6 +524,8 @@ include __DIR__ . '/config/db.php';
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="assets/scroll-animations.js"></script>
 </body>
 
 </html>
