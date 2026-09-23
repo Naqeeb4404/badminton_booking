@@ -9,7 +9,7 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Center - Badminton Kampung Panji</title>
+    <title>Rates - Sports Center Badminton Labuan F.T</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -138,112 +138,26 @@ include __DIR__ . '/config/db.php';
             transform: translateY(-2px);
         }
 
-        /* Hero Section dengan Parallax/Zoom effect */
-        .hero-section {
-            position: relative;
-            padding: 110px 40px 90px;
-            border-bottom: 1px solid var(--credix-border);
-            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            overflow: hidden;
-        }
-
-        .open-badge {
-            font-size: 0.72rem;
-            font-weight: 800;
-            background: rgba(99, 102, 241, 0.1);
-            color: #818cf8;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            padding: 6px 14px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .hero-title {
-            font-size: 3.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-            letter-spacing: -2px;
-            margin-bottom: 20px;
-            color: var(--text-main);
-        }
-
-        .hero-desc {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 540px;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .btn-check-availability {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: #fff;
-            font-weight: 700;
-            border: none;
-            padding: 13px 30px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-check-availability:hover {
-            opacity: 0.95;
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
-        }
-
-        .btn-call-centre {
-            background-color: var(--credix-card);
-            color: var(--text-main);
-            font-weight: 700;
-            border: 1px solid var(--credix-border);
-            padding: 13px 30px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .btn-call-centre:hover {
-            border-color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            transform: translateY(-3px);
-        }
-
         .content-container {
-            max-width: 1140px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 80px 20px;
+            padding: 80px 20px 100px 20px;
         }
 
-        .section-title {
-            font-size: 2.2rem;
+        .rates-title {
+            font-size: 3.2rem;
             font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
+            letter-spacing: -1.5px;
+            margin-bottom: 15px;
             color: var(--text-main);
         }
 
-        .section-subtitle-label {
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: #818cf8;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+        .rates-desc {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin-bottom: 50px;
+            line-height: 1.6;
         }
 
         /* Interactive Scroll Animation Classes */
@@ -259,24 +173,73 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        /* Staggered Delay Helpers */
         .delay-1 { transition-delay: 0.1s; }
         .delay-2 { transition-delay: 0.2s; }
         .delay-3 { transition-delay: 0.3s; }
 
-        /* Step & Feature Cards */
-        .step-card {
+        .rates-table-wrapper {
             background: var(--credix-card);
             border: 1px solid var(--credix-border);
             border-radius: 24px;
-            padding: 40px 30px;
+            padding: 30px;
+            margin-bottom: 50px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .rates-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+
+        .rates-table th {
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #818cf8;
+            border-bottom: 1px solid var(--credix-border);
+            padding-bottom: 16px;
+            text-align: left;
+        }
+
+        .rates-table th:last-child {
+            text-align: right;
+        }
+
+        .rates-table td {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--credix-border);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .rates-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rates-table td:last-child {
+            text-align: right;
+            font-weight: 800;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .info-card {
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 24px;
+            padding: 35px 30px;
             height: 100%;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
         }
 
-        .step-card::before {
+        .info-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -288,88 +251,101 @@ include __DIR__ . '/config/db.php';
             transition: opacity 0.3s;
         }
 
-        .step-card:hover {
+        .info-card:hover {
             transform: translateY(-8px);
             border-color: rgba(99, 102, 241, 0.4);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.15);
         }
 
-        .step-card:hover::before {
+        .info-card:hover::before {
             opacity: 1;
         }
 
-        .step-card span {
-            font-size: 0.75rem;
+        .info-card span {
+            font-size: 0.72rem;
             font-weight: 800;
             color: #818cf8;
-            display: block;
-            margin-bottom: 15px;
+            text-transform: uppercase;
             letter-spacing: 1.2px;
-        }
-
-        .step-card h5 {
-            font-size: 1.25rem;
-            font-weight: 800;
+            display: block;
             margin-bottom: 12px;
-            color: var(--text-main);
         }
 
-        .step-card p {
-            font-size: 0.9rem;
+        .info-card p {
+            font-size: 0.92rem;
             color: var(--text-muted);
             margin: 0;
             line-height: 1.6;
         }
 
-        /* Rate Cards */
-        .rate-card {
-            background: var(--credix-card);
-            border: 1px solid var(--credix-border);
-            border-radius: 24px;
-            padding: 40px 30px;
-            height: 100%;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .rate-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(168, 85, 247, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-
-        .rate-card span {
-            font-size: 0.72rem;
-            font-weight: 800;
+        .site-footer {
+            background-color: var(--credix-card);
+            padding: 70px 40px 35px 40px;
+            border-top: 1px solid var(--credix-border);
+            margin-top: 100px;
             color: var(--text-muted);
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 12px;
-            letter-spacing: 1.2px;
         }
 
-        .rate-card h2 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            margin-bottom: 12px;
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-col h6 {
+            font-size: 0.85rem;
+            font-weight: 700;
             color: var(--text-main);
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
         }
 
-        .rate-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
             margin: 0;
         }
 
-        footer {
-            border-top: 1px solid var(--credix-border);
-            padding: 40px 20px;
-            text-align: center;
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            background: var(--credix-card);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--text-main);
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 0 auto;
+            border-top: 1px solid var(--credix-border);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .rates-title {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
@@ -377,7 +353,7 @@ include __DIR__ . '/config/db.php';
 <body>
 
     <div class="top-announcement-bar d-none d-md-flex">
-        <div><i class="fa-solid fa-phone me-1 text-warning"></i> CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
+        <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
             <?php if(isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
@@ -393,118 +369,111 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>BADMINTON KAMPUNG PANJI</span>
-                <small>Kuala Terengganu</small>
+                <span>SPORTS CENTER</span>
+                <small>Badminton • Kuala Terengganu</small>
             </div>
         </a>
 
         <div class="nav-links d-none d-lg-flex">
-            <a href="index.php" class="active">Home</a>
-            <a href="rates.php">Rates</a>
+            <a href="index.php">Home</a>
+            <a href="rates.php" class="active">Rates</a>
             <a href="facility.php">Facility</a>
             <a href="about.php">About</a>
             <a href="faq.php">FAQ</a>
             <a href="rules.php">Rules</a>
             <a href="location.php">Location</a>
         </div>
+
         <a href="booking.php" class="btn-book-now">Book Now</a>
     </nav>
 
-    <section class="hero-section">
-        <div style="max-width: 1140px; margin: 0 auto;" class="reveal-on-scroll">
-            <span class="open-badge"><i class="fa-solid fa-circle-check me-1"></i> Open Daily • Dewan Kampung Panji</span>
-            <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
-            <p class="hero-desc">Tempah gelanggang badminton anda secara online dengan mudah. Semak kekosongan masa secara langsung dan buat tempahan dalam masa seminit.</p>
-            <div class="hero-buttons">
-                <a href="booking.php" class="btn-check-availability">Check availability</a>
-                <a href="tel:+601163519188" class="btn-call-centre"><i class="fa-solid fa-phone me-2"></i>Call Centre</a>
-            </div>
-        </div>
-    </section>
-
     <div class="content-container">
         
-        <!-- Live Availability Banner Section -->
-        <div class="reveal-on-scroll" style="background: var(--credix-card); border: 1px solid var(--credix-border); border-radius: 28px; padding: 40px; margin-bottom: 60px; position: relative; overflow: hidden;">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-8">
-                    <div class="section-subtitle-label">Live Availability System</div>
-                    <h3 style="font-weight: 800; font-size: 1.85rem; margin-bottom: 12px; color: var(--text-main);">Pilih tarikh, masa & gelanggang pilihan anda</h3>
-                    <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">Sistem kami memaparkan status ketersediaan gelanggang secara real-time bagi mengelakkan pertindihan tempahan.</p>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a href="booking.php" class="btn btn-light rounded-pill px-4 py-3 fw-bold w-100 w-lg-auto shadow-sm" style="background:#fff; color:#000;">Semak Gelanggang Sekarang &rarr;</a>
-                </div>
-            </div>
+        <div class="reveal-on-scroll">
+            <h1 class="rates-title">Rates</h1>
+            <p class="rates-desc">One flat rate per court, per hour — the same in every season and at every hour of the day. The booking page confirms the exact price for the hours you pick.</p>
         </div>
 
-        <!-- Three Steps Section -->
-        <div class="mb-5">
-            <div class="reveal-on-scroll">
-                <div class="section-subtitle-label">Prosedur Ringkas</div>
-                <h3 class="section-title mb-4">Three steps to play</h3>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4 reveal-on-scroll delay-1">
-                    <div class="step-card">
-                        <span>01</span>
-                        <h5>Find your date and time</h5>
-                        <p>Pilih tarikh pilihan anda dan semak slot masa kosong yang tersedia di sistem.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 reveal-on-scroll delay-2">
-                    <div class="step-card">
-                        <span>02</span>
-                        <h5>Make a booking</h5>
-                        <p>Sahkan slot tempahan anda dan lakukan pembayaran secara online dengan pantas.</p>
-                    </div>
-                </div>
-                <div class="col-md-4 reveal-on-scroll delay-3">
-                    <div class="step-card">
-                        <span>03</span>
-                        <h5>Turn up and play</h5>
-                        <p>Hadir ke dewan dengan kasut bertapak getah (non-marking) dan mulakan perlawanan anda.</p>
-                    </div>
-                </div>
-            </div>
+        <div class="rates-table-wrapper reveal-on-scroll delay-1">
+            <table class="rates-table">
+                <thead>
+                    <tr>
+                        <th>CHARGE</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Badminton court, per court per hour</td>
+                        <td>RM 15.00</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Rates Section -->
-        <div class="mb-4">
-            <div class="reveal-on-scroll d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <div class="section-subtitle-label">Harga & Fasiliti</div>
-                    <h3 class="section-title m-0">Rates & Courts</h3>
+        <div class="row g-4 mt-2">
+            <div class="col-md-4 reveal-on-scroll delay-1">
+                <div class="info-card">
+                    <span>Payment</span>
+                    <p>Online at the time of booking. The slot is only held once payment clears.</p>
                 </div>
-                <a href="rates.php" style="font-size: 0.88rem; font-weight: 700; color: #818cf8; text-decoration: none;">Full rate card &rarr;</a>
             </div>
-            <div class="row g-4">
-                <div class="col-md-6 reveal-on-scroll delay-1">
-                    <div class="rate-card">
-                        <span>Court Hire Rate</span>
-                        <h2>RM 15</h2>
-                        <p>per court, per hour — kadar standard setiap jam</p>
-                    </div>
+            <div class="col-md-4 reveal-on-scroll delay-2">
+                <div class="info-card">
+                    <span>Changes</span>
+                    <p>48 hours advance notice must be given for any change of booking time, subject to court availability.</p>
                 </div>
-                <div class="col-md-6 reveal-on-scroll delay-2">
-                    <div class="rate-card">
-                        <span>Available Courts</span>
-                        <h2>Dewan Utama</h2>
-                        <p>Gelanggang badminton berkualiti tinggi sedia ditempah</p>
-                    </div>
+            </div>
+            <div class="col-md-4 reveal-on-scroll delay-3">
+                <div class="info-card">
+                    <span>Groups</span>
+                    <p>For large groups and private events, please call the centre to make arrangements.</p>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <footer>
-        <div class="container">
-            <p class="mb-0">&copy; <?php echo date('Y'); ?> Badminton Kampung Panji, Kuala Terengganu. Hak Cipta Terpelihara.</p>
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <a href="index.php" class="brand-container mb-3 d-inline-flex">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div class="brand-text">
+                        <span>SPORTS CENTER</span>
+                        <small>Badminton • Labuan F.T</small>
+                    </div>
+                </a>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
+                    Sungai Bangat Warehouse<br>near Savemore Superstore
+                </p>
+            </div>
+            <div class="footer-col">
+                <h6>Pautan Pantas</h6>
+                <ul>
+                    <li><a href="rates.php">Rates</a></li>
+                    <li><a href="facility.php">Facility</a></li>
+                    <li><a href="rules.php">Rules</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h6>Sokongan</h6>
+                <ul>
+                    <li><a href="faq.php">FAQ</a></li>
+                    <li><a href="location.php">Location</a></li>
+                    <li><a href="booking.php">Book Now</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; Sports Center • Badminton court booking</div>
+            <div>Powered by aestivo.ai</div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS & Scroll Animation Observer Script -->
+    <!-- Bootstrap 5 JS & Scroll Observer Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -519,7 +488,6 @@ include __DIR__ . '/config/db.php';
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
                     } else {
-                        // Membenarkan animasi berulang/reverse secara lancar apabila skrol ke atas
                         entry.target.classList.remove('is-visible');
                     }
                 });
