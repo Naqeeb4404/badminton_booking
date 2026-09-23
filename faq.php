@@ -20,37 +20,46 @@ include __DIR__ . '/config/db.php';
 
     <style>
         :root {
-            --bg-app: #ffffff;
-            --text-dark: #111111;
-            --text-muted: #666666;
-            --accent-gold: #c59b27;
-            --border-color: #e2e8f0;
+            --credix-bg: #090a0f;
+            --credix-card: #13151f;
+            --credix-border: rgba(255, 255, 255, 0.08);
+            --credix-accent: #6366f1;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-dark);
+            background-color: var(--credix-bg);
+            color: var(--text-main);
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         .top-announcement-bar {
             font-size: 0.75rem;
-            color: #777;
-            padding: 8px 40px;
-            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-muted);
+            padding: 10px 40px;
+            border-bottom: 1px solid var(--credix-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(19, 21, 31, 0.5);
+            backdrop-filter: blur(10px);
         }
 
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 40px;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 18px 40px;
+            border-bottom: 1px solid var(--credix-border);
+            background: rgba(9, 10, 15, 0.85);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .brand-container {
@@ -61,29 +70,31 @@ include __DIR__ . '/config/db.php';
         }
 
         .brand-logo-icon {
-            width: 40px;
-            height: 40px;
-            background: #f59e0b;
-            border-radius: 8px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
 
         .brand-text span {
             display: block;
             font-weight: 800;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            color: #111;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
             line-height: 1.1;
         }
 
         .brand-text small {
             font-size: 0.65rem;
-            color: #b45309;
+            color: #a855f7;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -91,100 +102,130 @@ include __DIR__ . '/config/db.php';
 
         .nav-links {
             display: flex;
-            gap: 22px;
+            gap: 24px;
             align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-dark);
+            color: var(--text-muted);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.88rem;
             transition: color 0.2s;
         }
 
-        .nav-links a.active, .nav-links a:hover {
-            color: #d97706;
-            font-weight: 700;
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
         }
 
         .btn-book-now {
-            border: 1.5px solid #d1d5db;
-            color: #111;
+            border: 1px solid var(--credix-border);
+            color: var(--text-main);
             border-radius: 50px;
-            padding: 6px 20px;
+            padding: 8px 24px;
             font-weight: 700;
             font-size: 0.85rem;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.03);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .btn-book-now:hover {
-            border-color: #111;
-            background: #111;
+            background: var(--credix-accent);
+            border-color: var(--credix-accent);
             color: #fff;
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
         }
 
         .content-container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 60px 20px 80px 20px;
+            padding: 80px 20px 100px 20px;
         }
 
         .faq-title {
-            font-size: 2.8rem;
+            font-size: 3.2rem;
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
             margin-bottom: 15px;
+            color: var(--text-main);
         }
 
         .faq-desc {
-            color: #4b5563;
+            color: var(--text-muted);
             font-size: 1.05rem;
             max-width: 650px;
-            margin-bottom: 45px;
+            margin-bottom: 50px;
             line-height: 1.6;
         }
 
-        /* Custom Accordion Styling */
+        /* Interactive Scroll Animation Classes */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+
+        /* Custom Dark Accordion Styling */
         .accordion-item {
-            border: 1.5px solid var(--border-color);
-            border-radius: 12px !important;
-            margin-bottom: 15px;
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 16px !important;
+            margin-bottom: 16px;
             overflow: hidden;
-            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .accordion-item:hover {
+            border-color: rgba(99, 102, 241, 0.4);
         }
 
         .accordion-button {
             font-weight: 700;
             font-size: 1rem;
-            color: #1e293b;
-            background-color: #fff;
-            padding: 20px;
+            color: var(--text-main);
+            background-color: var(--credix-card);
+            padding: 22px 25px;
             box-shadow: none !important;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .accordion-button:not(.collapsed) {
-            color: #b45309;
-            background-color: #fffaf0;
-            border-bottom: 1px solid var(--border-color);
+            color: #818cf8;
+            background-color: rgba(99, 102, 241, 0.05);
+            border-bottom: 1px solid var(--credix-border);
+        }
+
+        .accordion-button::after {
+            filter: invert(1) grayscale(100%) brightness(200%);
         }
 
         .accordion-body {
             font-size: 0.92rem;
-            color: #64748b;
+            color: var(--text-muted);
             line-height: 1.6;
-            padding: 20px;
-            background-color: #fff;
+            padding: 22px 25px;
+            background-color: var(--credix-card);
         }
 
         .site-footer {
-            background-color: #f1f5f9;
-            padding: 60px 40px 30px 40px;
-            border-top: 1px solid #e2e8f0;
-            margin-top: 80px;
-            color: #475569;
+            background-color: var(--credix-card);
+            padding: 70px 40px 35px 40px;
+            border-top: 1px solid var(--credix-border);
+            margin-top: 100px;
+            color: var(--text-muted);
         }
 
         .footer-container {
@@ -199,7 +240,7 @@ include __DIR__ . '/config/db.php';
         .footer-col h6 {
             font-size: 0.85rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--text-main);
             margin-bottom: 15px;
         }
 
@@ -214,25 +255,25 @@ include __DIR__ . '/config/db.php';
         }
 
         .footer-col ul li a {
-            color: #64748b;
+            color: var(--text-muted);
             text-decoration: none;
             font-size: 0.88rem;
             transition: color 0.2s;
         }
 
         .footer-col ul li a:hover {
-            color: #d97706;
+            color: var(--text-main);
         }
 
         .footer-bottom {
             max-width: 1100px;
             margin: 0 auto;
-            border-top: 1px solid #cbd5e1;
+            border-top: 1px solid var(--credix-border);
             padding-top: 20px;
             display: flex;
             justify-content: space-between;
             font-size: 0.78rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         @media (max-width: 768px) {
@@ -244,6 +285,9 @@ include __DIR__ . '/config/db.php';
                 flex-direction: column;
                 gap: 10px;
             }
+            .faq-title {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
@@ -252,7 +296,13 @@ include __DIR__ . '/config/db.php';
 
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
-        <div><a href="auth/login.php" class="text-decoration-none text-dark fw-bold">Login / Register</a></div>
+        <div>
+            <?php if(isset($_SESSION['user'])): ?>
+                <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
+            <?php else: ?>
+                <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <nav class="custom-navbar">
@@ -276,15 +326,21 @@ include __DIR__ . '/config/db.php';
             <a href="location.php">Location</a>
         </div>
 
-        <a href="auth/login.php" class="btn-book-now">Book Now</a>
+        <?php if(isset($_SESSION['user'])): ?>
+            <a href="booking.php" class="btn-book-now">Book Now</a>
+        <?php else: ?>
+            <a href="auth/login.php" class="btn-book-now">Book Now</a>
+        <?php endif; ?>
     </nav>
 
     <div class="content-container">
         
-        <h1 class="faq-title">FAQ</h1>
-        <p class="faq-desc">Soalan Lazim mengenai proses tempahan gelanggang, pembayaran, dan peraturan pusat sukan kami.</p>
+        <div class="reveal-on-scroll">
+            <h1 class="faq-title">FAQ</h1>
+            <p class="faq-desc">Soalan Lazim mengenai proses tempahan gelanggang, pembayaran, dan peraturan pusat sukan kami.</p>
+        </div>
 
-        <div class="accordion" id="faqAccordion">
+        <div class="accordion reveal-on-scroll delay-1" id="faqAccordion">
             
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
@@ -354,11 +410,12 @@ include __DIR__ . '/config/db.php';
                         <small>Badminton • Labuan F.T</small>
                     </div>
                 </a>
-                <p style="font-size: 0.85rem; color: #64748b; margin-top: 10px;">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
                     Sungai Bangat Warehouse<br>near Savemore Superstore
                 </p>
             </div>
             <div class="footer-col">
+                <h6>Pautan Pantas</h6>
                 <ul>
                     <li><a href="rates.php">Rates</a></li>
                     <li><a href="facility.php">Facility</a></li>
@@ -366,10 +423,11 @@ include __DIR__ . '/config/db.php';
                 </ul>
             </div>
             <div class="footer-col">
+                <h6>Sokongan</h6>
                 <ul>
                     <li><a href="faq.php">FAQ</a></li>
                     <li><a href="location.php">Location</a></li>
-                    <li><a href="auth/login.php">Book Now</a></li>
+                    <li><a href="booking.php">Book Now</a></li>
                 </ul>
             </div>
         </div>
@@ -379,8 +437,31 @@ include __DIR__ . '/config/db.php';
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- Bootstrap 5 JS & Scroll Observer Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
 </body>
 
 </html>
