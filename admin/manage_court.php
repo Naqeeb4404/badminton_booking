@@ -351,7 +351,7 @@ if (isset($_GET['edit_id'])) {
 
 <body>
 
-    <!-- SIDEBAR MENU LENGKAP -->
+    <!-- SIDEBAR MENU -->
     <div class="sidebar">
         <a href="dashboard.php" class="sidebar-brand">
             <i class="fa-solid fa-shuttlecock text-warning"></i>
@@ -366,6 +366,18 @@ if (isset($_GET['edit_id'])) {
                     <span>Dashboard</span>
                 </div>
             </a>
+            <a href="manage_court.php" class="sidebar-nav-link active">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                    <span>Manage Court</span>
+                </div>
+            </a>
+            <a href="manage_users.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Manage Users</span>
+                </div>
+            </a>
             <a href="calendar.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-calendar-days"></i>
@@ -376,18 +388,6 @@ if (isset($_GET['edit_id'])) {
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-user-gear"></i>
                     <span>Profile</span>
-                </div>
-            </a>
-            <a href="manage_court.php" class="sidebar-nav-link active">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-file-lines"></i>
-                    <span>Forms</span>
-                </div>
-            </a>
-            <a href="manage_users.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-table"></i>
-                    <span>Tables</span>
                 </div>
             </a>
 
