@@ -113,6 +113,22 @@ function e($value) {
         padding: 30px;
     }
 
+    /* Main App Layout */
+    .app-layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Content Area */
+    .content-area {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
     /* Top Navigation Bar */
     .top-nav {
         background: var(--surface);
@@ -127,50 +143,32 @@ function e($value) {
     }
     .brand {
         font-weight: 700;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         display: flex;
         align-items: center;
         gap: 8px;
+        color: var(--text-main);
+        text-decoration: none;
     }
-    .nav-links {
+    
+    /* User Right Side Utilities */
+    .nav-right {
         display: flex;
-        gap: 20px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-muted);
         align-items: center;
+        gap: 15px;
     }
-    .nav-links a { text-decoration: none; color: inherit; }
-    .nav-links a.active { color: var(--text-main); font-weight: 600; }
-
-    /* Main App Layout */
-    .app-layout {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        gap: 25px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    /* Sidebar Menu */
-    .sidebar {
-        background: var(--surface);
+    .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--bg-main);
+        padding: 6px 14px 6px 6px;
+        border-radius: 50px;
         border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        height: fit-content;
     }
-    .sidebar-user {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 15px;
-    }
-    .sidebar-avatar {
-        width: 40px;
-        height: 40px;
+    .user-avatar-top {
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: var(--primary);
         color: #fff;
@@ -178,36 +176,13 @@ function e($value) {
         align-items: center;
         justify-content: center;
         font-weight: 700;
+        font-size: 0.85rem;
         background-size: cover;
         background-position: center;
     }
-    .menu-list {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-    .menu-item {
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--text-muted);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: 0.2s;
-    }
-    .menu-item:hover, .menu-item.active {
-        background: var(--accent-light);
-        color: var(--accent);
-    }
-
-    /* Content Area */
-    .content-area {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
+    .user-name {
+        font-size: 0.85rem;
+        font-weight: 600;
     }
 
     /* Banner & Profile Header Card */
@@ -321,10 +296,25 @@ function e($value) {
         cursor: pointer;
         width: 100%;
         transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
     }
-    .btn:hover { background: var(--accent); }
-    .btn-danger { background: #dc2626; }
-    .btn-danger:hover { background: #b91c1c; }
+    .btn:hover { background: var(--accent); color: #fff; }
+    
+    .btn-danger-custom {
+        background: #dc2626;
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+    }
+    .btn-danger-custom:hover { background: #b91c1c; }
 
     .alert {
         padding: 12px 16px;
@@ -340,26 +330,28 @@ function e($value) {
         .grid-2 { grid-template-columns: 1fr; }
     }
 </style>
-    <link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="sidebar.css">
 </head>
 <body class="admin-page">
 
     <?php include __DIR__ . '/sidebar.php'; ?>
 
     <div class="main-content">
-        <header class="topbar">
-            <div class="search-form">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" class="form-control search-input" placeholder="Type to search..." autocomplete="off">
+        <!-- Top Navigation Bar dengan Butang Logout yang Kemas di Atas -->
+        <header class="top-nav">
+            <div class="brand">
+                <i class="fa-solid fa-user-shield text-primary"></i> Admin Panel
             </div>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="nav-right">
                 <div class="user-pill">
-                    <div class="user-avatar"><?php echo e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))); ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo e($admin['name']); ?></div>
+                    <div class="user-avatar-top" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
+                        <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
+                    </div>
+                    <span class="user-name"><?php echo e($admin['name']); ?></span>
                 </div>
-                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                <a href="../auth/logout.php" class="btn-danger-custom">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </a>
             </div>
         </header>
@@ -367,102 +359,101 @@ function e($value) {
         <div class="content-body">
             <div class="content-area">
 
+                <?php if ($message): ?>
+                    <div class="alert alert-success"><?php echo e($message); ?></div>
+                <?php endif; ?>
+                <?php if ($error): ?>
+                    <div class="alert alert-danger"><?php echo e($error); ?></div>
+                <?php endif; ?>
 
-            <?php if ($message): ?>
-                <div class="alert alert-success"><?php echo e($message); ?></div>
-            <?php endif; ?>
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?php echo e($error); ?></div>
-            <?php endif; ?>
-
-            <!-- Header Profile Card (Banner Style) -->
-            <div class="profile-header-card">
-                <div class="banner"></div>
-                <div class="profile-info-section">
-                    <div class="profile-avatar-large" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
-                        <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
-                    </div>
-                    <div class="profile-details">
-                        <h2><?php echo e($admin['name']); ?></h2>
-                        <p><?php echo e($admin['email']); ?> &bull; <span style="text-transform: uppercase; font-weight: 600; color: var(--accent);"><?php echo e($admin['role']); ?></span></p>
+                <!-- Header Profile Card (Banner Style) -->
+                <div class="profile-header-card">
+                    <div class="banner"></div>
+                    <div class="profile-info-section">
+                        <div class="profile-avatar-large" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
+                            <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
+                        </div>
+                        <div class="profile-details">
+                            <h2><?php echo e($admin['name']); ?></h2>
+                            <p><?php echo e($admin['email']); ?> &bull; <span style="text-transform: uppercase; font-weight: 600; color: var(--accent);"><?php echo e($admin['role']); ?></span></p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Edit Profile & Notification Settings -->
-            <div class="grid-2">
-                <div class="card">
-                    <h3><i class="fa-solid fa-user-pen"></i> Edit Profile</h3>
-                    <form method="POST" enctype="multipart/form-data">
-                        <div class="field">
-                            <label>Nama Admin</label>
-                            <input type="text" name="name" class="form-control" value="<?php echo e($admin['name']); ?>" required>
-                        </div>
-                        <div class="field">
-                            <label>E-mel</label>
-                            <input type="email" name="email" class="form-control" value="<?php echo e($admin['email']); ?>" required>
-                        </div>
-                        <div class="field">
-                            <label>No. Telefon</label>
-                            <input type="text" name="phone" class="form-control" value="<?php echo e($admin['phone'] ?? ''); ?>">
-                        </div>
-                        <div class="field">
-                            <label>Gambar Profil Baharu</label>
-                            <input type="file" name="profile_pic" accept="image/*" class="form-control" style="padding: 7px;">
-                        </div>
-                        
-                        <!-- Notification Settings -->
-                        <div style="margin: 20px 0 10px 0; font-size: 0.85rem; font-weight: 700;"><i class="fa-solid fa-bell"></i> Notification Settings</div>
-                        <div class="field" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
-                            <input type="checkbox" name="notifications" value="1" <?php echo (!empty($admin['sms_alerts']) && $admin['sms_alerts'] == 1) ? 'checked' : ''; ?>>
-                            <span>Terima Notifikasi Tempahan & Bayaran</span>
-                        </div>
-
-                        <button type="submit" name="update_profile" class="btn" style="margin-top: 15px;">Simpan Perubahan</button>
-                    </form>
-                </div>
-
-                <!-- Change Password & Activity History -->
-                <div style="display: flex; flex-direction: column; gap: 25px;">
+                <!-- Edit Profile & Notification Settings -->
+                <div class="grid-2">
                     <div class="card">
-                        <h3><i class="fa-solid fa-key"></i> Change Password</h3>
-                        <form method="POST">
+                        <h3><i class="fa-solid fa-user-pen"></i> Edit Profile</h3>
+                        <form method="POST" enctype="multipart/form-data">
                             <div class="field">
-                                <label>Kata Laluan Semasa</label>
-                                <input type="password" name="old_password" class="form-control" required>
+                                <label>Nama Admin</label>
+                                <input type="text" name="name" class="form-control" value="<?php echo e($admin['name']); ?>" required>
                             </div>
                             <div class="field">
-                                <label>Kata Laluan Baharu</label>
-                                <input type="password" name="new_password" class="form-control" required>
+                                <label>E-mel</label>
+                                <input type="email" name="email" class="form-control" value="<?php echo e($admin['email']); ?>" required>
                             </div>
                             <div class="field">
-                                <label>Sahkan Kata Laluan Baharu</label>
-                                <input type="password" name="confirm_password" class="form-control" required>
+                                <label>No. Telefon</label>
+                                <input type="text" name="phone" class="form-control" value="<?php echo e($admin['phone'] ?? ''); ?>">
                             </div>
-                            <button type="submit" name="change_password" class="btn">Tukar Kata Laluan</button>
+                            <div class="field">
+                                <label>Gambar Profil Baharu</label>
+                                <input type="file" name="profile_pic" accept="image/*" class="form-control" style="padding: 7px;">
+                            </div>
+                            
+                            <!-- Notification Settings -->
+                            <div style="margin: 20px 0 10px 0; font-size: 0.85rem; font-weight: 700;"><i class="fa-solid fa-bell"></i> Notification Settings</div>
+                            <div class="field" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+                                <input type="checkbox" name="notifications" value="1" <?php echo (!empty($admin['sms_alerts']) && $admin['sms_alerts'] == 1) ? 'checked' : ''; ?>>
+                                <span>Terima Notifikasi Tempahan & Bayaran</span>
+                            </div>
+
+                            <button type="submit" name="update_profile" class="btn" style="margin-top: 15px;">Simpan Perubahan</button>
                         </form>
                     </div>
 
-                    <div class="card">
-                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Activity History</h3>
-                        <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 10px;">
-                            <?php if(mysqli_num_rows($activities) > 0): ?>
-                                <?php while($act = mysqli_fetch_assoc($activities)): ?>
-                                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-                                        <span>Tempahan ID #<?php echo $act['id']; ?> (<b><?php echo $act['status']; ?></b>)</span>
-                                        <span style="color: var(--text-muted); font-size: 0.75rem;"><?php echo $act['booking_date']; ?></span>
-                                    </div>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <span style="color: var(--text-muted);">Tiada aktiviti terkini.</span>
-                            <?php endif; ?>
+                    <!-- Change Password & Activity History -->
+                    <div style="display: flex; flex-direction: column; gap: 25px;">
+                        <div class="card">
+                            <h3><i class="fa-solid fa-key"></i> Change Password</h3>
+                            <form method="POST">
+                                <div class="field">
+                                    <label>Kata Laluan Semasa</label>
+                                    <input type="password" name="old_password" class="form-control" required>
+                                </div>
+                                <div class="field">
+                                    <label>Kata Laluan Baharu</label>
+                                    <input type="password" name="new_password" class="form-control" required>
+                                </div>
+                                <div class="field">
+                                    <label>Sahkan Kata Laluan Baharu</label>
+                                    <input type="password" name="confirm_password" class="form-control" required>
+                                </div>
+                                <button type="submit" name="change_password" class="btn">Tukar Kata Laluan</button>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Activity History</h3>
+                            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 10px;">
+                                <?php if(mysqli_num_rows($activities) > 0): ?>
+                                    <?php while($act = mysqli_fetch_assoc($activities)): ?>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                                            <span>Tempahan ID #<?php echo $act['id']; ?> (<b><?php echo $act['status']; ?></b>)</span>
+                                            <span style="color: var(--text-muted); font-size: 0.75rem;"><?php echo $act['booking_date']; ?></span>
+                                        </div>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <span style="color: var(--text-muted);">Tiada aktiviti terkini.</span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Bottom Back Button -->
-            <a href="dashboard.php" class="btn" style="text-align: center; text-decoration: none; background: #e5e7eb; color: var(--text-main); display: block;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+                <!-- Bottom Back Button -->
+                <a href="dashboard.php" class="btn" style="text-align: center; background: #e5e7eb; color: var(--text-main); display: block;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
 
             </div>
         </div>
