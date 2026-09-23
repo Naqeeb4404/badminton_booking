@@ -4,6 +4,7 @@ session_start();
 
 include __DIR__ . '/../config/db.php';
 
+// Pastikan hanya admin yang boleh akses
 if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin"){
     header("Location: ../auth/login.php");
     exit();
@@ -16,7 +17,10 @@ $msg_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM messages");
 $msg_row = mysqli_fetch_assoc($msg_query);
 $total_messages = $msg_row['total'];
 
-$result = mysqli_query($conn, "SELECT * FROM users");
+// Statistik tambahan untuk dashboard (Contoh: Jumlah pengguna berdaftar)
+$user_query = mysqli_query($conn, "SELECT COUNT(*) as total_users FROM users");
+$user_row = mysqli_fetch_assoc($user_query);
+$total_users = $user_row['total_users'];
 
 ?>
 
@@ -26,7 +30,7 @@ $result = mysqli_query($conn, "SELECT * FROM users");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users - Badminton Kampung Panji</title>
+    <title>Dashboard - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -229,32 +233,6 @@ $result = mysqli_query($conn, "SELECT * FROM users");
             background: #ffffff;
         }
 
-        /* MINIMALIST BADGES UNTUK ROLE */
-        .badge-role-admin {
-            background-color: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            color: #0f172a;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-        }
-
-        .badge-role-user {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            color: #64748b;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-        }
-
-        .table td, .table th {
-            vertical-align: middle;
-            padding: 14px 16px;
-        }
-
         @media (max-width: 768px) {
             .sidebar { width: 70px; }
             .sidebar .sidebar-brand span, .sidebar .menu-label, .sidebar .sidebar-nav-link span, .sidebar .badge { display: none; }
@@ -276,7 +254,7 @@ $result = mysqli_query($conn, "SELECT * FROM users");
 
         <div class="sidebar-menu">
             <div class="menu-label">Menu Utama</div>
-            <a href="dashboard.php" class="sidebar-nav-link">
+            <a href="dashboard.php" class="sidebar-nav-link active">
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-chart-pie"></i>
                     <span>Dashboard</span>
@@ -300,7 +278,7 @@ $result = mysqli_query($conn, "SELECT * FROM users");
                     <span>Forms</span>
                 </div>
             </a>
-            <a href="manage_users.php" class="sidebar-nav-link active">
+            <a href="manage_users.php" class="sidebar-nav-link">
                 <div class="sidebar-nav-link-content">
                     <i class="fa-solid fa-table"></i>
                     <span>Tables</span>
@@ -347,48 +325,46 @@ $result = mysqli_query($conn, "SELECT * FROM users");
             </div>
         </header>
 
-        <!-- ISI KANDUNGAN UTAMA -->
+        <!-- ISI KANDUNGAN UTAMA DASHBOARD -->
         <div class="content-body">
             
+            <div class="row g-4 mb-4">
+                <!-- Kad Ringkasan 1 -->
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Jumlah Pengguna</p>
+                                <h3 class="fw-bold mb-0"><?php echo $total_users; ?></h3>
+                            </div>
+                            <div class="bg-light p-3 rounded-4 text-primary fs-4">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Kad Ringkasan 2 -->
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Mesej Masuk</p>
+                                <h3 class="fw-bold mb-0"><?php echo $total_messages; ?></h3>
+                            </div>
+                            <div class="bg-light p-3 rounded-4 text-success fs-4">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card shadow">
                 <div class="card-body p-4">
-                    
-                    <h2 class="fw-bold mb-1">👥 User List</h2>
-                    <p class="text-muted fs-7 mb-4">Senarai akaun pengguna berdaftar di dalam sistem.</p>
+                    <h2 class="fw-bold mb-1">📊 Dashboard Utama</h2>
+                    <p class="text-muted fs-7 mb-4">Selamat datang ke panel pentadbir Badminton Kampung Panji.</p>
                     <hr class="text-muted opacity-25 mb-4">
-
-                    <!-- TABLE KESELURUHAN -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-center align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($row = mysqli_fetch_assoc($result)){ ?>
-                                <tr>
-                                    <td class="fw-semibold text-muted"><?php echo $row['id']; ?></td>
-                                    <td class="fw-bold text-start ps-4"><i class="fa-solid fa-user-circle text-secondary me-2"></i> <?php echo htmlspecialchars($row['name']); ?></td>
-                                    <td class="text-muted"><?php echo htmlspecialchars($row['email']); ?></td>
-                                    <td>
-                                        <?php 
-                                            if(strtolower($row['role']) == 'admin'){
-                                                echo "<span class='badge-role-admin'>Admin</span>";
-                                            } else {
-                                                echo "<span class='badge-role-user'>User</span>";
-                                            }
-                                        ?>
-                                    </td>
-                                </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-
+                    <p class="text-dark">Sila pilih menu di bahagian sidebar sebelah kiri untuk menguruskan pengguna, tempahan gelanggang, atau semakan mesej.</p>
                 </div>
             </div>
 

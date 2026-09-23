@@ -1,10 +1,9 @@
 <?php
-
 session_start();
 
 include __DIR__ . '/../config/db.php';
 
-if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin"){
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
     header("Location: ../auth/login.php");
     exit();
 }
@@ -17,12 +16,12 @@ $msg_row = mysqli_fetch_assoc($msg_query);
 $total_messages = $msg_row['total'];
 
 // ADD COURT
-if(isset($_POST['add'])){
+if (isset($_POST['add'])) {
     $court_name = trim($_POST['court_name'] ?? '');
     $status = ($_POST['status'] ?? '') === 'Available' ? 'Available' : 'Not Available';
     $price = (float)($_POST['price'] ?? 0);
 
-    if($court_name !== ''){
+    if ($court_name !== '') {
         $stmt = $conn->prepare("INSERT INTO courts (court_name, status, price) VALUES (?, ?, ?)");
         $stmt->bind_param("ssd", $court_name, $status, $price);
         $stmt->execute();
@@ -33,12 +32,12 @@ if(isset($_POST['add'])){
 }
 
 // EDIT COURT (name / price)
-if(isset($_POST['edit'])){
+if (isset($_POST['edit'])) {
     $id = (int)($_POST['id'] ?? 0);
     $court_name = trim($_POST['court_name'] ?? '');
     $price = (float)($_POST['price'] ?? 0);
 
-    if($id && $court_name !== ''){
+    if ($id && $court_name !== '') {
         $stmt = $conn->prepare("UPDATE courts SET court_name=?, price=? WHERE id=?");
         $stmt->bind_param("sdi", $court_name, $price, $id);
         $stmt->execute();
@@ -49,7 +48,7 @@ if(isset($_POST['edit'])){
 }
 
 // DELETE COURT
-if(isset($_GET['delete'])){
+if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM courts WHERE id=?");
     $stmt->bind_param("i", $id);
@@ -60,7 +59,7 @@ if(isset($_GET['delete'])){
 }
 
 // UPDATE STATUS
-if(isset($_GET['status'])){
+if (isset($_GET['status'])) {
     $id = (int)($_GET['id'] ?? 0);
     $status = $_GET['status'] === 'Available' ? 'Available' : 'Not Available';
 
@@ -72,13 +71,11 @@ if(isset($_GET['status'])){
     exit();
 }
 
-$result = mysqli_query($conn,
-"SELECT * FROM courts ORDER BY id DESC"
-);
+$result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
 
 // If ?edit_id=X is set, load that court so the form below can be pre-filled.
 $editCourt = null;
-if(isset($_GET['edit_id'])){
+if (isset($_GET['edit_id'])) {
     $editId = (int)$_GET['edit_id'];
     $stmt = $conn->prepare("SELECT * FROM courts WHERE id=? LIMIT 1");
     $stmt->bind_param("i", $editId);
@@ -400,7 +397,7 @@ if(isset($_GET['edit_id'])){
                     <i class="fa-solid fa-comments"></i>
                     <span>Message</span>
                 </div>
-                <?php if(isset($total_messages) && $total_messages > 0): ?>
+                <?php if (isset($total_messages) && $total_messages > 0): ?>
                     <span class="badge bg-danger rounded-pill"><?php echo $total_messages; ?></span>
                 <?php endif; ?>
             </a>
@@ -444,7 +441,7 @@ if(isset($_GET['edit_id'])){
                     <p class="text-muted fs-7 mb-4">Tambah, padam, atau kemas kini status ketersediaan gelanggang sukan.</p>
                     <hr class="text-muted opacity-25 mb-4">
 
-                    <?php if($editCourt): ?>
+                    <?php if ($editCourt): ?>
                     <!-- KOTAK EDIT GELANGGANG -->
                     <div class="gray-box mb-5">
                         <h5 class="fw-bold mb-3 text-secondary fs-6"><i class="fa-solid fa-pen me-1"></i> Edit Court #<?php echo (int)$editCourt['id']; ?></h5>
@@ -513,14 +510,14 @@ if(isset($_GET['edit_id'])){
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php while($row = mysqli_fetch_assoc($result)){ ?>
+                                <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                 <tr>
                                     <td class="fw-semibold text-muted"><?php echo (int)$row['id']; ?></td>
                                     <td class="fw-bold">🏸 <?php echo htmlspecialchars($row['court_name']); ?></td>
                                     <td>RM <?php echo number_format((float)$row['price'], 2); ?></td>
                                     <td>
                                         <?php
-                                        if($row['status'] == "Available"){
+                                        if ($row['status'] == "Available") {
                                             echo "<span class='badge bg-success px-3 py-2'>Available</span>";
                                         } else {
                                             echo "<span class='badge bg-danger px-3 py-2'>Not Available</span>";
