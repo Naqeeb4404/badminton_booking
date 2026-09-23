@@ -30,23 +30,24 @@ if(isset($_POST['court'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Court - AceTime</title>
+    <title>Book Court - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-outer: #221a16;
-            --bg-app: #f4f4f4;
-            --card-dark: #181818;
-            --accent-orange: #d9622b;
-            --text-dark: #111111;
-            --text-muted: #777777;
+            --credix-bg: #090a0f;
+            --credix-card: #13151f;
+            --credix-border: rgba(255, 255, 255, 0.08);
+            --credix-accent: #6366f1;
+            --credix-accent-hover: #4f46e5;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         html {
@@ -55,174 +56,181 @@ if(isset($_POST['court'])) {
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #382319, #120e0c);
-            color: var(--text-dark);
+            background-color: var(--credix-bg);
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 30px 15px;
+            margin: 0;
+            padding: 0;
         }
 
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: var(--bg-app);
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            padding: 20px 40px 50px 40px;
-        }
-
-        .top-info-bar {
+        /* Top Announcement Bar */
+        .top-announcement-bar {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 10px 40px;
+            border-bottom: 1px solid var(--credix-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
-            color: #777;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            margin-bottom: 15px;
-            font-weight: 600;
+            background: rgba(19, 21, 31, 0.5);
+            backdrop-filter: blur(10px);
         }
 
+        /* Navbar */
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0 20px 0;
-            background: transparent;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
+            padding: 18px 40px;
+            border-bottom: 1px solid var(--credix-border);
+            background: rgba(9, 10, 15, 0.8);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .brand-logo-wrapper {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .brand-logo {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #000;
-            text-decoration: none;
-            letter-spacing: -0.5px;
+        .brand-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            text-decoration: none;
         }
 
-        .brand-sub {
+        .brand-logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-text span {
+            display: block;
+            font-weight: 800;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .brand-text small {
             font-size: 0.65rem;
+            color: #a855f7;
             font-weight: 700;
-            letter-spacing: 1px;
-            color: #888;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-dark);
+            color: var(--text-muted);
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.9rem;
-            margin: 0 12px;
-            transition: opacity 0.2s;
+            font-size: 0.88rem;
+            transition: color 0.2s;
         }
 
-        .nav-links a:hover {
-            opacity: 0.6;
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-main);
         }
 
         .btn-book-now {
-            background-color: #fff;
-            color: #b8860b;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--credix-border);
+            color: var(--text-main);
             border-radius: 50px;
-            padding: 8px 20px;
+            padding: 8px 24px;
             font-weight: 700;
             font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
         .btn-book-now:hover {
-            background-color: #d4af37;
+            background: var(--credix-accent);
+            border-color: var(--credix-accent);
             color: #fff;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
 
-        .hero-banner {
-            position: relative;
-            background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
-            border-radius: 24px;
-            padding: 50px 40px;
-            color: #ffffff;
-            margin-bottom: 25px;
+        /* Hero Section */
+        .hero {
+            max-width: 1140px;
+            margin: 40px auto 20px;
+            padding: 0 20px;
         }
 
-        .hero-title {
-            font-size: 2.5rem;
+        .hero h1 {
+            font-size: 2.8rem;
             font-weight: 800;
-            line-height: 1.1;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            max-width: 650px;
-            margin-bottom: 15px;
-        }
-
-        .hero-subtitle {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.8);
-            max-width: 480px;
-            margin-bottom: 20px;
-        }
-
-        .section-heading {
-            font-size: 2.2rem;
-            font-weight: 800;
+            letter-spacing: -1.5px;
             margin-bottom: 10px;
-            color: #000;
-            letter-spacing: -0.5px;
+            color: var(--text-main);
         }
 
-        .step-label {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .hero p {
+            color: var(--text-muted);
+            font-size: 0.98rem;
+            max-width: 620px;
+            line-height: 1.6;
         }
 
-        .step-number {
-            background-color: #f1d06b;
-            color: #000;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
+        /* Container & Panel */
+        .wrap {
+            max-width: 1140px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: var(--credix-card);
+            border: 1px solid var(--credix-border);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.05);
+        }
+
+        .step {
+            font-size: 0.72rem;
             font-weight: 800;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #818cf8;
         }
 
-        /* Tanggal / Date Horizontal Scroller */
-        .date-scroller {
+        /* Dates Carousel */
+        .dates {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
+            padding-bottom: 8px;
             scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.2) transparent;
         }
 
         .date-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 12px 16px;
+            min-width: 82px;
+            padding: 14px 10px;
+            border: 1px solid var(--credix-border);
+            border-radius: 16px;
             text-align: center;
-            min-width: 75px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            transition: all 0.2s;
         }
 
         .date-card input[type="radio"] {
@@ -230,24 +238,32 @@ if(isset($_POST['court'])) {
         }
 
         .date-card:hover {
-            border-color: #000;
+            border-color: rgba(99, 102, 241, 0.4);
+            color: var(--text-main);
         }
 
-        /* Masa Slot */
+        .date-card.active {
+            border-color: var(--credix-accent);
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+            color: var(--text-main);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Time Slots */
         .time-slots {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 30px;
         }
 
         .time-slot-btn {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--credix-border);
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
             border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: 0.95rem;
+            padding: 12px 20px;
+            font-weight: 700;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -257,34 +273,41 @@ if(isset($_POST['court'])) {
         }
 
         .time-slot-btn:hover {
-            border-color: #000;
+            border-color: rgba(99, 102, 241, 0.4);
+            color: var(--text-main);
+        }
+
+        .time-slot-btn.active {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Courts Grid */
+        .courts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
         }
 
         .court-card {
-            background: #ffffff;
+            border: 1px solid var(--credix-border);
             border-radius: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.2s;
         }
 
         .court-card.unavailable {
-            opacity: 0.6;
-            filter: grayscale(80%);
-        }
-
-        .court-card:hover:not(.unavailable) {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            opacity: 0.4;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .court-img-wrapper {
-            position: relative;
-            height: 170px;
+            height: 160px;
             overflow: hidden;
-            background-color: #eee;
+            background-color: #1a1d29;
         }
 
         .court-img-wrapper img {
@@ -298,224 +321,174 @@ if(isset($_POST['court'])) {
         }
 
         .court-name {
-            font-size: 1.15rem;
             font-weight: 800;
-            color: #111;
-            margin-bottom: 10px;
+            color: var(--text-main);
+            font-size: 1.15rem;
+            margin-bottom: 12px;
         }
 
         .btn-book {
-            background-color: var(--card-dark);
-            color: #ffffff;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
             font-weight: 700;
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 50px;
+            padding: 10px 20px;
             border: none;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            transition: all 0.2s;
         }
 
         .btn-book:hover {
-            background-color: var(--accent-orange);
-            color: #ffffff;
+            opacity: 0.92;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
-        .alert-custom {
-            border-radius: 16px;
-            font-weight: 700;
-            border: none;
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .info-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            height: 100%;
+        hr {
+            border-color: var(--credix-border) !important;
+            opacity: 1;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="app-container" id="home-section">
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar d-none d-md-flex">
+        <div><i class="fa-solid fa-bolt me-1 text-indigo"></i> CALL +60 16 835 5533 &nbsp;&nbsp;|&nbsp;&nbsp; SUNGAI BANGAT Warehouse, Labuan F.T.</div>
+        <div>
+            <?php if(isset($_SESSION['user'])): ?>
+                <span class="text-light fw-bold"><?= htmlspecialchars($_SESSION['user']['name']) ?></span>
+            <?php endif; ?>
+        </div>
+    </div>
 
-        <!-- BAR ATAS (INFO LOKASI & TELEFON) -->
-        <div class="top-info-bar">
-            <div>
-                <span class="me-3"><i class="fa-solid fa-phone me-1 text-warning"></i> +60 16 835 5533</span>
-                <span><i class="fa-solid fa-location-dot me-1 text-danger"></i> SUNGAI BANGAT Warehouse, near Savemore Superstore</span>
+    <!-- Custom Navbar -->
+    <nav class="custom-navbar">
+        <a href="dashboard.php" class="brand-container">
+            <div class="brand-logo-icon">
+                <i class="fa-solid fa-feather"></i>
             </div>
-            <div>
-                <span class="text-dark fw-bold">BM</span>
+            <div class="brand-text">
+                <span>BADMINTON</span>
+                <small>Labuan F.T</small>
             </div>
+        </a>
+
+        <div class="nav-links d-none d-md-flex">
+            <a href="feedback_report.php">Feedback</a>
+            <a href="my_booking.php">My Booking</a>
+            <a href="profile.php">Profile</a>
         </div>
 
-        <!-- Header / Navigation -->
-        <nav class="custom-navbar">
-            <div class="brand-logo-wrapper">
-                <a href="dashboard.php" class="brand-logo">
-                    <i class="fa-solid fa-shuttlecock text-warning"></i> SPORTS CENTER
-                </a>
-                <span class="brand-sub">BADMINTON &bull; LABUAN F.T</span>
-            </div>
-
-     <div class="nav-links d-none d-md-block">
-    <a href="feedback_report.php">Feedback</a>
-    <a href="my_booking.php">My Booking</a>
-    <a href="profile.php">Profile</a>
-</div>
-
-            <div class="d-flex align-items-center gap-3">
-                <a href="#booking-section" class="btn-book-now">Book Now</a>
-                <a href="dashboard.php" class="btn btn-dark rounded-pill fw-bold btn-sm px-3 py-2">
-                    <i class="fa-solid fa-gauge me-1"></i> Dashboard
-                </a>
-            </div>
-        </nav>
-
-        <!-- Banner Utama -->
-        <div class="hero-banner">
-            <h1 class="hero-title">BOOK YOUR COURT ANYTIME, ANYWHERE.</h1>
-            <p class="hero-subtitle">See real-time availability, compare courts, and pay in seconds — all in one place.</p>
-            <a href="#booking-section" class="btn btn-light text-dark fw-bold rounded-pill px-4 py-2 shadow-sm text-decoration-none">
-                Find a Court <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+        <div class="d-flex align-items-center gap-3">
+            <a href="booking.php" class="btn-book-now active">Book Now</a>
+            <a href="dashboard.php" class="btn btn-dark rounded-pill fw-bold btn-sm px-3 py-2" style="border: 1px solid var(--credix-border);">
+                <i class="fa-solid fa-gauge me-1"></i> Dashboard
             </a>
         </div>
+    </nav>
 
-        <!-- Mesej Kejayaan (PHP) -->
-        <?php
-        if(isset($message)){
-            echo "
-            <div class='alert alert-custom p-3 mb-4 text-center'>
-                <i class='fa-solid fa-circle-check me-2'></i> $message
-            </div>
-            ";
-        }
-        ?>
+    <div class="hero">
+        <h1>Book your court.</h1>
+        <p>Lihat kekosongan masa nyata, bandingkan gelanggang dan buat tempahan dalam beberapa saat.</p>
+    </div>
 
-        <!-- Bahagian Tempahan Bergaya Gaya Rujukan (Booking Section) -->
-        <div id="booking-section" class="mb-5">
-            <h3 class="section-heading">Book a court</h3>
-            <p class="text-muted mb-4">Pick a date, a start time and a court. Available and unavailable courts are displayed below.</p>
-
+    <div class="wrap">
+        <div class="panel">
             <form method="POST">
                 <!-- Langkah 1: Pilih Tarikh -->
-                <div class="mb-4">
-                    <div class="step-label">
-                        <span class="step-number">1</span> Choose a date
-                    </div>
-                    <div class="date-scroller">
-                        <?php
-                        // Menjana senarai 14 hari dari hari ini secara dinamik
-                        for ($i = 0; $i < 14; $i++) {
-                            $date_val = date('Y-m-d', strtotime("+$i days"));
-                            $day_name = ($i == 0) ? 'TODAY' : strtoupper(date('D', strtotime("+$i days")));
-                            $day_num = date('d', strtotime("+$i days"));
-                            $month_short = date('M', strtotime("+$i days"));
-                            $checked = ($i == 0) ? 'checked' : '';
-                            $active_class = ($i == 0) ? 'border-dark bg-white shadow-sm' : 'bg-white';
-                        ?>
-                        <label class="date-card <?php echo $active_class; ?>" onclick="updateDateCard(this)">
-                            <input type="radio" name="date" value="<?php echo $date_val; ?>" <?php echo $checked; ?> required>
-                            <div style="font-size: 0.7rem; font-weight: 700; color: #777;"><?php echo $day_name; ?></div>
-                            <div style="font-size: 1.2rem; font-weight: 800; color: #000; margin: 2px 0;"><?php echo $day_num; ?></div>
-                            <div style="font-size: 0.75rem; font-weight: 600; color: #555;"><?php echo $month_short; ?></div>
-                        </label>
-                        <?php } ?>
-                    </div>
+                <div class="step">1. Choose a date</div>
+                <div class="dates mb-4">
+                    <?php
+                    for ($i = 0; $i < 14; $i++) {
+                        $date_val = date('Y-m-d', strtotime("+$i days"));
+                        $day_name = ($i == 0) ? 'TODAY' : strtoupper(date('D', strtotime("+$i days")));
+                        $day_num = date('d', strtotime("+$i days"));
+                        $month_short = date('M', strtotime("+$i days"));
+                        $checked = ($i == 0) ? 'checked' : '';
+                        $active_class = ($i == 0) ? 'active' : '';
+                    ?>
+                    <label class="date-card <?php echo $active_class; ?>" onclick="updateDateCard(this)">
+                        <input type="radio" name="date" value="<?php echo $date_val; ?>" <?php echo $checked; ?> required>
+                        <span style="font-size: 0.65rem; color: #818cf8; font-weight: 800; text-transform: uppercase;"><?php echo $day_name; ?></span>
+                        <strong style="display: block; font-size: 1.4rem; color: var(--text-main); margin: 4px 0;"><?php echo $day_num; ?></strong>
+                        <span style="font-size: 0.7rem; color: var(--text-muted);"><?php echo $month_short; ?></span>
+                    </label>
+                    <?php } ?>
                 </div>
+
+                <hr class="my-4">
 
                 <!-- Langkah 2: Pilih Masa Mula -->
-                <div class="mb-4">
-                    <div class="step-label">
-                        <span class="step-number">2</span> Choose a start time
-                    </div>
-                    <div class="time-slots">
-                        <?php 
-                        $times = ['08:00', '10:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
-                        foreach($times as $index => $t) {
-                            $t_checked = ($index === 4) ? 'checked' : ''; // Default pilih 18:00
-                            $t_active = ($index === 4) ? 'border-dark bg-white shadow-sm' : '';
-                        ?>
-                        <label class="time-slot-btn <?php echo $t_active; ?>" onclick="updateTimeCard(this)">
-                            <input type="radio" name="time" value="<?php echo $t; ?>:00" <?php echo $t_checked; ?> required>
-                            <?php echo $t; ?>
-                        </label>
-                        <?php } ?>
-                    </div>
+                <div class="step">2. Choose a start time</div>
+                <div class="time-slots mb-4">
+                    <?php 
+                    $times = ['08:00', '10:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+                    foreach($times as $index => $t) {
+                        $t_checked = ($index === 4) ? 'checked' : ''; 
+                        $t_active = ($index === 4) ? 'active' : '';
+                    ?>
+                    <label class="time-slot-btn <?php echo $t_active; ?>" onclick="updateTimeCard(this)">
+                        <input type="radio" name="time" value="<?php echo $t; ?>:00" <?php echo $t_checked; ?> required>
+                        <?php echo $t; ?>
+                    </label>
+                    <?php } ?>
                 </div>
 
-                <!-- Langkah 3: Pilih Gelanggang (Available & Not Available) -->
-                <div class="mb-3">
-                    <div class="step-label">
-                        <span class="step-number">3</span> Choose a court & Book
-                    </div>
-                </div>
+                <hr class="my-4">
 
-                <div class="row g-4">
+                <!-- Langkah 3: Pilih Gelanggang -->
+                <div class="step">3. Choose a court</div>
+                <div class="courts">
                     <?php
-                    // Paparkan SEMUA gelanggang (Available & Not Available)
                     $result = mysqli_query($conn, "SELECT * FROM courts");
-
                     while($row = mysqli_fetch_assoc($result)){
                         $is_available = ($row['status'] == 'Available');
                         $card_class = $is_available ? 'court-card' : 'court-card unavailable';
                     ?>
-                    <div class="col-lg-3 col-md-6 col-12">
-                        <div class="<?php echo $card_class; ?>">
-                            <div class="court-img-wrapper">
-                                <img src="../images/court<?php echo $row['id']; ?>.jpg" 
-                                     alt="Court Image"
-                                     onerror="this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop'">
-                            </div>
-
-                            <div class="court-card-body text-center">
-                                <h5 class="court-name"><?php echo $row['court_name']; ?></h5>
-                                
-                                <?php if($is_available) { ?>
-                                    <span class="badge bg-success mb-3 px-3 py-1 fw-bold">Available</span>
-                                    <!-- name+value on the button itself: only the card that was actually
-                                         clicked submits its court id, instead of every hidden "court"
-                                         input on the page fighting over the same field name. -->
-                                    <button type="submit" name="court" value="<?php echo $row['id']; ?>" class="btn btn-book w-100">
-                                        Book Court
-                                    </button>
-                                <?php } else { ?>
-                                    <span class="badge bg-danger mb-3 px-3 py-1 fw-bold">Not Available / Booked</span>
-                                    <button class="btn btn-secondary w-100" disabled style="border-radius: 12px; padding: 12px; font-weight: 700; font-size: 0.9rem;">
-                                        Unavailable
-                                    </button>
-                                <?php } ?>
-                            </div>
+                    <div class="<?php echo $card_class; ?>">
+                        <div class="court-img-wrapper">
+                            <img src="../images/court<?php echo $row['id']; ?>.jpg" 
+                                 alt="Court Image"
+                                 onerror="this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop'">
+                        </div>
+                        <div class="court-card-body text-center">
+                            <h5 class="court-name"><?php echo htmlspecialchars($row['court_name']); ?></h5>
+                            <?php if($is_available) { ?>
+                                <div class="mb-3" style="font-size: 0.78rem; font-weight: 800; color: #34d399;"><i class="fa-solid fa-circle-check me-1"></i> Available</div>
+                                <button type="submit" name="court" value="<?php echo $row['id']; ?>" class="btn btn-book w-100">
+                                    Book Court
+                                </button>
+                            <?php } else { ?>
+                                <div class="mb-3" style="font-size: 0.78rem; font-weight: 800; color: #f87171;"><i class="fa-solid fa-circle-xmark me-1"></i> Not Available</div>
+                                <button class="btn btn-dark w-100" disabled style="border-radius: 50px; padding: 10px; font-weight: 700; font-size: 0.85rem; opacity: 0.5;">
+                                    Unavailable
+                                </button>
+                            <?php } ?>
                         </div>
                     </div>
                     <?php } ?>
                 </div>
             </form>
         </div>
-
     </div>
 
-    <!-- Bootstrap 5 JS & Script Interaktif Pilihan Tarikh/Masa -->
+    <!-- Bootstrap 5 JS & Skrip Interaktif Pilihan -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function updateDateCard(element) {
             document.querySelectorAll('.date-card').forEach(card => {
-                card.classList.remove('border-dark', 'shadow-sm');
-                card.classList.add('bg-white');
+                card.classList.remove('active');
             });
-            element.classList.add('border-dark', 'shadow-sm');
+            element.classList.add('active');
         }
 
         function updateTimeCard(element) {
             document.querySelectorAll('.time-slot-btn').forEach(btn => {
-                btn.classList.remove('border-dark', 'shadow-sm');
+                btn.classList.remove('active');
             });
-            element.classList.add('border-dark', 'shadow-sm');
+            element.classList.add('active');
         }
     </script>
 </body>
