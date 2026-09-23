@@ -30,14 +30,14 @@ if(isset($_POST['court'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Court - Sports Center</title>
+    <title>Book Court - AceTime</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -59,7 +59,6 @@ if(isset($_POST['court'])) {
             color: var(--text-dark);
             min-height: 100vh;
             padding: 30px 15px;
-            -webkit-font-smoothing: antialiased;
         }
 
         .app-container {
@@ -116,12 +115,6 @@ if(isset($_POST['court'])) {
             letter-spacing: 1px;
             color: #888;
             text-transform: uppercase;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .nav-links a {
@@ -211,7 +204,7 @@ if(isset($_POST['court'])) {
             font-weight: 800;
         }
 
-        /* Date Horizontal Scroller */
+        /* Tanggal / Date Horizontal Scroller */
         .date-scroller {
             display: flex;
             gap: 10px;
@@ -240,7 +233,7 @@ if(isset($_POST['court'])) {
             border-color: #000;
         }
 
-        /* Time Slots */
+        /* Masa Slot */
         .time-slots {
             display: flex;
             gap: 12px;
@@ -335,16 +328,13 @@ if(isset($_POST['court'])) {
             color: #0f5132;
         }
 
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 15px 20px 40px 20px;
-            }
-            .hero-banner {
-                padding: 35px 20px;
-            }
-            .hero-title {
-                font-size: 1.9rem;
-            }
+        .info-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            height: 100%;
         }
     </style>
 </head>
@@ -353,7 +343,7 @@ if(isset($_POST['court'])) {
 
     <div class="app-container" id="home-section">
 
-        <!-- Top Info Bar -->
+        <!-- BAR ATAS (INFO LOKASI & TELEFON) -->
         <div class="top-info-bar">
             <div>
                 <span class="me-3"><i class="fa-solid fa-phone me-1 text-warning"></i> +60 16 835 5533</span>
@@ -373,11 +363,11 @@ if(isset($_POST['court'])) {
                 <span class="brand-sub">BADMINTON &bull; LABUAN F.T</span>
             </div>
 
-            <div class="nav-links d-none d-md-flex">
-                <a href="feedback_report.php">Feedback</a>
-                <a href="my_booking.php">My Booking</a>
-                <a href="profile.php">Profile</a>
-            </div>
+     <div class="nav-links d-none d-md-block">
+    <a href="feedback_report.php">Feedback</a>
+    <a href="my_booking.php">My Booking</a>
+    <a href="profile.php">Profile</a>
+</div>
 
             <div class="d-flex align-items-center gap-3">
                 <a href="#booking-section" class="btn-book-now">Book Now</a>
@@ -387,7 +377,7 @@ if(isset($_POST['court'])) {
             </div>
         </nav>
 
-        <!-- Main Banner -->
+        <!-- Banner Utama -->
         <div class="hero-banner">
             <h1 class="hero-title">BOOK YOUR COURT ANYTIME, ANYWHERE.</h1>
             <p class="hero-subtitle">See real-time availability, compare courts, and pay in seconds — all in one place.</p>
@@ -396,7 +386,7 @@ if(isset($_POST['court'])) {
             </a>
         </div>
 
-        <!-- Success Message (PHP) -->
+        <!-- Mesej Kejayaan (PHP) -->
         <?php
         if(isset($message)){
             echo "
@@ -407,19 +397,20 @@ if(isset($_POST['court'])) {
         }
         ?>
 
-        <!-- Booking Section -->
+        <!-- Bahagian Tempahan Bergaya Gaya Rujukan (Booking Section) -->
         <div id="booking-section" class="mb-5">
             <h3 class="section-heading">Book a court</h3>
             <p class="text-muted mb-4">Pick a date, a start time and a court. Available and unavailable courts are displayed below.</p>
 
             <form method="POST">
-                <!-- Step 1: Choose a date -->
+                <!-- Langkah 1: Pilih Tarikh -->
                 <div class="mb-4">
                     <div class="step-label">
                         <span class="step-number">1</span> Choose a date
                     </div>
                     <div class="date-scroller">
                         <?php
+                        // Menjana senarai 14 hari dari hari ini secara dinamik
                         for ($i = 0; $i < 14; $i++) {
                             $date_val = date('Y-m-d', strtotime("+$i days"));
                             $day_name = ($i == 0) ? 'TODAY' : strtoupper(date('D', strtotime("+$i days")));
@@ -438,7 +429,7 @@ if(isset($_POST['court'])) {
                     </div>
                 </div>
 
-                <!-- Step 2: Choose a start time -->
+                <!-- Langkah 2: Pilih Masa Mula -->
                 <div class="mb-4">
                     <div class="step-label">
                         <span class="step-number">2</span> Choose a start time
@@ -447,7 +438,7 @@ if(isset($_POST['court'])) {
                         <?php 
                         $times = ['08:00', '10:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
                         foreach($times as $index => $t) {
-                            $t_checked = ($index === 4) ? 'checked' : ''; 
+                            $t_checked = ($index === 4) ? 'checked' : ''; // Default pilih 18:00
                             $t_active = ($index === 4) ? 'border-dark bg-white shadow-sm' : '';
                         ?>
                         <label class="time-slot-btn <?php echo $t_active; ?>" onclick="updateTimeCard(this)">
@@ -458,7 +449,7 @@ if(isset($_POST['court'])) {
                     </div>
                 </div>
 
-                <!-- Step 3: Choose a court & Book -->
+                <!-- Langkah 3: Pilih Gelanggang (Available & Not Available) -->
                 <div class="mb-3">
                     <div class="step-label">
                         <span class="step-number">3</span> Choose a court & Book
@@ -467,6 +458,7 @@ if(isset($_POST['court'])) {
 
                 <div class="row g-4">
                     <?php
+                    // Paparkan SEMUA gelanggang (Available & Not Available)
                     $result = mysqli_query($conn, "SELECT * FROM courts");
 
                     while($row = mysqli_fetch_assoc($result)){
@@ -486,6 +478,9 @@ if(isset($_POST['court'])) {
                                 
                                 <?php if($is_available) { ?>
                                     <span class="badge bg-success mb-3 px-3 py-1 fw-bold">Available</span>
+                                    <!-- name+value on the button itself: only the card that was actually
+                                         clicked submits its court id, instead of every hidden "court"
+                                         input on the page fighting over the same field name. -->
                                     <button type="submit" name="court" value="<?php echo $row['id']; ?>" class="btn btn-book w-100">
                                         Book Court
                                     </button>
@@ -505,7 +500,7 @@ if(isset($_POST['court'])) {
 
     </div>
 
-    <!-- Bootstrap 5 JS & Interactive Selection Script -->
+    <!-- Bootstrap 5 JS & Script Interaktif Pilihan Tarikh/Masa -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function updateDateCard(element) {

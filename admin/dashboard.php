@@ -531,33 +531,32 @@ $pendingBookings = (int)$pendingRow['total'];
                             <p class="text-muted fs-7">Semak dan pantau tempahan slot gelanggang pengguna.</p>
                         </div>
                         <a href="manage_booking.php" class="btn-card btn-green">Manage Booking ➔</a>
-                        <a href="manage_payment.php" class="btn-card btn-orange">Manage Payment ➔</a>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-4">
                     <div class="action-card">
                         <div>
-                            <div class="action-icon icon-yellow mx-auto"><i class="fa-solid fa-users-gear"></i></div>
-                            <h5 class="fw-bold fs-6">Manage Users</h5>
-                            <p class="text-muted fs-7">Kawalselia akaun pengguna dan hak akses sistem.</p>
+                            <div class="action-icon icon-yellow mx-auto"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                            <h5 class="fw-bold fs-6">Manage Payment</h5>
+                            <p class="text-muted fs-7">Semak dan sahkan transaksi bayaran pengguna.</p>
                         </div>
-                        <a href="manage_users.php" class="btn-card btn-yellow">Manage Users ➔</a>
+                        <a href="manage_payment.php" class="btn-card btn-yellow">Manage Payment ➔</a>
                     </div>
                 </div>
             </div>
 
-            <!-- BAHAGIAN MODUL TAMBAHAN (INVOICE, MESSAGE, PAGES) -->
+            <!-- BAHAGIAN MODUL TAMBAHAN (USERS, MESSAGE, PAGES) -->
             <h5 class="fw-bold mb-3 mt-4"><i class="fa-solid fa-layer-group text-info me-2"></i> Modul & Alat Sokongan</h5>
             <div class="row g-4">
                 <div class="col-6 col-lg-4">
                     <div class="action-card">
                         <div>
-                            <div class="action-icon icon-purple mx-auto"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                            <h5 class="fw-bold fs-6">Invois & Resit</h5>
-                            <p class="text-muted fs-7">Semak transaksi bayaran pengguna.</p>
+                            <div class="action-icon icon-purple mx-auto"><i class="fa-solid fa-users-gear"></i></div>
+                            <h5 class="fw-bold fs-6">Manage Users</h5>
+                            <p class="text-muted fs-7">Kawalselia akaun pengguna dan hak akses sistem.</p>
                         </div>
-                        <a href="manage_payment.php" class="btn-card btn-purple">Ke Invois ➔</a>
+                        <a href="manage_users.php" class="btn-card btn-purple">Manage Users ➔</a>
                     </div>
                 </div>
 
