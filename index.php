@@ -438,12 +438,12 @@ include __DIR__ . '/config/db.php';
                         </div>
                     </div>
 
-                    <!-- Bahagian Kanan: Bingkai Video Penuh di Dalam Kotak -->
-                    <div class="col-lg-6">
-                        <div class="video-box-wrapper">
-                            <video class="hero-video-element" autoplay muted loop playsinline>
-                                <source src="video/videosport.mp4" type="video/mp4">
-                                Your browser does not support the video tag.
+                  <!-- Sebelah Kanan: Video di dalam Kad yang sama (Laluan Betul) -->
+                    <div class="col-lg-5">
+                        <div class="hero-video-wrapper">
+                            <video autoplay muted loop playsinline>
+                                <source src="videoiklan.mp4" type="video/mp4">
+                                Pelayar anda tidak menyokong paparan video.
                             </video>
                         </div>
                     </div>
