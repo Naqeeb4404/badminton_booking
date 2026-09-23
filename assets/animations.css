@@ -1,0 +1,25 @@
+/* Scroll Animation Base & Active States */
+.scroll-animate-init {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.scroll-animate-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Stagger delays for grid items */
+.row .col-md-4:nth-child(1) .step-card { transition-delay: 0.1s; }
+.row .col-md-4:nth-child(2) .step-card { transition-delay: 0.2s; }
+.row .col-md-4:nth-child(3) .step-card { transition-delay: 0.3s; }
+
+.row .col-md-6:nth-child(1) .rate-card { transition-delay: 0.1s; }
+.row .col-md-6:nth-child(2) .rate-card { transition-delay: 0.2s; }
+
+/* Enhanced Card Hover & Parallax Feel */
+.step-card, .rate-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+}
