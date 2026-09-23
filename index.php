@@ -21,7 +21,7 @@ include __DIR__ . '/config/db.php';
     <style>
         :root {
             --credix-bg: #090a0f;
-            --credix-card: rgba(19, 21, 31, 0.75);
+            --credix-card: rgba(19, 21, 31, 0.8);
             --credix-border: rgba(255, 255, 255, 0.12);
             --credix-accent: #6366f1;
             --text-main: #f8fafc;
@@ -37,7 +37,7 @@ include __DIR__ . '/config/db.php';
             overflow-x: hidden;
         }
 
-        /* Latar Belakang Animasi Berterusan (Moving Background) */
+        /* Latar Belakang Animasi Berterusan */
         .animated-bg-layer {
             position: fixed;
             top: 0;
@@ -159,9 +159,9 @@ include __DIR__ . '/config/db.php';
             transform: translateY(-2px);
         }
 
-        /* Hero Section dengan Kesan Bertindih (Overlapping & Parallax Layering) */
+        /* Hero Section Susun Atur Moden */
         .hero-section {
-            padding: 120px 0 160px 0;
+            padding: 80px 0 120px 0;
             position: relative;
             overflow: hidden;
         }
@@ -185,7 +185,7 @@ include __DIR__ . '/config/db.php';
         }
 
         .hero-title {
-            font-size: 3.8rem;
+            font-size: 3.5rem;
             font-weight: 800;
             letter-spacing: -1.5px;
             color: var(--text-main);
@@ -196,7 +196,7 @@ include __DIR__ . '/config/db.php';
         .hero-desc {
             color: var(--text-muted);
             font-size: 1.05rem;
-            max-width: 520px;
+            max-width: 500px;
             line-height: 1.6;
         }
 
@@ -242,11 +242,10 @@ include __DIR__ . '/config/db.php';
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Bingkai Video Terapung & Bertindih (Floating & Overlapping Video Frame) */
+        /* Bingkai Video Terapung di Sebelah Kanan dengan Kesan Bertindih */
         .video-floating-container {
             position: relative;
             z-index: 2;
-            margin-left: -60px; /* Kesan bertindih dengan lajur teks */
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: transform;
         }
@@ -258,8 +257,8 @@ include __DIR__ . '/config/db.php';
             border: 1px solid var(--credix-border);
             border-radius: 24px;
             overflow: hidden;
-            height: 380px;
-            padding: 24px;
+            height: 400px;
+            padding: 20px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             display: flex;
@@ -336,7 +335,6 @@ include __DIR__ . '/config/db.php';
 
         @media (max-width: 991px) {
             .video-floating-container {
-                margin-left: 0;
                 margin-top: 40px;
             }
             .hero-title {
@@ -350,7 +348,7 @@ include __DIR__ . '/config/db.php';
             }
             .video-preview-card {
                 height: 260px;
-                padding: 15px;
+                padding: 12px;
             }
             .footer-container {
                 grid-template-columns: 1fr;
@@ -366,7 +364,7 @@ include __DIR__ . '/config/db.php';
 
 <body>
 
-    <!-- Latar Belakang Animasi Berterusan (Bergerak bebas di belakang) -->
+    <!-- Latar Belakang Animasi Berterusan -->
     <div class="animated-bg-layer"></div>
 
     <div class="top-announcement-bar d-none d-md-flex">
@@ -408,13 +406,13 @@ include __DIR__ . '/config/db.php';
         <?php endif; ?>
     </nav>
 
-    <!-- Hero Section dengan Kesan Parallax dan Bertindih -->
+    <!-- Hero Section dengan Susunan Kiri-Kanan Seimbang -->
     <section class="hero-section">
         <div class="container">
-            <div class="row align-items-center">
+            <div class="row align-items-center g-5">
                 
-                <!-- Lajur Teks (Lapisan Hadapan / Overlapping Text) -->
-                <div class="col-lg-7 hero-content-wrapper" id="textLayer">
+                <!-- Lajur Kiri: Teks & Butang -->
+                <div class="col-lg-6 hero-content-wrapper" id="textLayer">
                     <div class="badge-pill mb-3">
                         <span>NEXT-GEN COURT BOOKING PLATFORM</span>
                     </div>
@@ -440,11 +438,11 @@ include __DIR__ . '/config/db.php';
                     </div>
                 </div>
 
-                <!-- Bingkai Video Terapung & Bertindih (Floating Parallax Video Frame) -->
+                <!-- Lajur Kanan: Bingkai Video Terapung Besar -->
                 <div class="col-lg-6 video-floating-container" id="videoLayer">
                     <div class="video-preview-card">
                         <video class="hero-video-element" autoplay muted loop playsinline>
-                            <source src="video/videosport.mp4" type="video/mp4">
+                            <source src="video/videoiklan.mp4" type="videoiklan/mp4">
                             Your browser does not support the video tag.
                         </video>
                     </div>
@@ -501,10 +499,9 @@ include __DIR__ . '/config/db.php';
             const textLayer = document.getElementById("textLayer");
             const videoLayer = document.getElementById("videoLayer");
 
-            // Kesan pergerakan kelajuan berbeza (Parallax Effect) antara teks dan video
             if (window.innerWidth > 991) {
-                textLayer.style.transform = `translateY(${scrollPosition * 0.08}px)`;
-                videoLayer.style.transform = `translateY(${scrollPosition * -0.12}px)`;
+                textLayer.style.transform = `translateY(${scrollPosition * 0.05}px)`;
+                videoLayer.style.transform = `translateY(${scrollPosition * -0.08}px)`;
             }
         });
     </script>
