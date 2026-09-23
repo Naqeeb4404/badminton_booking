@@ -1,0 +1,185 @@
+/* Shared Admin Sidebar
+   Single source of truth for every page in /admin. */
+
+:root {
+    --sidebar-bg: #1c2434;
+    --sidebar-text: #dee4ee;
+    --sidebar-hover: #333a48;
+}
+
+.sidebar {
+    width: 280px !important;
+    background-color: var(--sidebar-bg) !important;
+    color: var(--sidebar-text);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 1000 !important;
+    transition: all 0.3s ease;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+    border: 0;
+    border-radius: 0;
+    padding: 0 !important;
+}
+
+.sidebar-brand {
+    padding: 25px 20px !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none !important;
+    background: transparent !important;
+}
+
+.sidebar-menu {
+    padding: 20px 15px !important;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.menu-label {
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8a99ad !important;
+    margin-bottom: 10px;
+    padding-left: 10px !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-nav-link {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px !important;
+    color: var(--sidebar-text) !important;
+    text-decoration: none !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 5px !important;
+    transition: all 0.2s ease;
+    background: transparent !important;
+}
+
+.sidebar-nav-link-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-nav-link:hover,
+.sidebar-nav-link.active {
+    background-color: var(--sidebar-hover) !important;
+    color: #fff !important;
+}
+
+.sidebar-nav-link i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 280px !important;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 240px !important;
+    }
+
+    .main-content {
+        margin-left: 240px !important;
+    }
+}
+
+
+/* Shared Dashboard-style content/topbar support */
+body.admin-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+    display: flex;
+    background: #f1f5f9;
+}
+
+.admin-page .topbar {
+    height: 80px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.admin-page .topbar .search-form {
+    position: relative;
+    width: 350px;
+}
+
+.admin-page .topbar .search-input {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 50px !important;
+    padding: 10px 20px 10px 45px !important;
+    font-size: 0.85rem !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.admin-page .topbar .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 5px 10px 5px 5px;
+}
+
+.admin-page .topbar .user-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1c2434;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.admin-page .content-body {
+    padding: 40px;
+}
+
+@media (max-width: 768px) {
+    .admin-page .topbar {
+        padding: 0 20px;
+    }
+
+    .admin-page .content-body {
+        padding: 20px;
+    }
+
+    .admin-page .topbar .search-form {
+        width: 220px;
+    }
+}

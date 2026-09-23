@@ -340,43 +340,33 @@ function e($value) {
         .grid-2 { grid-template-columns: 1fr; }
     }
 </style>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
-<body>
+<body class="admin-page">
 
-    <!-- Top Navigation -->
-    <div class="top-nav">
-        <div class="brand">
-            <i class="fa-solid fa-shuttlecock text-warning"></i> Badminton Kampung Panji Admin
-        </div>
-        <div class="nav-links">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="profile.php" class="active">Profile</a>
-            <a href="../auth/logout.php" style="color: #dc2626;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
-    </div>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
-    <div class="app-layout">
-        
-        <!-- Sidebar Menu -->
-        <div class="sidebar">
-            <div class="sidebar-user">
-                <div class="sidebar-avatar" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
-                    <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
-                </div>
-                <div>
-                    <div style="font-weight: 700; font-size: 0.9rem;"><?php echo e($admin['name']); ?></div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);"><?php echo e($admin['email']); ?></div>
-                </div>
+    <div class="main-content">
+        <header class="topbar">
+            <div class="search-form">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" class="form-control search-input" placeholder="Type to search..." autocomplete="off">
             </div>
-            <div class="menu-list">
-                <a href="dashboard.php" class="menu-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-                <a href="profile.php" class="menu-item active"><i class="fa-solid fa-user"></i> Profile Settings</a>
-                <a href="../auth/logout.php" class="menu-item" style="color: #dc2626;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-            </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="content-area">
+            <div class="d-flex align-items-center gap-3">
+                <div class="user-pill">
+                    <div class="user-avatar"><?php echo e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))); ?></div>
+                    <div class="fw-bold fs-7 pe-2"><?php echo e($admin['name']); ?></div>
+                </div>
+                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                </a>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="content-area">
+
 
             <?php if ($message): ?>
                 <div class="alert alert-success"><?php echo e($message); ?></div>
@@ -474,6 +464,7 @@ function e($value) {
             <!-- Bottom Back Button -->
             <a href="dashboard.php" class="btn" style="text-align: center; text-decoration: none; background: #e5e7eb; color: var(--text-main); display: block;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
 
+            </div>
         </div>
     </div>
 

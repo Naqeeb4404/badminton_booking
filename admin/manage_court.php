@@ -345,68 +345,13 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
             .search-form { display: none; }
         }
     </style>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 
 <body>
 
     <!-- SIDEBAR MENU -->
-    <div class="sidebar">
-        <a href="dashboard.php" class="sidebar-brand">
-            <i class="fa-solid fa-shuttlecock text-warning"></i>
-            <span>TailAdmin</span>
-        </a>
-
-        <div class="sidebar-menu">
-            <div class="menu-label">Menu Utama</div>
-            <a href="dashboard.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Dashboard</span>
-                </div>
-            </a>
-            <a href="manage_court.php" class="sidebar-nav-link active">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
-                    <span>Manage Court</span>
-                </div>
-            </a>
-            <a href="manage_users.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Manage Users</span>
-                </div>
-            </a>
-            <a href="calendar.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    <span>Calendar</span>
-                </div>
-            </a>
-            <a href="profile.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-user-gear"></i>
-                    <span>Profile</span>
-                </div>
-            </a>
-
-            <div class="menu-label mt-3">Sokongan (Support)</div>
-            <a href="message.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Message</span>
-                </div>
-                <?php if (isset($total_messages) && $total_messages > 0): ?>
-                    <span class="badge bg-danger rounded-pill"><?php echo $total_messages; ?></span>
-                <?php endif; ?>
-            </a>
-            <a href="manage_payment.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Invoice</span>
-                </div>
-            </a>
-        </div>
-    </div>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">

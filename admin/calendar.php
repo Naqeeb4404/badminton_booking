@@ -365,71 +365,13 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
             .calendar-date { width: 22px; height: 22px; line-height: 22px; font-size: 0.75rem; }
         }
     </style>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 
 <body>
 
     <!-- SIDEBAR -->
-    <div class="sidebar">
-        <a href="dashboard.php" class="sidebar-brand">
-            <i class="fa-solid fa-shuttlecock text-warning"></i>
-            <span>TailAdmin</span>
-        </a>
-
-        <div class="sidebar-menu">
-            <div class="menu-label">Menu Utama</div>
-            <a href="dashboard.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Dashboard</span>
-                </div>
-            </a>
-            <a href="calendar.php" class="sidebar-nav-link active">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    <span>Calendar</span>
-                </div>
-            </a>
-            <a href="profile.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-user-gear"></i>
-                    <span>Profile</span>
-                </div>
-            </a>
-            <a href="manage_booking.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-book"></i>
-                    <span>Bookings</span>
-                </div>
-            </a>
-            <a href="manage_court.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
-                    <span>Courts</span>
-                </div>
-            </a>
-            <a href="manage_users.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Users</span>
-                </div>
-            </a>
-
-            <div class="menu-label mt-3">Sokongan (Support)</div>
-            <a href="message.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Message</span>
-                </div>
-            </a>
-            <a href="manage_payment.php" class="sidebar-nav-link">
-                <div class="sidebar-nav-link-content">
-                    <i class="fa-solid fa-file-invoice-dollar"></i>
-                    <span>Invoice / Payments</span>
-                </div>
-            </a>
-        </div>
-    </div>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">
