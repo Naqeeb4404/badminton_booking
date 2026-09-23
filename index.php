@@ -9,7 +9,7 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CALL +60 11 6351 9188 | Badminton Kampung Panji</title>
+    <title>Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -48,23 +48,22 @@ include __DIR__ . '/config/db.php';
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(19, 21, 31, 0.7);
-            backdrop-filter: blur(12px);
+            background: rgba(19, 21, 31, 0.5);
+            backdrop-filter: blur(10px);
         }
 
-        /* Glass Navbar */
+        /* Credix Glass Navbar */
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 18px 40px;
             border-bottom: 1px solid var(--credix-border);
-            background: rgba(9, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
+            background: rgba(9, 10, 15, 0.8);
+            backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
             z-index: 1000;
-            transition: all 0.3s ease;
         }
 
         .brand-container {
@@ -116,7 +115,7 @@ include __DIR__ . '/config/db.php';
             text-decoration: none;
             font-weight: 600;
             font-size: 0.88rem;
-            transition: color 0.2s ease;
+            transition: color 0.2s;
         }
 
         .nav-links a:hover, .nav-links a.active {
@@ -132,23 +131,22 @@ include __DIR__ . '/config/db.php';
             font-size: 0.85rem;
             background: rgba(255, 255, 255, 0.03);
             text-decoration: none;
-            transition: all 0.25s ease;
+            transition: all 0.2s;
         }
 
         .btn-book-now:hover {
             background: var(--credix-accent);
             border-color: var(--credix-accent);
             color: #fff;
-            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
 
-        /* Hero Section */
+        /* Hero Section ala Credix Landing */
         .hero-section {
             position: relative;
-            padding: 120px 40px 100px;
+            padding: 100px 40px 80px;
             border-bottom: 1px solid var(--credix-border);
-            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            overflow: hidden;
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
         }
 
         .open-badge {
@@ -166,7 +164,7 @@ include __DIR__ . '/config/db.php';
         }
 
         .hero-title {
-            font-size: 4rem;
+            font-size: 3.8rem;
             font-weight: 800;
             line-height: 1.1;
             letter-spacing: -2px;
@@ -176,8 +174,8 @@ include __DIR__ . '/config/db.php';
 
         .hero-desc {
             color: var(--text-muted);
-            font-size: 1.15rem;
-            max-width: 560px;
+            font-size: 1.1rem;
+            max-width: 540px;
             margin-bottom: 40px;
             line-height: 1.6;
         }
@@ -193,19 +191,18 @@ include __DIR__ . '/config/db.php';
             color: #fff;
             font-weight: 700;
             border: none;
-            padding: 14px 32px;
+            padding: 13px 30px;
             border-radius: 50px;
             font-size: 0.9rem;
             text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s;
+            box-shadow: 0 4px 25px rgba(99, 102, 241, 0.4);
         }
 
         .btn-check-availability:hover {
-            opacity: 0.95;
+            opacity: 0.9;
             color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 35px rgba(99, 102, 241, 0.6);
+            transform: translateY(-2px);
         }
 
         .btn-call-centre {
@@ -213,31 +210,30 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
             font-weight: 700;
             border: 1px solid var(--credix-border);
-            padding: 14px 32px;
+            padding: 13px 30px;
             border-radius: 50px;
             font-size: 0.9rem;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
         .btn-call-centre:hover {
             border-color: var(--text-muted);
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
-            transform: translateY(-3px);
         }
 
         .content-container {
             max-width: 1140px;
             margin: 0 auto;
-            padding: 90px 20px;
+            padding: 70px 20px;
         }
 
         .section-title {
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: -1px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: var(--text-main);
         }
 
@@ -250,13 +246,14 @@ include __DIR__ . '/config/db.php';
             margin-bottom: 8px;
         }
 
-        /* Step Cards */
+        /* Credix Feature & Step Cards */
         .step-card {
             background: var(--credix-card);
             border: 1px solid var(--credix-border);
             border-radius: 24px;
             padding: 40px 30px;
             height: 100%;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -270,13 +267,13 @@ include __DIR__ . '/config/db.php';
             height: 2px;
             background: linear-gradient(90deg, transparent, #6366f1, transparent);
             opacity: 0;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s;
         }
 
         .step-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.1);
         }
 
         .step-card:hover::before {
@@ -306,19 +303,20 @@ include __DIR__ . '/config/db.php';
             line-height: 1.6;
         }
 
-        /* Rate Cards */
+        /* Credix Rate Cards */
         .rate-card {
             background: var(--credix-card);
             border: 1px solid var(--credix-border);
             border-radius: 24px;
             padding: 40px 30px;
             height: 100%;
+            transition: all 0.3s ease;
         }
 
         .rate-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             border-color: rgba(168, 85, 247, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
 
         .rate-card span {
@@ -350,26 +348,11 @@ include __DIR__ . '/config/db.php';
         /* Footer */
         footer {
             border-top: 1px solid var(--credix-border);
-            padding: 50px 20px;
+            padding: 40px 20px;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.85rem;
             background: var(--credix-card);
-        }
-    </style>
-
-    <!-- Include Animation Styles -->
-    <link rel="stylesheet" href="assets/css/animations.css">
-    <style>
-        .scroll-animate-init {
-            opacity: 0;
-            transform: translateY(35px) scale(0.98);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform;
-        }
-        .scroll-animate-active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
         }
     </style>
 </head>
@@ -410,7 +393,7 @@ include __DIR__ . '/config/db.php';
         <a href="booking.php" class="btn-book-now">Book Now</a>
     </nav>
 
-    <section class="hero-section scroll-animate-init">
+    <section class="hero-section">
         <div style="max-width: 1140px; margin: 0 auto;">
             <span class="open-badge"><i class="fa-solid fa-sparkles me-1"></i> Next-Gen Court Booking Platform</span>
             <h1 class="hero-title">Book a court.<br>Bring your game.</h1>
@@ -425,7 +408,7 @@ include __DIR__ . '/config/db.php';
     <div class="content-container">
         
         <!-- Dashboard Live Banner -->
-        <div class="scroll-animate-init" style="background: var(--credix-card); border: 1px solid var(--credix-border); border-radius: 28px; padding: 45px; margin-bottom: 70px; position: relative; overflow: hidden;">
+        <div style="background: var(--credix-card); border: 1px solid var(--credix-border); border-radius: 28px; padding: 40px; margin-bottom: 60px; position: relative; overflow: hidden;">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
                     <div class="section-subtitle-label">Instant Sync Engine</div>
@@ -439,7 +422,7 @@ include __DIR__ . '/config/db.php';
         </div>
 
         <!-- Three Steps Section -->
-        <div class="mb-5 scroll-animate-init">
+        <div class="mb-5">
             <div class="section-subtitle-label">Workflow</div>
             <h3 class="section-title mb-4">Three steps to play</h3>
             <div class="row g-4">
@@ -468,7 +451,7 @@ include __DIR__ . '/config/db.php';
         </div>
 
         <!-- Rates Section -->
-        <div class="mb-4 scroll-animate-init">
+        <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <div class="section-subtitle-label">Pricing Matrix</div>
@@ -504,8 +487,6 @@ include __DIR__ . '/config/db.php';
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Scroll Animations Script -->
-    <script src="assets/js/scroll-animations.js"></script>
 </body>
 
 </html>
