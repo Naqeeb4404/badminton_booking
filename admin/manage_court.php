@@ -1,6 +1,6 @@
 <?php
 session_start();
-include __DIR__ . '../config/db.php';
+include __DIR__ . '/../config/db.php';
 
 // Semak sama ada pengguna adalah admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
