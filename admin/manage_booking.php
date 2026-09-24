@@ -96,7 +96,14 @@ if (isset($_POST['booking_action'], $_POST['booking_id'])) {
     exit();
 }
 
-$result = $conn->query("
+// Handle Filter
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'All';
+$whereSql = "";
+if (in_array($filter, ['Pending', 'Approved', 'Rejected'], true)) {
+    $whereSql = " WHERE bookings.status = '" . $conn->real_escape_string($filter) . "'";
+}
+
+$query = "
     SELECT bookings.*, courts.court_name, courts.price,
            users.name AS user_name, users.email,
            payments.receipt AS payment_receipt,
@@ -106,8 +113,10 @@ $result = $conn->query("
     JOIN courts ON bookings.court_id = courts.id
     JOIN users ON bookings.user_id = users.id
     LEFT JOIN payments ON payments.booking_id = bookings.id
+    " . $whereSql . "
     ORDER BY (bookings.status = 'Pending') DESC, bookings.id DESC
-");
+";
+$result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="ms">
@@ -350,10 +359,17 @@ $result = $conn->query("
         </header>
 
         <div class="content-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <div>
                     <h2 class="fw-bold mb-1">Booking Management</h2>
                     <p class="text-muted mb-0">Review the payment receipt, then approve or reject the badminton court booking.</p>
+                </div>
+                <!-- FILTER BUTTONS -->
+                <div class="btn-group" role="group">
+                    <a href="manage_booking.php?filter=All" class="btn btn-sm <?= $filter === 'All' ? 'btn-dark' : 'btn-outline-secondary' ?>">All</a>
+                    <a href="manage_booking.php?filter=Pending" class="btn btn-sm <?= $filter === 'Pending' ? 'btn-warning text-dark' : 'btn-outline-secondary' ?>">Pending</a>
+                    <a href="manage_booking.php?filter=Approved" class="btn btn-sm <?= $filter === 'Approved' ? 'btn-success' : 'btn-outline-secondary' ?>">Approved</a>
+                    <a href="manage_booking.php?filter=Rejected" class="btn btn-sm <?= $filter === 'Rejected' ? 'btn-danger' : 'btn-outline-secondary' ?>">Rejected</a>
                 </div>
             </div>
 
@@ -379,52 +395,58 @@ $result = $conn->query("
                             </tr>
                         </thead>
                         <tbody>
-                        <?php while($r = $result->fetch_assoc()):
-                            $endTime = date('H:i', strtotime($r['booking_time']) + 3600);
-                        ?>
+                        <?php if ($result->num_rows > 0): ?>
+                            <?php while($r = $result->fetch_assoc()):
+                                $endTime = date('H:i', strtotime($r['booking_time']) + 3600);
+                            ?>
+                                <tr>
+                                    <td>#<?= (int)$r['id'] ?></td>
+                                    <td><?= htmlspecialchars($r['user_name']) ?><br><small class="text-muted"><?= htmlspecialchars($r['email']) ?></small></td>
+                                    <td><?= htmlspecialchars($r['court_name']) ?></td>
+                                    <td><?= htmlspecialchars($r['booking_date']) ?></td>
+                                    <td><?= htmlspecialchars(substr($r['booking_time'],0,5)) ?> - <?= $endTime ?></td>
+                                    <td>RM <?= number_format((float)$r['price'], 2) ?></td>
+                                    <td>
+                                        <?php if($r['payment_receipt']): ?>
+                                            <a target="_blank" href="../user/uploads/receipt/<?= rawurlencode($r['payment_receipt']) ?>">View Receipt</a>
+                                        <?php else: ?>
+                                            &mdash;
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if($r['payment_status']): ?>
+                                            <span class="badge <?= $r['payment_status']==='Approved'?'bg-success':($r['payment_status']==='Rejected'?'bg-danger':'bg-warning text-dark') ?>"><?= htmlspecialchars($r['payment_status']) ?></span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">No receipt</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge <?= $r['status']==='Approved'?'bg-success':($r['status']==='Rejected'?'bg-danger':'bg-warning text-dark') ?>"><?= htmlspecialchars($r['status']) ?></span>
+                                        <?php if($r['status']==='Rejected' && !empty($r['rejection_reason'])): ?>
+                                            <div class="small text-muted mt-1"><?= htmlspecialchars($r['rejection_reason']) ?></div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if($r['status']==='Pending'): ?>
+                                            <form method="post" class="d-flex flex-column gap-1">
+                                                <input type="hidden" name="booking_id" value="<?= (int)$r['id'] ?>">
+                                                <div class="d-flex gap-1">
+                                                    <button name="booking_action" value="Approved" class="btn btn-success btn-sm" <?= $r['payment_receipt'] ? '' : 'disabled title="Waiting for receipt"' ?>>Approve Booking</button>
+                                                    <button name="booking_action" value="Rejected" class="btn btn-danger btn-sm">Reject Booking</button>
+                                                </div>
+                                                <input type="text" name="reason" class="form-control form-control-sm reason-input" placeholder="Reason for rejection (optional)">
+                                            </form>
+                                        <?php else: ?>
+                                            &mdash;
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
                             <tr>
-                                <td>#<?= (int)$r['id'] ?></td>
-                                <td><?= htmlspecialchars($r['user_name']) ?><br><small class="text-muted"><?= htmlspecialchars($r['email']) ?></small></td>
-                                <td><?= htmlspecialchars($r['court_name']) ?></td>
-                                <td><?= htmlspecialchars($r['booking_date']) ?></td>
-                                <td><?= htmlspecialchars(substr($r['booking_time'],0,5)) ?> - <?= $endTime ?></td>
-                                <td>RM <?= number_format((float)$r['price'], 2) ?></td>
-                                <td>
-                                    <?php if($r['payment_receipt']): ?>
-                                        <a target="_blank" href="../user/uploads/receipt/<?= rawurlencode($r['payment_receipt']) ?>">View Receipt</a>
-                                    <?php else: ?>
-                                        &mdash;
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if($r['payment_status']): ?>
-                                        <span class="badge <?= $r['payment_status']==='Approved'?'bg-success':($r['payment_status']==='Rejected'?'bg-danger':'bg-warning text-dark') ?>"><?= htmlspecialchars($r['payment_status']) ?></span>
-                                    <?php else: ?>
-                                        <span class="badge bg-secondary">No receipt</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <span class="badge <?= $r['status']==='Approved'?'bg-success':($r['status']==='Rejected'?'bg-danger':'bg-warning text-dark') ?>"><?= htmlspecialchars($r['status']) ?></span>
-                                    <?php if($r['status']==='Rejected' && !empty($r['rejection_reason'])): ?>
-                                        <div class="small text-muted mt-1"><?= htmlspecialchars($r['rejection_reason']) ?></div>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if($r['status']==='Pending'): ?>
-                                        <form method="post" class="d-flex flex-column gap-1">
-                                            <input type="hidden" name="booking_id" value="<?= (int)$r['id'] ?>">
-                                            <div class="d-flex gap-1">
-                                                <button name="booking_action" value="Approved" class="btn btn-success btn-sm" <?= $r['payment_receipt'] ? '' : 'disabled title="Waiting for receipt"' ?>>Approve Booking</button>
-                                                <button name="booking_action" value="Rejected" class="btn btn-danger btn-sm">Reject Booking</button>
-                                            </div>
-                                            <input type="text" name="reason" class="form-control form-control-sm reason-input" placeholder="Reason for rejection (optional)">
-                                        </form>
-                                    <?php else: ?>
-                                        &mdash;
-                                    <?php endif; ?>
-                                </td>
+                                <td colspan="10" class="text-center text-muted py-4">No bookings found for this filter.</td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
