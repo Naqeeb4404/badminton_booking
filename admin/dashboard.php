@@ -1,6 +1,7 @@
 <?php
 session_start();
 include __DIR__ . '/../config/db.php';
+include __DIR__ . '/sidebar.php';
 
 // Periksa kebenaran akses Admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== "admin") {
