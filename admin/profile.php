@@ -113,7 +113,6 @@ function e($value) {
         padding: 30px;
     }
 
-    /* Main App Layout */
     .app-layout {
         display: grid;
         grid-template-columns: 260px 1fr;
@@ -122,14 +121,12 @@ function e($value) {
         margin: 0 auto;
     }
 
-    /* Content Area */
     .content-area {
         display: flex;
         flex-direction: column;
         gap: 25px;
     }
 
-    /* Top Navigation Bar */
     .top-nav {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -151,7 +148,6 @@ function e($value) {
         text-decoration: none;
     }
     
-    /* User Right Side Utilities */
     .nav-right {
         display: flex;
         align-items: center;
@@ -185,7 +181,6 @@ function e($value) {
         font-weight: 600;
     }
 
-    /* Banner & Profile Header Card */
     .profile-header-card {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -236,7 +231,6 @@ function e($value) {
         font-size: 0.85rem;
     }
 
-    /* Grid Sections */
     .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -259,7 +253,6 @@ function e($value) {
         gap: 8px;
     }
 
-    /* Form Elements */
     .field {
         margin-bottom: 15px;
     }
@@ -337,7 +330,6 @@ function e($value) {
     <?php include __DIR__ . '/sidebar.php'; ?>
 
     <div class="main-content">
-        <!-- Top Navigation Bar dengan Butang Logout yang Kemas di Atas -->
         <header class="top-nav">
             <div class="brand">
                 <i class="fa-solid fa-user-shield text-primary"></i> Admin Panel
@@ -366,7 +358,6 @@ function e($value) {
                     <div class="alert alert-danger"><?php echo e($error); ?></div>
                 <?php endif; ?>
 
-                <!-- Header Profile Card (Banner Style) -->
                 <div class="profile-header-card">
                     <div class="banner"></div>
                     <div class="profile-info-section">
@@ -380,7 +371,6 @@ function e($value) {
                     </div>
                 </div>
 
-                <!-- Edit Profile & Notification Settings -->
                 <div class="grid-2">
                     <div class="card">
                         <h3><i class="fa-solid fa-user-pen"></i> Edit Profile</h3>
@@ -402,7 +392,6 @@ function e($value) {
                                 <input type="file" name="profile_pic" accept="image/*" class="form-control" style="padding: 7px;">
                             </div>
                             
-                            <!-- Notification Settings -->
                             <div style="margin: 20px 0 10px 0; font-size: 0.85rem; font-weight: 700;"><i class="fa-solid fa-bell"></i> Notification Settings</div>
                             <div class="field" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
                                 <input type="checkbox" name="notifications" value="1" <?php echo (!empty($admin['sms_alerts']) && $admin['sms_alerts'] == 1) ? 'checked' : ''; ?>>
@@ -413,7 +402,6 @@ function e($value) {
                         </form>
                     </div>
 
-                    <!-- Change Password & Activity History -->
                     <div style="display: flex; flex-direction: column; gap: 25px;">
                         <div class="card">
                             <h3><i class="fa-solid fa-key"></i> Change Password</h3>
@@ -452,7 +440,6 @@ function e($value) {
                     </div>
                 </div>
 
-                <!-- Bottom Back Button -->
                 <a href="dashboard.php" class="btn" style="text-align: center; background: #e5e7eb; color: var(--text-main); display: block;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
 
             </div>
