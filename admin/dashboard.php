@@ -10,23 +10,39 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== "admin") {
 
 $user = $_SESSION['user'];
 $searchTerm = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+
+// Filter Tambahan (Tarikh / Status)
+$filterDate = isset($_GET['filter_date']) ? $_GET['filter_date'] : '';
+$filterStatus = isset($_GET['filter_status']) ? $_GET['filter_status'] : '';
 ?>
 <?php
 $today = date('Y-m-d');
+$currentMonth = date('Y-m');
+
+// 1. Court Ditempah Hari Ini
 $todayStmt = $conn->prepare("SELECT COUNT(*) AS total FROM bookings WHERE booking_date=? AND status IN ('Pending','Approved')");
 $todayStmt->bind_param("s", $today);
 $todayStmt->execute();
 $todayBookings = (int)$todayStmt->get_result()->fetch_assoc()['total'];
 $todayStmt->close();
 
+// 2. Court Available
 $courtRow = $conn->query("SELECT COUNT(*) AS total FROM courts WHERE status='Available'")->fetch_assoc();
 $availableCourts = (int)$courtRow['total'];
 
+// 3. Jumlah Jualan Hari Ini
 $salesStmt = $conn->prepare("SELECT COALESCE(SUM(p.amount),0) AS total FROM payments p JOIN bookings b ON p.booking_id=b.id WHERE b.booking_date=? AND b.status='Approved' AND p.status='Approved'");
 $salesStmt->bind_param("s", $today);
 $salesStmt->execute();
 $todaySales = (float)$salesStmt->get_result()->fetch_assoc()['total'];
 $salesStmt->close();
+
+// 4. Jumlah Duit Bulanan (Bulan Semasa)
+$monthlySalesStmt = $conn->prepare("SELECT COALESCE(SUM(p.amount),0) AS total FROM payments p JOIN bookings b ON p.booking_id=b.id WHERE DATE_FORMAT(b.booking_date, '%Y-%m') = ? AND b.status='Approved' AND p.status='Approved'");
+$monthlySalesStmt->bind_param("s", $currentMonth);
+$monthlySalesStmt->execute();
+$monthlySales = (float)$monthlySalesStmt->get_result()->fetch_assoc()['total'];
+$monthlySalesStmt->close();
 
 $userRow = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role='user'")->fetch_assoc();
 $totalUsers = (int)$userRow['total'];
@@ -185,7 +201,7 @@ $pendingBookings = (int)$pendingRow['total'];
 
         .search-form {
             position: relative;
-            width: 350px;
+            width: 300px;
         }
 
         .search-input {
@@ -327,6 +343,7 @@ $pendingBookings = (int)$pendingRow['total'];
         .icon-yellow { background: rgba(234, 179, 8, 0.1); color: #ca8a04; }
         .icon-purple { background: rgba(147, 51, 234, 0.1); color: #9333ea; }
         .icon-pink { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+        .icon-teal { background: rgba(13, 148, 136, 0.1); color: #0d9488; }
 
         .btn-card {
             width: 100%;
@@ -351,6 +368,8 @@ $pendingBookings = (int)$pendingRow['total'];
         .btn-purple:hover { background: #7e22ce; color: #fff; }
         .btn-pink { background: #ec4899; }
         .btn-pink:hover { background: #db2777; color: #fff; }
+        .btn-teal { background: #0d9488; }
+        .btn-teal:hover { background: #0f766e; color: #fff; }
 
         @media (max-width: 768px) {
             .sidebar { width: 70px; }
@@ -396,7 +415,30 @@ $pendingBookings = (int)$pendingRow['total'];
             <!-- Welcome Banner -->
             <div class="welcome-card">
                 <h2 class="fw-bold mb-1">Selamat Datang Admin, <?php echo htmlspecialchars($user['name']); ?> 👋</h2>
-                <p class="text-white-50 mb-0 fs-7">Statistik Jualan Harian & Status Tempahan Badminton Court</p>
+                <p class="text-white-50 mb-0 fs-7">Statistik Jualan Harian, Bulanan & Status Tempahan Badminton Court</p>
+            </div>
+
+            <!-- FILTER PAGE SECTION -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 p-3 bg-white">
+                <form action="" method="GET" class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label class="form-label fs-7 fw-bold text-muted mb-1"><i class="fa-solid fa-filter me-1"></i> Tapis Mengikut Tarikh</label>
+                        <input type="date" name="filter_date" class="form-control form-control-sm rounded-pill px-3" value="<?= $filterDate ?>">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fs-7 fw-bold text-muted mb-1"><i class="fa-solid fa-tag me-1"></i> Tapis Status Tempahan</label>
+                        <select name="filter_status" class="form-select form-select-sm rounded-pill px-3">
+                            <option value="">-- Semua Status --</option>
+                            <option value="Pending" <?= $filterStatus == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                            <option value="Approved" <?= $filterStatus == 'Approved' ? 'selected' : '' ?>>Approved</option>
+                            <option value="Cancelled" <?= $filterStatus == 'Cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2 pt-2">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold w-100"><i class="fa-solid fa-magnifying-glass me-1"></i> Tapis Data</button>
+                        <a href="dashboard.php" class="btn btn-light btn-sm rounded-pill px-3 fw-bold text-muted"><i class="fa-solid fa-rotate-right"></i></a>
+                    </div>
+                </form>
             </div>
 
             <!-- KAD STATISTIK -->
@@ -422,15 +464,16 @@ $pendingBookings = (int)$pendingRow['total'];
                         <div class="stat-icon icon-yellow"><i class="fa-solid fa-money-bill-wave"></i></div>
                         <span class="text-muted fs-7">Jumlah Jualan Hari Ini</span>
                         <h3 class="fw-bold mt-1 mb-0">RM <?= number_format($todaySales, 2) ?></h3>
-                        <small class="text-muted">Booking yang diluluskan hari ini</small>
+                        <small class="text-muted">Booking diluluskan hari ini</small>
                     </div>
                 </div>
+                <!-- TAMBAHAN: TOTAL DUIT BULANAN -->
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="stat-card">
-                        <div class="stat-icon icon-purple"><i class="fa-solid fa-users"></i></div>
-                        <span class="text-muted fs-7">Jumlah Pengguna Aktif</span>
-                        <h3 class="fw-bold mt-1 mb-0"><?= $totalUsers ?> Ahli</h3>
-                        <small class="text-muted"><?= $pendingBookings ?> Booking Pending</small>
+                        <div class="stat-icon icon-teal"><i class="fa-solid fa-wallet"></i></div>
+                        <span class="text-muted fs-7">Total Duit Bulanan (<?= date('M Y') ?>)</span>
+                        <h3 class="fw-bold mt-1 mb-0">RM <?= number_format($monthlySales, 2) ?></h3>
+                        <small class="text-muted">Kutipan bulan semasa</small>
                     </div>
                 </div>
             </div>
@@ -493,10 +536,10 @@ $pendingBookings = (int)$pendingRow['total'];
                 </div>
             </div>
 
-            <!-- BAHAGIAN MODUL TAMBAHAN (USERS, MESSAGE, PAGES) -->
+            <!-- BAHAGIAN MODUL TAMBAHAN (USERS, MESSAGE, PAGES & REPORT HARIAN) -->
             <h5 class="fw-bold mb-3 mt-4"><i class="fa-solid fa-layer-group text-info me-2"></i> Modul & Alat Sokongan</h5>
             <div class="row g-4">
-                <div class="col-6 col-lg-4">
+                <div class="col-6 col-lg-3">
                     <div class="action-card">
                         <div>
                             <div class="action-icon icon-purple mx-auto"><i class="fa-solid fa-users-gear"></i></div>
@@ -507,7 +550,19 @@ $pendingBookings = (int)$pendingRow['total'];
                     </div>
                 </div>
 
-                <div class="col-6 col-lg-4">
+                <!-- TAMBAHAN: REPORT HARIAN -->
+                <div class="col-6 col-lg-3">
+                    <div class="action-card">
+                        <div>
+                            <div class="action-icon icon-teal mx-auto"><i class="fa-solid fa-chart-bar"></i></div>
+                            <h5 class="fw-bold fs-6">Report Harian</h5>
+                            <p class="text-muted fs-7">Papar laporan harian aktiviti dan transaksi sistem.</p>
+                        </div>
+                        <a href="daily_report.php" class="btn-card btn-teal">Buka Report ➔</a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
                     <div class="action-card">
                         <div>
                             <div class="action-icon icon-pink mx-auto"><i class="fa-solid fa-comments"></i></div>
@@ -518,7 +573,7 @@ $pendingBookings = (int)$pendingRow['total'];
                     </div>
                 </div>
 
-                <div class="col-6 col-lg-4">
+                <div class="col-6 col-lg-3">
                     <div class="action-card">
                         <div>
                             <div class="action-icon icon-green mx-auto"><i class="fa-solid fa-folder-open"></i></div>
