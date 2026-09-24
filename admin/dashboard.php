@@ -385,8 +385,77 @@ $pendingBookings = (int)$pendingRow['total'];
 
 <body>
 
-    <!-- SIDEBAR -->
-    <?php include __DIR__ . '/sidebar.php'; ?>
+    <!-- SIDEBAR (TERMASUK KEMASKINI MENU BARU) -->
+    <aside class="sidebar">
+        <a href="dashboard.php" class="sidebar-brand">
+            <i class="fa-solid fa-table-tennis-paddle-ball text-lime" style="color: var(--accent-lime);"></i>
+            <span>Badminton Panji</span>
+        </a>
+        <div class="sidebar-menu">
+            <div class="menu-label">Utama</div>
+            <a href="dashboard.php" class="sidebar-nav-link active">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </div>
+            </a>
+            
+            <div class="menu-label mt-3">Pengurusan</div>
+            <a href="manage_court.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+                    <span>Manage Court</span>
+                </div>
+            </a>
+            <a href="manage_booking.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Manage Booking</span>
+                </div>
+            </a>
+            <a href="manage_payment.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Manage Payment</span>
+                </div>
+            </a>
+            <a href="manage_users.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Manage Users</span>
+                </div>
+            </a>
+
+            <!-- TAMBAHAN BARU DI SIDEBAR -->
+            <div class="menu-label mt-3">Laporan & Tapis</div>
+            <a href="dashboard.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-filter"></i>
+                    <span>Filter Page</span>
+                </div>
+            </a>
+            <a href="daily_report.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <span>Report Harian</span>
+                </div>
+            </a>
+
+            <div class="menu-label mt-3">Sokongan</div>
+            <a href="message.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Mesej & Pertanyaan</span>
+                </div>
+            </a>
+            <a href="../index.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <span>Pengurusan Halaman</span>
+                </div>
+            </a>
+        </div>
+    </aside>
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">
@@ -467,7 +536,7 @@ $pendingBookings = (int)$pendingRow['total'];
                         <small class="text-muted">Booking diluluskan hari ini</small>
                     </div>
                 </div>
-                <!-- TAMBAHAN: TOTAL DUIT BULANAN -->
+                <!-- TOTAL DUIT BULANAN -->
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="stat-card">
                         <div class="stat-icon icon-teal"><i class="fa-solid fa-wallet"></i></div>
@@ -536,7 +605,7 @@ $pendingBookings = (int)$pendingRow['total'];
                 </div>
             </div>
 
-            <!-- BAHAGIAN MODUL TAMBAHAN (USERS, MESSAGE, PAGES & REPORT HARIAN) -->
+            <!-- BAHAGIAN MODUL TAMBAHAN -->
             <h5 class="fw-bold mb-3 mt-4"><i class="fa-solid fa-layer-group text-info me-2"></i> Modul & Alat Sokongan</h5>
             <div class="row g-4">
                 <div class="col-6 col-lg-3">
@@ -550,7 +619,6 @@ $pendingBookings = (int)$pendingRow['total'];
                     </div>
                 </div>
 
-                <!-- TAMBAHAN: REPORT HARIAN -->
                 <div class="col-6 col-lg-3">
                     <div class="action-card">
                         <div>
