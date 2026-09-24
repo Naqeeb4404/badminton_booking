@@ -16,7 +16,7 @@ $time = $_POST['time'] ?? '';
 $court_id = (int)($_POST['court_id'] ?? 0);
 
 if(!$date || !$time || !$court_id || $date < date('Y-m-d')){
-    header("Location: dashboard.php?error=".urlencode('Maklumat booking tidak lengkap.'));
+    header("Location: ../booking.php?error=".urlencode('Maklumat booking tidak lengkap.'));
     exit();
 }
 
@@ -35,7 +35,7 @@ try {
 
     if(!$court || $court['status'] !== 'Available'){
         $conn->rollback();
-        header("Location: dashboard.php?error=".urlencode('Gelanggang ini tidak tersedia.'));
+        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Gelanggang ini tidak tersedia.'));
         exit();
     }
 
@@ -49,7 +49,7 @@ try {
 
     if($exists){
         $conn->rollback();
-        header("Location: dashboard.php?error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
+        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
         exit();
     }
 
@@ -71,9 +71,9 @@ try {
     // a second request for the exact same court/date/time slipped past the row
     // lock above and hit the database's own uniqueness guarantee instead.
     if($e->getCode() === 1062){
-        header("Location: dashboard.php?error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
+        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
     }else{
-        header("Location: dashboard.php?error=".urlencode('Booking gagal. Sila cuba lagi.'));
+        header("Location: ../booking.php?error=".urlencode('Booking gagal. Sila cuba lagi.'));
     }
     exit();
 }
