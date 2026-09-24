@@ -96,13 +96,26 @@ if (isset($_POST['booking_action'], $_POST['booking_id'])) {
     exit();
 }
 
-// Handle Filter
+// Handle Filter & Pagination
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'All';
 $whereSql = "";
 if (in_array($filter, ['Pending', 'Approved', 'Rejected'], true)) {
     $whereSql = " WHERE bookings.status = '" . $conn->real_escape_string($filter) . "'";
 }
 
+$limit = 10; // Rekod setiap halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+$offset = ($page - 1) * $limit;
+
+// Dapatkan jumlah keseluruhan rekod untuk pagination
+$totalQuery = "SELECT COUNT(*) AS total FROM bookings JOIN courts ON bookings.court_id = courts.id JOIN users ON bookings.user_id = users.id LEFT JOIN payments ON payments.booking_id = bookings.id" . $whereSql;
+$totalResult = $conn->query($totalQuery);
+$totalRow = $totalResult->fetch_assoc();
+$totalRecords = $totalRow['total'];
+$totalPages = ceil($totalRecords / $limit);
+
+// Query utama dengan LIMIT dan OFFSET
 $query = "
     SELECT bookings.*, courts.court_name, courts.price,
            users.name AS user_name, users.email,
@@ -115,6 +128,7 @@ $query = "
     LEFT JOIN payments ON payments.booking_id = bookings.id
     " . $whereSql . "
     ORDER BY (bookings.status = 'Pending') DESC, bookings.id DESC
+    LIMIT $limit OFFSET $offset
 ";
 $result = $conn->query($query);
 ?>
@@ -453,6 +467,42 @@ $result = $conn->query($query);
                         </tbody>
                     </table>
                 </div>
+
+                <!-- COMPACT PAGINATION (MENDAFTAR / KETEPI) -->
+                <?php if ($totalPages > 1): ?>
+                    <nav class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top flex-wrap gap-2">
+                        <div class="text-muted small">
+                            Showing page <?= $page ?> of <?= $totalPages ?> (Total: <?= $totalRecords ?> bookings)
+                        </div>
+                        <ul class="pagination pagination-sm mb-0">
+                            <!-- Previous Button -->
+                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                <a class="page-link" href="manage_booking.php?filter=<?= $filter ?>&page=<?= $page - 1 ?>">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                <?php if ($i == 1 || $i == $totalPages || abs($i - $page) <= 1): ?>
+                                    <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
+                                        <a class="page-link" href="manage_booking.php?filter=<?= $filter ?>&page=<?= $i ?>"><?= $i ?></a>
+                                    </li>
+                                <?php elseif ($i == 2 || $i == $totalPages - 1): ?>
+                                    <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+
+                            <!-- Next Button -->
+                            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                                <a class="page-link" href="manage_booking.php?filter=<?= $filter ?>&page=<?= $page + 1 ?>">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
+
             </div>
         </div>
     </div>
