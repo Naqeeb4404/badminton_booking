@@ -22,9 +22,16 @@ if (isset($_POST['update_profile'])) {
     $notif = isset($_POST['notifications']) ? 1 : 0;
 
     if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
+        $upload_dir = "../uploads/";
+        
+        // Cipta folder uploads secara automatik jika belum wujud
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+
         $ext = pathinfo($_FILES['profile_pic']['name'], PATHINFO_EXTENSION);
         $filename = "admin_" . $admin_id . "_" . time() . "." . $ext;
-        $target = "../uploads/" . $filename;
+        $target = $upload_dir . $filename;
         
         if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target)) {
             mysqli_query($conn, "UPDATE users SET profile_pic = '$filename' WHERE id = '$admin_id'");
