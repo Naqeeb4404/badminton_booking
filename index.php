@@ -484,7 +484,7 @@ include __DIR__ . '/config/db.php';
         </div>
         <div class="footer-bottom">
             <div>&copy; Sports Center • Badminton court booking</div>
-            <div>Powered by aestivo.ai</div>
+            <div>Badminton Court Booking System</div>
         </div>
     </footer>
 
