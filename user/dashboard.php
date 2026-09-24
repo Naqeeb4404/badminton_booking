@@ -9,14 +9,6 @@ if(!isset($_SESSION['user'])){
 
 $user_id = $_SESSION['user']['id'];
 
-if(isset($_POST['court'])) {
-    $court_id = $_POST['court'] ?? '';
-    $booking_date = $_POST['date'] ?? '';
-    $booking_time = $_POST['time'] ?? '';
-
-    header("Location: ../booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -384,7 +376,7 @@ if(isset($_POST['court'])) {
 
     <div class="wrap">
         <div class="panel">
-            <form method="POST">
+            <form method="POST" action="create_booking.php">
                 <!-- Langkah 1: Pilih Tarikh -->
                 <div class="step">1. Choose a date</div>
                 <div class="dates mb-4">
