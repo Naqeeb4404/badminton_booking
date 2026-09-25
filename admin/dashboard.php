@@ -10,8 +10,8 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== "admin") {
 
 $user = $_SESSION['user'];
 $searchTerm = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
-
-// Pengiraan Statistik Pangkalan Data
+?>
+<?php
 $today = date('Y-m-d');
 $todayStmt = $conn->prepare("SELECT COUNT(*) AS total FROM bookings WHERE booking_date=? AND status IN ('Pending','Approved')");
 $todayStmt->bind_param("s", $today);
@@ -45,13 +45,10 @@ $pendingBookings = (int)$pendingRow['total'];
     <!-- Bootstrap 5 CSS & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="stylesheet" href="sidebar.css">
 
     <style>
         :root {
@@ -88,6 +85,81 @@ $pendingBookings = (int)$pendingRow['total'];
             background: #94a3b8;
         }
 
+        /* SIDEBAR STYLING */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: all 0.3s ease;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-brand {
+            padding: 25px 20px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            padding: 20px 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8a99ad;
+            margin-bottom: 10px;
+            padding-left: 10px;
+            font-weight: 700;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav-link-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-nav-link:hover, .sidebar-nav-link.active {
+            background-color: var(--sidebar-hover);
+            color: #fff;
+        }
+
+        .sidebar-nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
         /* MAIN CONTENT AREA */
         .main-content {
             margin-left: 280px;
@@ -95,7 +167,6 @@ $pendingBookings = (int)$pendingRow['total'];
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            transition: all 0.3s ease;
         }
 
         /* TOPBAR STYLING */
@@ -282,12 +353,15 @@ $pendingBookings = (int)$pendingRow['total'];
         .btn-pink:hover { background: #db2777; color: #fff; }
 
         @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .sidebar-brand span, .sidebar .menu-label, .sidebar .sidebar-nav-link span, .sidebar .badge { display: none; }
             .main-content { margin-left: 70px; }
             .topbar { padding: 0 20px; }
             .search-form { display: none; }
             .content-body { padding: 20px; }
         }
     </style>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 
 <body>
@@ -419,7 +493,7 @@ $pendingBookings = (int)$pendingRow['total'];
                 </div>
             </div>
 
-            <!-- BAHAGIAN MODUL TAMBAHAN -->
+            <!-- BAHAGIAN MODUL TAMBAHAN (USERS, MESSAGE, PAGES) -->
             <h5 class="fw-bold mb-3 mt-4"><i class="fa-solid fa-layer-group text-info me-2"></i> Modul & Alat Sokongan</h5>
             <div class="row g-4">
                 <div class="col-6 col-lg-4">
@@ -499,9 +573,7 @@ $pendingBookings = (int)$pendingRow['total'];
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: {
-                    maintainAspectRatio: false
-                },
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'bottom' } }
             }
         });
