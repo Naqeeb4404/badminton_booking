@@ -1,4 +1,4 @@
-```php
+
 <?php
 
 session_start();
@@ -1099,4 +1099,3 @@ if (isset($_POST['court'])) {
 </body>
 
 </html>
-```
