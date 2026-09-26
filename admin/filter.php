@@ -78,20 +78,63 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Filter Booking | Admin</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         body {
             background: #f5f6fa;
             font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar Styling Support */
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: #fff;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav-link:hover, .sidebar-nav-link.active {
+            background: rgba(37, 99, 235, 0.2);
+            color: #38bdf8;
+        }
+
+        .sidebar-nav-link-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Main Content Layout Wrapper */
+        .main-content {
+            margin-left: 260px;
+            flex-grow: 1;
+            padding: 20px;
+            min-height: 100vh;
         }
 
         .container-box {
             max-width: 1400px;
-            margin: 40px auto;
+            margin: 20px auto;
             padding: 20px;
         }
 
@@ -132,270 +175,163 @@ $result = mysqli_query($conn, $sql);
 
 <body>
 
-<div class="container-box">
+<!-- INCLUDE SIDEBAR -->
+<?php include 'sidebar.php'; ?>
 
-    <!-- TITLE -->
-    <div class="mb-4">
-        <h2 class="page-title">Filter Booking</h2>
-        <p class="text-muted">
-            Search and filter badminton court bookings.
-        </p>
-    </div>
+<!-- MAIN CONTENT CONTAINER -->
+<div class="main-content">
+    <div class="container-box">
 
-    <!-- FILTER -->
-    <div class="card filter-card">
-
-        <form method="GET">
-
-            <div class="row g-3">
-
-                <!-- DATE -->
-                <div class="col-md-3">
-                    <label class="form-label">Booking Date</label>
-                    <input
-                        type="date"
-                        name="date"
-                        class="form-control"
-                        value="<?= htmlspecialchars($date) ?>"
-                    >
-                </div>
-
-                <!-- MONTH -->
-                <div class="col-md-3">
-                    <label class="form-label">Month</label>
-                    <input
-                        type="month"
-                        name="month"
-                        class="form-control"
-                        value="<?= htmlspecialchars($month) ?>"
-                    >
-                </div>
-
-                <!-- COURT -->
-                <div class="col-md-3">
-                    <label class="form-label">Court</label>
-
-                    <select name="court_id" class="form-select">
-                        <option value="">All Courts</option>
-
-                        <?php while ($court = mysqli_fetch_assoc($courts)): ?>
-
-                            <option
-                                value="<?= $court['id'] ?>"
-                                <?= ($court_id == $court['id']) ? 'selected' : '' ?>
-                            >
-                                <?= htmlspecialchars($court['court_name']) ?>
-                            </option>
-
-                        <?php endwhile; ?>
-
-                    </select>
-                </div>
-
-                <!-- STATUS -->
-                <div class="col-md-3">
-                    <label class="form-label">Booking Status</label>
-
-                    <select name="status" class="form-select">
-
-                        <option value="">All Status</option>
-
-                        <option value="Pending"
-                            <?= ($status == 'Pending') ? 'selected' : '' ?>>
-                            Pending
-                        </option>
-
-                        <option value="Approved"
-                            <?= ($status == 'Approved') ? 'selected' : '' ?>>
-                            Approved
-                        </option>
-
-                        <option value="Rejected"
-                            <?= ($status == 'Rejected') ? 'selected' : '' ?>>
-                            Rejected
-                        </option>
-
-                    </select>
-                </div>
-
-                <!-- CUSTOMER -->
-                <div class="col-md-6">
-
-                    <label class="form-label">Customer Name</label>
-
-                    <input
-                        type="text"
-                        name="customer"
-                        class="form-control"
-                        placeholder="Search customer..."
-                        value="<?= htmlspecialchars($customer) ?>"
-                    >
-
-                </div>
-
-                <!-- BUTTON -->
-                <div class="col-md-6 d-flex align-items-end gap-2">
-
-                    <button
-                        type="submit"
-                        class="btn btn-dark btn-filter"
-                    >
-                        Filter
-                    </button>
-
-                    <a
-                        href="filter.php"
-                        class="btn btn-outline-secondary btn-filter"
-                    >
-                        Reset
-                    </a>
-
-                </div>
-
-            </div>
-
-        </form>
-
-    </div>
-
-    <!-- RESULT -->
-    <div class="card table-card">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-                <h5 class="mb-1">Booking Results</h5>
-                <small class="text-muted">
-                    Showing filtered booking records
-                </small>
-            </div>
-
+        <!-- TITLE -->
+        <div class="mb-4">
+            <h2 class="page-title">Filter Booking</h2>
+            <p class="text-muted">
+                Search and filter badminton court bookings.
+            </p>
         </div>
 
-        <div class="table-responsive">
+        <!-- FILTER -->
+        <div class="card filter-card">
+            <form method="GET">
+                <div class="row g-3">
 
-            <table class="table table-hover">
+                    <!-- DATE -->
+                    <div class="col-md-3">
+                        <label class="form-label">Booking Date</label>
+                        <input
+                            type="date"
+                            name="date"
+                            class="form-control"
+                            value="<?= htmlspecialchars($date) ?>"
+                        >
+                    </div>
 
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Customer</th>
-                        <th>Email</th>
-                        <th>Court</th>
-                        <th>Duration</th>
-                        <th>Booking Status</th>
-                        <th>Amount</th>
-                        <th>Payment</th>
-                    </tr>
-                </thead>
+                    <!-- MONTH -->
+                    <div class="col-md-3">
+                        <label class="form-label">Month</label>
+                        <input
+                            type="month"
+                            name="month"
+                            class="form-control"
+                            value="<?= htmlspecialchars($month) ?>"
+                        >
+                    </div>
 
-                <tbody>
+                    <!-- COURT -->
+                    <div class="col-md-3">
+                        <label class="form-label">Court</label>
+                        <select name="court_id" class="form-select">
+                            <option value="">All Courts</option>
+                            <?php while ($court = mysqli_fetch_assoc($courts)): ?>
+                                <option
+                                    value="<?= $court['id'] ?>"
+                                    <?= ($court_id == $court['id']) ? 'selected' : '' ?>
+                                >
+                                    <?= htmlspecialchars($court['court_name']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
 
-                <?php if ($result && mysqli_num_rows($result) > 0): ?>
+                    <!-- STATUS -->
+                    <div class="col-md-3">
+                        <label class="form-label">Booking Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="Pending" <?= ($status == 'Pending') ? 'selected' : '' ?>>Pending</option>
+                            <option value="Approved" <?= ($status == 'Approved') ? 'selected' : '' ?>>Approved</option>
+                            <option value="Rejected" <?= ($status == 'Rejected') ? 'selected' : '' ?>>Rejected</option>
+                        </select>
+                    </div>
 
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <!-- CUSTOMER -->
+                    <div class="col-md-6">
+                        <label class="form-label">Customer Name</label>
+                        <input
+                            type="text"
+                            name="customer"
+                            class="form-control"
+                            placeholder="Search customer..."
+                            value="<?= htmlspecialchars($customer) ?>"
+                        >
+                    </div>
 
+                    <!-- BUTTON -->
+                    <div class="col-md-6 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-dark btn-filter">Filter</button>
+                        <a href="filter.php" class="btn btn-outline-secondary btn-filter">Reset</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <!-- RESULT -->
+        <div class="card table-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="mb-1">Booking Results</h5>
+                    <small class="text-muted">Showing filtered booking records</small>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
                         <tr>
-
-                            <td>
-                                <?= htmlspecialchars($row['booking_date']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['booking_time']) ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['customer_name'] ?? '-') ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['email'] ?? '-') ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['court_name'] ?? '-') ?>
-                            </td>
-
-                            <td>
-                                <?= htmlspecialchars($row['duration']) ?> hour
-                            </td>
-
-                            <td>
-
-                                <?php if ($row['status'] === 'Approved'): ?>
-
-                                    <span class="badge bg-success">
-                                        Approved
-                                    </span>
-
-                                <?php elseif ($row['status'] === 'Rejected'): ?>
-
-                                    <span class="badge bg-danger">
-                                        Rejected
-                                    </span>
-
-                                <?php else: ?>
-
-                                    <span class="badge bg-warning text-dark">
-                                        Pending
-                                    </span>
-
-                                <?php endif; ?>
-
-                            </td>
-
-                            <td>
-                                RM <?= number_format((float)($row['amount'] ?? 0), 2) ?>
-                            </td>
-
-                            <td>
-
-                                <?php if (($row['payment_status'] ?? '') === 'Approved'): ?>
-
-                                    <span class="badge bg-success">
-                                        Paid
-                                    </span>
-
-                                <?php elseif (($row['payment_status'] ?? '') === 'Rejected'): ?>
-
-                                    <span class="badge bg-danger">
-                                        Rejected
-                                    </span>
-
-                                <?php else: ?>
-
-                                    <span class="badge bg-secondary">
-                                        Pending
-                                    </span>
-
-                                <?php endif; ?>
-
-                            </td>
-
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Customer</th>
+                            <th>Email</th>
+                            <th>Court</th>
+                            <th>Duration</th>
+                            <th>Booking Status</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
                         </tr>
-
-                    <?php endwhile; ?>
-
-                <?php else: ?>
-
-                    <tr>
-                        <td colspan="9" class="text-center py-4 text-muted">
-                            No booking found.
-                        </td>
-                    </tr>
-
-                <?php endif; ?>
-
-                </tbody>
-
-            </table>
-
+                    </thead>
+                    <tbody>
+                    <?php if ($result && mysqli_num_rows($result) > 0): ?>
+                        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['booking_date']) ?></td>
+                                <td><?= htmlspecialchars($row['booking_time']) ?></td>
+                                <td><?= htmlspecialchars($row['customer_name'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['email'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['court_name'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($row['duration']) ?> hour</td>
+                                <td>
+                                    <?php if ($row['status'] === 'Approved'): ?>
+                                        <span class="badge bg-success">Approved</span>
+                                    <?php elseif ($row['status'] === 'Rejected'): ?>
+                                        <span class="badge bg-danger">Rejected</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>RM <?= number_format((float)($row['amount'] ?? 0), 2) ?></td>
+                                <td>
+                                    <?php if (($row['payment_status'] ?? '') === 'Approved'): ?>
+                                        <span class="badge bg-success">Paid</span>
+                                    <?php elseif (($row['payment_status'] ?? '') === 'Rejected'): ?>
+                                        <span class="badge bg-danger">Rejected</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Pending</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">No booking found.</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
-
 </div>
 
 </body>

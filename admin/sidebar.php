@@ -10,6 +10,7 @@ $admin_sidebar_items = [
     ['file' => 'calendar.php',         'icon' => 'fa-calendar-days',          'label' => 'Calendar'],
     ['file' => 'profile.php',          'icon' => 'fa-user-gear',              'label' => 'Profile'],
     ['file' => 'manage_booking.php',  'icon' => 'fa-book',                    'label' => 'Bookings'],
+    ['file' => 'filter.php',           'icon' => 'fa-filter',                 'label' => 'Filter Bookings'],
     ['file' => 'manage_court.php',    'icon' => 'fa-table-tennis-paddle-ball', 'label' => 'Courts'],
     ['file' => 'manage_users.php',    'icon' => 'fa-users',                  'label' => 'Users'],
 ];
