@@ -1,1336 +1,1357 @@
-
 <?php
 session_start();
+
 include __DIR__ . '/../config/db.php';
 
-// Semak sama ada pengguna adalah admin
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
-    header("Location: ../auth/login.php");
+if (
+    !isset($_SESSION['user']) ||
+    $_SESSION['user']['role'] !== 'admin'
+) {
+    header('Location: ../auth/login.php');
     exit();
 }
 
-$user = $_SESSION['user'];
-
-/*
-|--------------------------------------------------------------------------
-| STATUS YANG DIBENARKAN
-|--------------------------------------------------------------------------
-*/
-$allowed_statuses = ['Available', 'Unavailable', 'Disabled', 'Deleted'];
-
-/*
-|--------------------------------------------------------------------------
-| KIRA JUMLAH MESEJ
-|--------------------------------------------------------------------------
-*/
-$msg_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM messages");
-$msg_row = mysqli_fetch_assoc($msg_query);
-$total_messages = $msg_row['total'];
-mysqli_free_result($msg_query);
-
-
-/*
-|--------------------------------------------------------------------------
-| 1. TAMBAH GELANGGANG
-|--------------------------------------------------------------------------
-*/
-if (isset($_POST['add'])) {
-
-    $court_name = trim($_POST['court_name'] ?? '');
-    $status = $_POST['status'] ?? 'Available';
-    $price = (float)($_POST['price'] ?? 0);
-
-    // Pastikan status sah
-    if (!in_array($status, $allowed_statuses, true)) {
-        $status = 'Available';
-    }
-
-    if ($court_name !== '') {
-
-        $stmt = $conn->prepare("
-            INSERT INTO courts (court_name, status, price)
-            VALUES (?, ?, ?)
-        ");
-
-        $stmt->bind_param(
-            "ssd",
-            $court_name,
-            $status,
-            $price
-        );
-
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    header("Location: manage_court.php");
-    exit();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| 2. KEMASKINI GELANGGANG
-|--------------------------------------------------------------------------
-*/
-if (isset($_POST['edit'])) {
-
-    $id = (int)($_POST['id'] ?? 0);
-    $court_name = trim($_POST['court_name'] ?? '');
-    $price = (float)($_POST['price'] ?? 0);
-
-    if ($id && $court_name !== '') {
-
-        $stmt = $conn->prepare("
-            UPDATE courts
-            SET court_name = ?, price = ?
-            WHERE id = ?
-        ");
-
-        $stmt->bind_param(
-            "sdi",
-            $court_name,
-            $price,
-            $id
-        );
-
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    header("Location: manage_court.php");
-    exit();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| 3. DELETE GELANGGANG
-|--------------------------------------------------------------------------
-| Kita guna SOFT DELETE.
-| Row tidak dibuang daripada database.
-| Status akan menjadi Deleted.
-|--------------------------------------------------------------------------
-*/
-if (isset($_GET['delete'])) {
-
-    $id = (int)$_GET['delete'];
-
-    if ($id > 0) {
-
-        $stmt = $conn->prepare("
-            UPDATE courts
-            SET status = 'Deleted'
-            WHERE id = ?
-        ");
-
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    header("Location: manage_court.php");
-    exit();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| 4. TUKAR STATUS
-|--------------------------------------------------------------------------
-*/
-if (isset($_GET['status']) && isset($_GET['id'])) {
-
-    $id = (int)$_GET['id'];
-    $status = $_GET['status'];
-
-    // Hanya benarkan status yang ada dalam database
-    if (!in_array($status, $allowed_statuses, true)) {
-        $status = 'Available';
-    }
-
-    if ($id > 0) {
-
-        $stmt = $conn->prepare("
-            UPDATE courts
-            SET status = ?
-            WHERE id = ?
-        ");
-
-        $stmt->bind_param(
-            "si",
-            $status,
-            $id
-        );
-
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    header("Location: manage_court.php");
-    exit();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| 5. AMBIL DATA COURT UNTUK EDIT
-|--------------------------------------------------------------------------
-*/
-$editCourt = null;
-
-if (isset($_GET['edit_id'])) {
-
-    $edit_id = (int)$_GET['edit_id'];
-
-    $edit_stmt = $conn->prepare("
-        SELECT *
-        FROM courts
-        WHERE id = ?
-    ");
-
-    $edit_stmt->bind_param("i", $edit_id);
-    $edit_stmt->execute();
-
-    $edit_result = $edit_stmt->get_result();
-    $editCourt = $edit_result->fetch_assoc();
-
-    $edit_stmt->close();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| 6. AMBIL SENARAI COURT
-|--------------------------------------------------------------------------
-*/
 $result = mysqli_query(
     $conn,
-    "SELECT * FROM courts ORDER BY id DESC"
+    "SELECT 
+        p.*,
+        b.booking_date,
+        b.booking_time,
+        b.status AS booking_status,
+        c.court_name,
+        u.name,
+        u.email
+     FROM payments p
+     JOIN bookings b ON p.booking_id = b.id
+     JOIN courts c ON b.court_id = c.id
+     JOIN users u ON p.user_id = u.id
+     ORDER BY p.payment_date DESC"
 );
-
 ?>
 
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Manage Court - Badminton Kampung Panji</title>
-
+    <title>Manage Payments - Badminton Kampung Panji</title>
 
     <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+        rel="stylesheet"
+    >
 
-
-    <!-- FontAwesome -->
+    <!-- Font Awesome -->
     <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
 
-
-    <!-- Google Font -->
+    <!-- Shared Sidebar -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+        rel="stylesheet"
+        href="sidebar.css?v=20260926"
+    >
 
+    <style>
 
-<style>
+        * {
+            box-sizing: border-box;
+        }
 
-:root {
+        body {
+            margin: 0;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(59, 130, 246, 0.08),
+                    transparent 35%
+                ),
+                #f1f5f9;
 
-    --sidebar-bg: #1c2434;
+            font-family:
+                Arial,
+                sans-serif;
 
-    --sidebar-text: #dee4ee;
+            color: #0f172a;
+        }
 
-    --sidebar-hover: #333a48;
+        /* =========================
+           MAIN CONTENT
+        ========================= */
 
-    --accent-lime: #ccff00;
+        .main-content {
+            min-height: 100vh;
+        }
 
-    --text-dark: #111111;
+        .content-body {
+            padding-bottom: 40px;
+        }
 
-    --body-bg: #f1f5f9;
+        /* =========================
+           TOPBAR
+        ========================= */
 
-}
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
+            background: rgba(255, 255, 255, 0.82);
 
-body {
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
 
-    font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 15px 25px;
 
-    background-color: var(--body-bg);
+            border-radius: 18px;
 
-    color: var(--text-dark);
+            box-shadow:
+                0 8px 30px rgba(15, 23, 42, 0.06);
 
-    min-height: 100vh;
+            margin-bottom: 25px;
 
-    margin: 0;
+            border: 1px solid rgba(148, 163, 184, 0.20);
+        }
 
-    display: flex;
+        /* =========================
+           SEARCH
+        ========================= */
 
-}
+        .search-form {
+            position: relative;
 
+            display: flex;
+            align-items: center;
 
-::-webkit-scrollbar {
+            width: 320px;
+        }
 
-    width: 6px;
+        .search-form i {
+            position: absolute;
 
-    height: 6px;
+            left: 15px;
 
-}
+            color: #64748b;
 
+            font-size: 0.9rem;
 
-::-webkit-scrollbar-track {
+            z-index: 2;
+        }
 
-    background: transparent;
+        .search-input {
+            width: 100%;
 
-}
+            padding:
+                11px
+                15px
+                11px
+                42px;
 
+            border:
+                1px solid
+                #e2e8f0;
 
-::-webkit-scrollbar-thumb {
+            border-radius: 13px;
 
-    background: #cbd5e1;
+            font-size: 0.9rem;
 
-    border-radius: 10px;
+            background: rgba(248, 250, 252, 0.85);
 
-}
+            outline: none;
 
+            transition: all 0.25s ease;
+        }
 
-::-webkit-scrollbar-thumb:hover {
+        .search-input:focus {
+            border-color: #3b82f6;
 
-    background: #94a3b8;
+            background: #ffffff;
 
-}
+            box-shadow:
+                0 0 0 4px
+                rgba(59, 130, 246, 0.10);
+        }
 
+        /* =========================
+           USER PILL
+        ========================= */
 
-.sidebar {
+        .user-pill {
+            display: flex;
 
-    width: 280px;
+            align-items: center;
 
-    background-color: var(--sidebar-bg);
+            gap: 10px;
 
-    color: var(--sidebar-text);
+            background:
+                rgba(248, 250, 252, 0.9);
 
-    position: fixed;
+            padding:
+                6px
+                14px
+                6px
+                6px;
 
-    top: 0;
+            border-radius: 50px;
 
-    left: 0;
+            border:
+                1px solid
+                #e2e8f0;
+        }
 
-    height: 100vh;
+        .user-avatar {
+            width: 34px;
+            height: 34px;
 
-    display: flex;
+            border-radius: 50%;
 
-    flex-direction: column;
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #334155
+                );
 
-    z-index: 100;
+            color: #fff;
 
-    transition: all 0.3s ease;
+            display: flex;
 
-    box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            align-items: center;
+            justify-content: center;
 
-}
+            font-weight: 700;
 
+            font-size: 0.85rem;
 
-.sidebar-brand {
+            overflow: hidden;
 
-    padding: 25px 20px;
+            box-shadow:
+                0 4px 12px
+                rgba(15, 23, 42, 0.15);
+        }
 
-    font-size: 1.25rem;
+        /* =========================
+           PAGE HEADER
+        ========================= */
 
-    font-weight: 800;
+        .page-title {
+            font-size: 28px;
 
-    color: #fff;
+            letter-spacing: -0.5px;
+        }
 
-    display: flex;
+        .page-description {
+            color: #64748b;
 
-    align-items: center;
+            font-size: 14px;
+        }
 
-    gap: 12px;
+        /* =========================
+           FILTER CARD
+        ========================= */
 
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+        .filter-card {
+            background:
+                rgba(255, 255, 255, 0.78);
 
-    text-decoration: none;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
 
-}
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.18);
 
+            box-shadow:
+                0 10px 35px
+                rgba(15, 23, 42, 0.06);
 
-.sidebar-menu {
+            border-radius: 18px;
 
-    padding: 20px 15px;
+            padding: 20px;
+        }
 
-    overflow-y: auto;
+        .filter-title {
+            font-size: 15px;
 
-    flex-grow: 1;
+            font-weight: 700;
 
-}
+            color: #ffffff;
+        }
 
+        .filter-label {
+            font-size: 12px;
 
-.menu-label {
+            font-weight: 700;
 
-    font-size: 0.75rem;
+            color: #ffffff;
 
-    text-transform: uppercase;
+            margin-bottom: 7px;
+        }
 
-    letter-spacing: 1px;
+        .filter-select {
+            border:
+                1px solid
+                #e2e8f0;
 
-    color: #8a99ad;
+            border-radius: 12px;
 
-    margin-bottom: 10px;
+            padding: 10px 12px;
 
-    padding-left: 10px;
+            font-size: 13px;
 
-    font-weight: 700;
+            background-color: #fff;
 
-}
+            transition: all 0.2s ease;
+        }
 
+        .filter-select:focus {
+            border-color: #3b82f6;
 
-.sidebar-nav-link {
+            box-shadow:
+                0 0 0 3px
+                rgba(59, 130, 246, 0.10);
+        }
 
-    display: flex;
+        .reset-btn {
+            border-radius: 12px;
 
-    align-items: center;
+            padding: 10px 15px;
 
-    justify-content: space-between;
+            font-weight: 600;
 
-    padding: 12px 15px;
+            font-size: 13px;
 
-    color: var(--sidebar-text);
+            transition: all 0.2s ease;
+        }
 
-    text-decoration: none;
+        .reset-btn:hover {
+            transform: translateY(-1px);
+        }
 
-    border-radius: 10px;
+        /* =========================
+           TABLE CARD
+        ========================= */
 
-    font-weight: 500;
+        .payment-card {
+            background:
+                rgba(255, 255, 255, 0.82);
 
-    font-size: 0.9rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
 
-    margin-bottom: 5px;
+            border:
+                1px solid
+                rgba(148, 163, 184, 0.18);
 
-    transition: all 0.2s ease;
+            box-shadow:
+                0 10px 35px
+                rgba(15, 23, 42, 0.06);
 
-}
+            border-radius: 18px;
 
+            overflow: hidden;
+        }
 
-.sidebar-nav-link-content {
+        .table-wrapper {
+            overflow-x: auto;
+        }
 
-    display: flex;
+        .payment-table {
+            margin: 0;
 
-    align-items: center;
+            min-width: 1050px;
+        }
 
-    gap: 12px;
+        .payment-table thead th {
+            background:
+                rgba(248, 250, 252, 0.9);
 
-}
+            color: #000000;
 
+            font-size: 11px;
 
-.sidebar-nav-link:hover,
-.sidebar-nav-link.active {
+            text-transform: uppercase;
 
-    background-color: var(--sidebar-hover);
+            letter-spacing: 0.6px;
 
-    color: #fff;
+            font-weight: 700;
 
-}
+            padding: 16px;
 
+            border-bottom:
+                1px solid
+                #e2e8f0;
 
-.sidebar-nav-link i {
+            white-space: nowrap;
+        }
 
-    font-size: 1.1rem;
+        .payment-table tbody td {
+            padding: 17px 16px;
 
-    width: 20px;
+            vertical-align: middle;
 
-    text-align: center;
+            border-bottom:
+                1px solid
+                #f1f5f9;
 
-}
+            font-size: 13px;
+            
+            color: #000000 !important;
+        }
 
+        .payment-table tbody tr {
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
 
-.main-content {
+        .payment-table tbody tr:hover {
+            background:
+                rgba(59, 130, 246, 0.035);
+        }
 
-    margin-left: 280px;
+        .payment-id {
+            font-weight: 800;
 
-    flex-grow: 1;
+            color: #000000 !important;
+        }
 
-    display: flex;
+        .customer-name {
+            font-weight: 700;
 
-    flex-direction: column;
+            color: #000000 !important;
+        }
 
-    min-height: 100vh;
+        .customer-email {
+            font-size: 11px;
 
-}
+            color: #000000 !important;
+        }
 
+        .booking-court {
+            font-weight: 700;
 
-.topbar {
+            color: #000000 !important;
+        }
 
-    height: 80px;
+        .booking-info {
+            font-size: 11px;
 
-    background: #ffffff;
+            color: #000000 !important;
+        }
 
-    border-bottom: 1px solid #e2e8f0;
+        .amount {
+            font-weight: 800;
 
-    display: flex;
+            color: #000000 !important;
 
-    align-items: center;
+            white-space: nowrap;
+        }
 
-    justify-content: space-between;
+        /* =========================
+           STATUS BADGES
+        ========================= */
 
-    padding: 0 40px;
+        .status-badge {
+            display: inline-flex;
 
-    position: sticky;
+            align-items: center;
 
-    top: 0;
+            gap: 5px;
 
-    z-index: 99;
+            padding:
+                6px
+                10px;
 
-}
+            border-radius: 50px;
 
+            font-size: 10px;
 
-.search-form {
+            font-weight: 700;
 
-    position: relative;
+            white-space: nowrap;
+        }
 
-    width: 350px;
+        .status-approved {
+            background: #dcfce7;
 
-}
+            color: #166534 !important;
+        }
 
+        .status-rejected {
+            background: #fee2e2;
 
-.search-input {
+            color: #991b1b !important;
+        }
 
-    background: #f8fafc !important;
+        .status-pending {
+            background: #fef3c7;
 
-    border: 1px solid #e2e8f0 !important;
+            color: #92400e !important;
+        }
 
-    border-radius: 50px !important;
+        /* =========================
+           RECEIPT BUTTON
+        ========================= */
 
-    padding: 10px 20px 10px 45px !important;
+        .receipt-btn {
+            border-radius: 9px;
 
-    font-size: 0.85rem !important;
+            font-size: 11px;
 
-    width: 100% !important;
+            font-weight: 600;
 
-    color: #1e293b !important;
+            padding:
+                6px
+                10px;
 
-    box-shadow: none !important;
+            transition: all 0.2s ease;
+        }
 
-    outline: none !important;
+        .receipt-btn:hover {
+            transform: translateY(-1px);
+        }
 
-}
+        /* =========================
+           MANAGE LINK
+        ========================= */
 
+        .manage-link {
+            display: inline-block;
 
-.search-form i {
+            margin-top: 5px;
 
-    position: absolute;
+            color: #2563eb !important;
 
-    left: 18px;
+            text-decoration: none;
 
-    top: 50%;
+            font-size: 11px;
 
-    transform: translateY(-50%);
+            font-weight: 600;
+        }
 
-    color: #94a3b8;
+        .manage-link:hover {
+            color: #1d4ed8 !important;
 
-    z-index: 5;
+            text-decoration: underline;
+        }
 
-    pointer-events: none;
+        /* =========================
+           PAGINATION FOOTER
+        ========================= */
 
-}
+        .pagination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(248, 250, 252, 0.9);
+            border-top: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #000000;
+        }
 
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
 
-.user-pill {
+        .page-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #000000;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-    display: flex;
+        .page-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
 
-    align-items: center;
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    gap: 12px;
+        /* =========================
+           NO RESULTS
+        ========================= */
 
-    background: #f8fafc;
+        #noResults {
+            padding: 50px 20px;
 
-    padding: 6px 16px 6px 6px;
+            text-align: center;
 
-    border-radius: 50px;
+            color: #94a3b8;
+        }
 
-    border: 1px solid #e2e8f0;
+        #noResults i {
+            font-size: 32px;
 
-}
+            margin-bottom: 10px;
+        }
 
+        /* =========================
+           RESPONSIVE
+        ========================= */
 
-.user-avatar {
+        @media (max-width: 768px) {
 
-    width: 38px;
+            .topbar {
+                flex-direction: column;
 
-    height: 38px;
+                align-items: stretch;
 
-    border-radius: 50%;
+                gap: 15px;
 
-    background: var(--sidebar-bg);
+                padding: 15px;
+            }
 
-    color: var(--accent-lime);
+            .search-form {
+                width: 100%;
+            }
 
-    display: flex;
+            .topbar > div:last-child {
+                justify-content: space-between;
+            }
 
-    align-items: center;
+            .page-title {
+                font-size: 23px;
+            }
 
-    justify-content: center;
+            .filter-card {
+                padding: 15px;
+            }
 
-    font-weight: 800;
+            .pagination-footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
 
-    font-size: 0.9rem;
+        }
 
-}
+    </style>
 
-
-.content-body {
-
-    padding: 40px;
-
-    flex-grow: 1;
-
-}
-
-
-.card {
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 20px;
-
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
-
-    background: #ffffff;
-
-}
-
-
-.gray-box {
-
-    background-color: #f8fafc;
-
-    border: 1px solid #e2e8f0;
-
-    border-radius: 16px;
-
-    padding: 24px;
-
-}
-
-
-.btn-minimal {
-
-    background-color: #f1f5f9;
-
-    border: 1px solid #cbd5e1;
-
-    color: #334155;
-
-    font-size: 0.8rem;
-
-    font-weight: 600;
-
-    padding: 6px 12px;
-
-    border-radius: 8px;
-
-    transition: all 0.2s ease;
-
-}
-
-
-.btn-minimal:hover {
-
-    background-color: #e2e8f0;
-
-    border-color: #94a3b8;
-
-    color: #0f172a;
-
-}
-
-
-.btn-minimal-dark {
-
-    background-color: #334155;
-
-    border: 1px solid #334155;
-
-    color: #ffffff;
-
-    font-size: 0.85rem;
-
-    font-weight: 600;
-
-    padding: 8px 16px;
-
-    border-radius: 8px;
-
-    transition: all 0.2s ease;
-
-}
-
-
-.btn-minimal-dark:hover {
-
-    background-color: #1e293b;
-
-    color: #ffffff;
-
-}
-
-
-.table td,
-.table th {
-
-    vertical-align: middle;
-
-    padding: 14px 16px;
-
-}
-
-
-@media (max-width: 768px) {
-
-    .sidebar {
-
-        width: 70px;
-
-    }
-
-    .sidebar .sidebar-brand span,
-    .sidebar .menu-label,
-    .sidebar .sidebar-nav-link span,
-    .sidebar .badge {
-
-        display: none;
-
-    }
-
-    .main-content {
-
-        margin-left: 70px;
-
-    }
-
-    .topbar {
-
-        padding: 0 20px;
-
-    }
-
-    .search-form {
-
-        display: none;
-
-    }
-
-}
-
-</style>
-
-
-<link rel="stylesheet"
-      href="sidebar.css?v=20260926">
-
-
-<style>
-
-body.admin-page .sidebar,
-body.admin-page .main-content {
-
-    transition: none !important;
-
-}
-
-</style>
+    <!-- Keep shared admin shell stable -->
+    <style>
+        body.admin-page .sidebar,
+        body.admin-page .main-content {
+            transition: none !important;
+        }
+    </style>
 
 </head>
 
-
 <body class="admin-page">
-
-
-<!-- SIDEBAR -->
 
 <?php include __DIR__ . '/sidebar.php'; ?>
 
 
-<!-- MAIN CONTENT -->
-
 <div class="main-content">
 
+    <!-- =========================
+         TOPBAR
+    ========================= -->
 
-<!-- TOPBAR -->
+    <header class="topbar">
 
-<header class="topbar">
+        <div class="search-form">
 
-    <div class="search-form">
+            <i class="fa-solid fa-magnifying-glass"></i>
 
-        <i class="fa-solid fa-search"></i>
+            <input
+                type="text"
+                id="topSearch"
+                class="search-input"
+                placeholder="Search payments..."
+                autocomplete="off"
+            >
 
-        <input
-            type="text"
-            class="form-control search-input"
-            placeholder="Type to search..."
-            autocomplete="off">
-
-    </div>
+        </div>
 
 
-    <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
 
-        <div class="user-pill">
+            <div class="user-pill">
 
-            <div
-                class="user-avatar"
-                style="<?php echo $admin_photo_style ?? ''; ?>">
+                <div
+                    class="user-avatar"
+                    style="<?php echo $admin_photo_style; ?>"
+                >
+                    <?php
+                    echo $admin_photo === ''
+                        ? htmlspecialchars(
+                            $admin_initial,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        )
+                        : '';
+                    ?>
+                </div>
 
-                <?php
-
-                if (($admin_photo ?? '') === '') {
-
+                <div
+                    class="fw-bold fs-7 pe-2 text-dark"
+                >
+                    <?php
                     echo htmlspecialchars(
-                        $admin_initial ?? 'A',
-                        ENT_QUOTES,
-                        'UTF-8'
+                        $current_admin['name']
+                        ?? $_SESSION['user']['name']
+                        ?? 'Admin'
                     );
-
-                }
-
-                ?>
+                    ?>
+                </div>
 
             </div>
 
 
-            <div class="fw-bold fs-7 pe-2">
+            <a
+                href="../auth/logout.php"
+                class="btn btn-danger btn-sm rounded-pill fw-bold px-3"
+            >
+                <i class="fa-solid fa-right-from-bracket me-1"></i>
+                Logout
+            </a>
 
-                <?php
+        </div>
 
-                echo htmlspecialchars(
-                    $current_admin['name']
-                    ?? $user['name']
-                    ?? 'Admin'
-                );
+    </header>
 
-                ?>
+
+    <div class="content-body">
+
+        <!-- =========================
+             PAGE HEADER
+        ========================= -->
+
+        <div class="mb-4">
+
+            <h2 class="fw-bold page-title mb-1">
+                Payment Management
+            </h2>
+
+            <p class="page-description mb-0">
+                View payment receipts linked to each badminton booking.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FILTER
+        ========================= -->
+
+        <div class="filter-card mb-4">
+
+            <div class="d-flex align-items-center mb-3">
+
+                <div
+                    class="d-flex align-items-center justify-content-center me-2"
+                    style="
+                        width:34px;
+                        height:34px;
+                        border-radius:10px;
+                        background:#eff6ff;
+                        color:#2563eb;
+                    "
+                >
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+
+                <div class="filter-title">
+                    Filter Payments
+                </div>
+
+            </div>
+
+
+            <div class="row g-3 align-items-end">
+
+                <!-- SEARCH -->
+
+                <div class="col-lg-4 col-md-6">
+
+                    <label class="filter-label">
+                        Search Customer / Email / Court
+                    </label>
+
+                    <div class="position-relative">
+
+                        <i
+                            class="fa-solid fa-magnifying-glass position-absolute"
+                            style="
+                                left:14px;
+                                top:50%;
+                                transform:translateY(-50%);
+                                color:#94a3b8;
+                                z-index:2;
+                            "
+                        ></i>
+
+                        <input
+                            type="text"
+                            id="paymentSearch"
+                            class="form-control filter-select ps-5"
+                            placeholder="Type to search..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PAYMENT STATUS -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <label class="filter-label">
+                        Payment Status
+                    </label>
+
+                    <select
+                        id="paymentStatusFilter"
+                        class="form-select filter-select"
+                    >
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Approved">
+                            Approved
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BOOKING STATUS -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <label class="filter-label">
+                        Booking Status
+                    </label>
+
+                    <select
+                        id="bookingStatusFilter"
+                        class="form-select filter-select"
+                    >
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Approved">
+                            Approved
+                        </option>
+
+                        <option value="Rejected">
+                            Rejected
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PAYMENT METHOD -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <label class="filter-label">
+                        Payment Method
+                    </label>
+
+                    <select
+                        id="paymentMethodFilter"
+                        class="form-select filter-select"
+                    >
+
+                        <option value="">
+                            All Methods
+                        </option>
+                        <option value="MAE">
+                            MAE
+                        </option>
+                        <option value="Touch N Go">
+                            Touch N Go
+                        </option>
+                        <option value="Bank Islam">
+                            Bank Islam
+                        </option>
+                        <option value="Card Payment">
+                            Card Payment
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- RESET -->
+
+                <div class="col-lg-2 col-md-6">
+
+                    <button
+                        type="button"
+                        id="resetFilters"
+                        class="btn btn-outline-secondary reset-btn w-100"
+                    >
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Reset
+                    </button>
+
+                </div>
 
             </div>
 
         </div>
 
 
-        <a
-            href="../auth/logout.php"
-            class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
+        <!-- =========================
+             PAYMENT TABLE
+        ========================= -->
 
-            <i class="fa-solid fa-right-from-bracket me-1"></i>
+        <div class="payment-card">
 
-            Logout
+            <div class="table-wrapper">
 
-        </a>
+                <table
+                    class="table payment-table"
+                    id="paymentTable"
+                >
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Booking
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Method
+                            </th>
+
+                            <th>
+                                Receipt
+                            </th>
+
+                            <th>
+                                Payment Status
+                            </th>
+
+                            <th>
+                                Booking Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <?php while ($r = mysqli_fetch_assoc($result)): ?>
+
+                        <tr
+                            data-payment-status="<?= htmlspecialchars($r['status']) ?>"
+                            data-booking-status="<?= htmlspecialchars($r['booking_status']) ?>"
+                            data-payment-method="<?= htmlspecialchars($r['payment_method'] ?? '-') ?>"
+                        >
+
+                            <!-- PAYMENT -->
+
+                            <td>
+
+                                <span class="payment-id">
+                                    #<?= (int)$r['payment_id'] ?>
+                                </span>
+
+                            </td>
+
+
+                            <!-- CUSTOMER -->
+
+                            <td>
+
+                                <div class="customer-name">
+                                    <?= htmlspecialchars($r['name']) ?>
+                                </div>
+
+                                <div class="customer-email">
+                                    <?= htmlspecialchars($r['email']) ?>
+                                </div>
+
+                            </td>
+
+
+                            <!-- BOOKING -->
+
+                            <td>
+
+                                <div class="booking-court">
+                                    <?= htmlspecialchars($r['court_name']) ?>
+                                </div>
+
+                                <div class="booking-info">
+
+                                    <i class="fa-regular fa-calendar me-1"></i>
+
+                                    <?= htmlspecialchars($r['booking_date']) ?>
+
+                                    &nbsp;
+
+                                    <i class="fa-regular fa-clock me-1"></i>
+
+                                    <?= htmlspecialchars(
+                                        substr($r['booking_time'], 0, 5)
+                                    ) ?>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- AMOUNT -->
+
+                            <td>
+
+                                <span class="amount">
+                                    RM <?= number_format(
+                                        (float)$r['amount'],
+                                        2
+                                    ) ?>
+                                </span>
+
+                            </td>
+
+
+                            <!-- METHOD -->
+
+                            <td>
+
+                                <span class="fw-semibold" style="color: #000000 !important;">
+                                    <?= htmlspecialchars(
+                                        $r['payment_method'] ?? '-'
+                                    ) ?>
+                                </span>
+
+                            </td>
+
+
+                            <!-- RECEIPT -->
+
+                            <td>
+
+                                <?php if ($r['receipt']): ?>
+
+                                    <a
+                                        target="_blank"
+                                        href="../user/uploads/receipt/<?= rawurlencode($r['receipt']) ?>"
+                                        class="btn btn-sm btn-outline-primary receipt-btn"
+                                    >
+                                        <i class="fa-solid fa-file-image me-1"></i>
+                                        View
+                                    </a>
+
+                                <?php else: ?>
+
+                                    <span class="text-muted">
+                                        No Receipt
+                                    </span>
+
+                                <?php endif; ?>
+
+                            </td>
+
+
+                            <!-- PAYMENT STATUS -->
+
+                            <td>
+
+                                <?php
+                                if ($r['status'] === 'Approved') {
+                                    $statusClass = 'status-approved';
+                                    $statusIcon = 'fa-circle-check';
+                                } elseif ($r['status'] === 'Rejected') {
+                                    $statusClass = 'status-rejected';
+                                    $statusIcon = 'fa-circle-xmark';
+                                } else {
+                                    $statusClass = 'status-pending';
+                                    $statusIcon = 'fa-clock';
+                                }
+                                ?>
+
+                                <span
+                                    class="status-badge <?= $statusClass ?>"
+                                >
+
+                                    <i class="fa-solid <?= $statusIcon ?>"></i>
+
+                                    <?= htmlspecialchars($r['status']) ?>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- BOOKING STATUS -->
+
+                            <td>
+
+                                <?php
+                                if ($r['booking_status'] === 'Approved') {
+                                    $bookingStatusClass = 'status-approved';
+                                    $bookingStatusIcon = 'fa-circle-check';
+                                } elseif ($r['booking_status'] === 'Rejected') {
+                                    $bookingStatusClass = 'status-rejected';
+                                    $bookingStatusIcon = 'fa-circle-xmark';
+                                } else {
+                                    $bookingStatusClass = 'status-pending';
+                                    $bookingStatusIcon = 'fa-clock';
+                                }
+                                ?>
+
+                                <span
+                                    class="status-badge <?= $bookingStatusClass ?>"
+                                >
+
+                                    <i
+                                        class="fa-solid <?= $bookingStatusIcon ?>"
+                                    ></i>
+
+                                    <?= htmlspecialchars(
+                                        $r['booking_status']
+                                    ) ?>
+
+                                </span>
+
+                                <br>
+
+                                <a
+                                    href="manage_booking.php"
+                                    class="manage-link"
+                                >
+                                    Manage →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    <?php endwhile; ?>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- PAGINATION FOOTER -->
+
+            <div class="pagination-footer">
+
+                <div id="tableInfo">
+                    Showing 0 to 0 of 0 entries
+                </div>
+
+                <div class="pagination-controls">
+                    <button type="button" id="prevPage" class="page-btn">
+                        <i class="fa-solid fa-chevron-left me-1"></i> Previous
+                    </button>
+                    <button type="button" id="nextPage" class="page-btn">
+                        Next <i class="fa-solid fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
+
+            </div>
+
+
+            <!-- NO RESULTS -->
+
+            <div
+                id="noResults"
+                style="display:none;"
+            >
+
+                <i class="fa-solid fa-filter-circle-xmark d-block"></i>
+
+                <strong>
+                    No payments found
+                </strong>
+
+                <p class="mb-0 mt-1">
+                    Try changing your search or filter.
+                </p>
+
+            </div>
+
+        </div>
 
     </div>
 
-</header>
-
-
-<!-- CONTENT -->
-
-<div class="content-body">
-
-<div class="card shadow">
-
-<div class="card-body p-4">
-
-
-<h2 class="fw-bold mb-1">
-
-🏸 Manage Badminton Court
-
-</h2>
-
-
-<p class="text-muted fs-7 mb-4">
-
-Tambah, padam, atau kemas kini status ketersediaan gelanggang sukan.
-
-</p>
-
-
-<hr class="text-muted opacity-25 mb-4">
-
-
-<?php if ($editCourt): ?>
-
-
-<!-- EDIT COURT -->
-
-<div class="gray-box mb-5">
-
-<h5 class="fw-bold mb-3 text-secondary fs-6">
-
-<i class="fa-solid fa-pen me-1"></i>
-
-Edit Court #<?php echo (int)$editCourt['id']; ?>
-
-</h5>
-
-
-<form method="POST" class="row g-3">
-
-
-<input
-    type="hidden"
-    name="id"
-    value="<?php echo (int)$editCourt['id']; ?>">
-
-
-<div class="col-md-6">
-
-<label class="form-label fw-semibold fs-7 text-muted">
-
-Nama Gelanggang
-
-</label>
-
-
-<input
-    type="text"
-    name="court_name"
-    class="form-control bg-white"
-    value="<?php echo htmlspecialchars($editCourt['court_name']); ?>"
-    required>
-
 </div>
 
 
-<div class="col-md-3">
-
-<label class="form-label fw-semibold fs-7 text-muted">
-
-Price (RM/hr)
-
-</label>
-
-
-<input
-    type="number"
-    name="price"
-    step="0.01"
-    min="0"
-    class="form-control bg-white"
-    value="<?php echo htmlspecialchars($editCourt['price']); ?>"
-    required>
-
-</div>
-
-
-<div class="col-md-3 d-flex align-items-end gap-2">
-
-
-<button
-    name="edit"
-    value="1"
-    class="btn btn-minimal-dark w-100">
-
-<i class="fa-solid fa-check me-1"></i>
-
-Save
-
-</button>
-
-
-<a
-    href="manage_court.php"
-    class="btn btn-minimal">
-
-Cancel
-
-</a>
-
-
-</div>
-
-
-</form>
-
-</div>
-
-
-<?php else: ?>
-
-
-<!-- ADD COURT -->
-
-<div class="gray-box mb-5">
-
-
-<h5 class="fw-bold mb-3 text-secondary fs-6">
-
-<i class="fa-solid fa-circle-plus me-1"></i>
-
-Tambah Gelanggang Baharu
-
-</h5>
-
-
-<form method="POST" class="row g-3">
-
-
-<div class="col-md-4">
-
-<label class="form-label fw-semibold fs-7 text-muted">
-
-Nama Gelanggang
-
-</label>
-
-
-<input
-    type="text"
-    name="court_name"
-    class="form-control bg-white"
-    placeholder="Example: Court 5"
-    required>
-
-</div>
-
-
-<div class="col-md-2">
-
-<label class="form-label fw-semibold fs-7 text-muted">
-
-Price (RM/hr)
-
-</label>
-
-
-<input
-    type="number"
-    name="price"
-    step="0.01"
-    min="0"
-    class="form-control bg-white"
-    placeholder="20.00"
-    required>
-
-</div>
-
-
-<div class="col-md-3">
-
-<label class="form-label fw-semibold fs-7 text-muted">
-
-Status Awal
-
-</label>
-
-
-<select
-    name="status"
-    class="form-select bg-white">
-
-<option value="Available">
-
-Available
-
-</option>
-
-<option value="Unavailable">
-
-Unavailable
-
-</option>
-
-<option value="Disabled">
-
-Disabled
-
-</option>
-
-</select>
-
-</div>
-
-
-<div class="col-md-3 d-flex align-items-end">
-
-
-<button
-    name="add"
-    value="1"
-    class="btn btn-minimal-dark w-100">
-
-<i class="fa-solid fa-plus me-1"></i>
-
-Add Court
-
-</button>
-
-</div>
-
-
-</form>
-
-</div>
-
-
-<?php endif; ?>
-
-
-<h4 class="fw-bold mb-3">
-
-<i class="fa-solid fa-list-ul me-2 text-dark"></i>
-
-Court List
-
-</h4>
-
-
-<!-- COURT TABLE -->
-
-<div class="table-responsive">
-
-
-<table class="table table-bordered table-hover text-center align-middle">
-
-
-<thead class="table-dark">
-
-<tr>
-
-<th>ID</th>
-
-<th>Court Name</th>
-
-<th>Price (RM/hr)</th>
-
-<th>Status</th>
-
-<th>Action</th>
-
-</tr>
-
-</thead>
-
-
-<tbody>
-
-
-<?php while ($row = mysqli_fetch_assoc($result)) { ?>
-
-
-<tr>
-
-
-<td class="fw-semibold text-muted">
-
-<?php echo (int)$row['id']; ?>
-
-</td>
-
-
-<td class="fw-bold">
-
-🏸
-
-<?php
-
-echo htmlspecialchars(
-    $row['court_name']
-);
-
-?>
-
-</td>
-
-
-<td>
-
-RM
-
-<?php
-
-echo number_format(
-    (float)$row['price'],
-    2
-);
-
-?>
-
-</td>
-
-
-<td>
-
-
-<?php
-
-$status = $row['status'];
-
-
-switch ($status) {
-
-
-    case 'Available':
-
-        echo "<span class='badge bg-success px-3 py-2'>
-                Available
-              </span>";
-
-        break;
-
-
-    case 'Unavailable':
-
-        echo "<span class='badge bg-warning text-dark px-3 py-2'>
-                Unavailable
-              </span>";
-
-        break;
-
-
-    case 'Disabled':
-
-        echo "<span class='badge bg-secondary px-3 py-2'>
-                Disabled
-              </span>";
-
-        break;
-
-
-    case 'Deleted':
-
-        echo "<span class='badge bg-danger px-3 py-2'>
-                Deleted
-              </span>";
-
-        break;
-
-
-    default:
-
-        echo "<span class='badge bg-dark px-3 py-2'>
-                " . htmlspecialchars($status) . "
-              </span>";
-
-        break;
-
+<!-- =========================
+     FILTER & PAGINATION JS
+========================= -->
+
+<script>
+
+const searchInput = document.getElementById('paymentSearch');
+const topSearch = document.getElementById('topSearch');
+const paymentStatus = document.getElementById('paymentStatusFilter');
+const bookingStatus = document.getElementById('bookingStatusFilter');
+const paymentMethod = document.getElementById('paymentMethodFilter');
+const resetButton = document.getElementById('resetFilters');
+
+const prevBtn = document.getElementById('prevPage');
+const nextBtn = document.getElementById('nextPage');
+const tableInfo = document.getElementById('tableInfo');
+const noResults = document.getElementById('noResults');
+
+let currentPage = 1;
+const rowsPerPage = 10; // Paparkan 10 rekod setiap muka surat
+
+function updateTable() {
+    const search = searchInput.value.toLowerCase().trim();
+    const selectedPayment = paymentStatus.value;
+    const selectedBooking = bookingStatus.value;
+    const selectedMethod = paymentMethod.value;
+
+    const rows = document.querySelectorAll('#paymentTable tbody tr');
+    let matchedRows = [];
+
+    // Tapis baris mengikut carian & pilihan filter
+    rows.forEach(row => {
+        const rowText = row.innerText.toLowerCase();
+        const rowPayment = row.dataset.paymentStatus;
+        const rowBooking = row.dataset.bookingStatus;
+        const rowMethod = row.dataset.paymentMethod;
+
+        const matchSearch = search === '' || rowText.includes(search);
+        const matchPayment = selectedPayment === '' || rowPayment === selectedPayment;
+        const matchBooking = selectedBooking === '' || rowBooking === selectedBooking;
+        const matchMethod = selectedMethod === '' || rowMethod === selectedMethod;
+
+        if (matchSearch && matchPayment && matchBooking && matchMethod) {
+            matchedRows.push(row);
+            row.style.display = 'none'; // Sembunyikan dulu sebelum paparkan mengikut pagination
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const totalMatched = matchedRows.length;
+    const totalPages = Math.ceil(totalMatched / rowsPerPage) || 1;
+
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
+    if (currentPage < 1) {
+        currentPage = 1;
+    }
+
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    // Paparkan hanya baris untuk muka surat semasa
+    for (let i = startIndex; i < endIndex && i < totalMatched; i++) {
+        matchedRows[i].style.display = '';
+    }
+
+    // Kemaskini maklumat teks bawah
+    if (totalMatched === 0) {
+        tableInfo.innerText = "Showing 0 to 0 of 0 entries";
+        noResults.style.display = 'block';
+    } else {
+        tableInfo.innerText = `Showing ${startIndex + 1} to ${Math.min(endIndex, totalMatched)} of ${totalMatched} entries`;
+        noResults.style.display = 'none';
+    }
+
+    // Kawalan butang Next / Previous
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage >= totalPages;
 }
 
-?>
+// Event Listeners untuk Filter & Carian
+searchInput.addEventListener('input', () => { currentPage = 1; updateTable(); });
+topSearch.addEventListener('input', () => { searchInput.value = topSearch.value; currentPage = 1; updateTable(); });
+paymentStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
+bookingStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
+paymentMethod.addEventListener('change', () => { currentPage = 1; updateTable(); });
 
+// Butang Muka Surat Seterusnya & Sebelumnya
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        updateTable();
+    }
+});
 
-</td>
+nextBtn.addEventListener('click', () => {
+    currentPage++;
+    updateTable();
+});
 
+// Reset Semua Filter
+resetButton.addEventListener('click', () => {
+    searchInput.value = '';
+    topSearch.value = '';
+    paymentStatus.value = '';
+    bookingStatus.value = '';
+    paymentMethod.value = '';
+    currentPage = 1;
+    updateTable();
+});
 
-<td>
+// Jalankan kali pertama semasa muat halaman
+document.addEventListener('DOMContentLoaded', () => {
+    updateTable();
+});
 
-
-<div class="d-flex justify-content-center flex-wrap gap-1">
-
-
-<!-- EDIT -->
-
-<a
-    href="?edit_id=<?php echo (int)$row['id']; ?>"
-    class="btn btn-minimal">
-
-Edit
-
-</a>
-
-
-<?php if ($status !== 'Deleted') { ?>
-
-
-<!-- AVAILABLE -->
-
-<a
-    href="?status=Available&id=<?php echo (int)$row['id']; ?>"
-    class="btn btn-minimal">
-
-Available
-
-</a>
-
-
-<!-- DISABLE -->
-
-<a
-    href="?status=Disabled&id=<?php echo (int)$row['id']; ?>"
-    class="btn btn-minimal">
-
-Disable
-
-</a>
-
-
-<!-- DELETE -->
-
-<a
-    href="?delete=<?php echo (int)$row['id']; ?>"
-    class="btn btn-minimal text-danger"
-    onclick="return confirm('Delete this court?');">
-
-Delete
-
-</a>
-
-
-<?php } else { ?>
-
-
-<!-- RESTORE -->
-
-<a
-    href="?status=Available&id=<?php echo (int)$row['id']; ?>"
-    class="btn btn-minimal">
-
-Restore
-
-</a>
-
-
-<?php } ?>
-
-
-</div>
-
-
-</td>
-
-
-</tr>
-
-
-<?php } ?>
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-</div>
+</script>
 
 
 </body>
-
 </html>
-
