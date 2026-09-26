@@ -205,8 +205,29 @@ function e($value) {
     }
     .banner {
         height: 140px;
-        background: linear-gradient(135deg, #1e293b, #0f172a);
+        background: #0f172a;
         position: relative;
+        overflow: hidden;
+    }
+
+    .banner video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(15, 23, 42, 0.05),
+            rgba(15, 23, 42, 0.18)
+        );
+        pointer-events: none;
     }
     .profile-info-section {
         padding: 0 30px 25px 30px;
@@ -377,7 +398,12 @@ function e($value) {
                 <?php endif; ?>
 
                 <div class="profile-header-card">
-                    <div class="banner"></div>
+                    <div class="banner">
+                        <video autoplay muted loop playsinline preload="metadata">
+                            <source src="../uploads/yonex.mp4" type="video/mp4">
+                            Browser anda tidak menyokong video HTML5.
+                        </video>
+                    </div>
                     <div class="profile-info-section">
                         <div class="profile-avatar-large" style="<?php echo $admin_photo_style; ?>">
                             <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
