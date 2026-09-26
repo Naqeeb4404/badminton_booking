@@ -5,12 +5,6 @@ include __DIR__ . '/../config/db.php';
 $error = '';
 $success = '';
 
-/*
-|--------------------------------------------------------------------------
-| Check Reset Session
-|--------------------------------------------------------------------------
-*/
-
 if (!isset($_SESSION['reset_user_id'])) {
     header("Location: forgot_password.php");
     exit();
@@ -18,12 +12,6 @@ if (!isset($_SESSION['reset_user_id'])) {
 
 $userId = (int) $_SESSION['reset_user_id'];
 $userEmail = $_SESSION['reset_email'] ?? '';
-
-/*
-|--------------------------------------------------------------------------
-| Reset Password
-|--------------------------------------------------------------------------
-*/
 
 if (isset($_POST['reset_password'])) {
 
@@ -62,12 +50,6 @@ if (isset($_POST['reset_password'])) {
             );
 
             if ($stmt->execute()) {
-
-                /*
-                |--------------------------------------------------------------------------
-                | Clear Reset Session
-                |--------------------------------------------------------------------------
-                */
 
                 unset($_SESSION['reset_user_id']);
                 unset($_SESSION['reset_email']);
@@ -141,15 +123,15 @@ if (isset($_POST['reset_password'])) {
             padding: 20px;
         }
 
-        /* =========================
+        /* =================================
            MAIN CONTAINER
-        ========================= */
+        ================================= */
 
         .reset-container {
             width: 100%;
             max-width: 950px;
 
-            min-height: 540px;
+            min-height: 500px;
 
             display: flex;
 
@@ -163,9 +145,9 @@ if (isset($_POST['reset_password'])) {
                 0 10px 35px rgba(0, 0, 0, 0.45);
         }
 
-        /* =========================
-           LEFT SIDE
-        ========================= */
+        /* =================================
+           LEFT
+        ================================= */
 
         .left {
             width: 55%;
@@ -180,9 +162,9 @@ if (isset($_POST['reset_password'])) {
             justify-content: center;
         }
 
-        /* =========================
-           RIGHT SIDE
-        ========================= */
+        /* =================================
+           RIGHT
+        ================================= */
 
         .right {
             width: 45%;
@@ -198,9 +180,9 @@ if (isset($_POST['reset_password'])) {
             width: 100%;
             height: 100%;
 
-            object-fit: cover;
+            min-height: 500px;
 
-            min-height: 540px;
+            object-fit: cover;
 
             display: block;
         }
@@ -212,8 +194,8 @@ if (isset($_POST['reset_password'])) {
 
             background: linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.10),
-                rgba(0, 0, 0, 0.70)
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.65)
             );
 
             display: flex;
@@ -245,12 +227,12 @@ if (isset($_POST['reset_password'])) {
             margin: 0;
         }
 
-        /* =========================
-           BACK BUTTON
-        ========================= */
+        /* =================================
+           BACK
+        ================================= */
 
         .back-top {
-            margin-bottom: 22px;
+            margin-bottom: 25px;
         }
 
         .back-top a {
@@ -273,9 +255,9 @@ if (isset($_POST['reset_password'])) {
             margin-right: 6px;
         }
 
-        /* =========================
+        /* =================================
            ICON
-        ========================= */
+        ================================= */
 
         .icon-box {
             width: 58px;
@@ -297,9 +279,9 @@ if (isset($_POST['reset_password'])) {
             margin-bottom: 20px;
         }
 
-        /* =========================
+        /* =================================
            TITLE
-        ========================= */
+        ================================= */
 
         h1 {
             font-size: 42px;
@@ -320,12 +302,12 @@ if (isset($_POST['reset_password'])) {
 
             max-width: 430px;
 
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* =========================
-           EMAIL DISPLAY
-        ========================= */
+        /* =================================
+           EMAIL
+        ================================= */
 
         .email-display {
             display: flex;
@@ -338,13 +320,13 @@ if (isset($_POST['reset_password'])) {
 
             border-radius: 8px;
 
-            padding: 13px 15px;
+            padding: 12px 15px;
 
             margin-bottom: 22px;
 
-            color: #555;
-
             font-size: 13px;
+
+            color: #555;
         }
 
         .email-icon {
@@ -383,38 +365,12 @@ if (isset($_POST['reset_password'])) {
             word-break: break-word;
         }
 
-        /* =========================
-           ERROR
-        ========================= */
-
-        .error-box {
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-
-            background: #fff0f0;
-
-            border-left: 4px solid #dc3545;
-
-            color: #b02a37;
-
-            padding: 11px 14px;
-
-            border-radius: 6px;
-
-            font-size: 13px;
-
-            margin-bottom: 20px;
-        }
-
-        /* =========================
+        /* =================================
            FORM
-        ========================= */
+        ================================= */
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-label {
@@ -477,9 +433,9 @@ if (isset($_POST['reset_password'])) {
             border-bottom-color: #000;
         }
 
-        /* =========================
-           SHOW PASSWORD BUTTON
-        ========================= */
+        /* =================================
+           PASSWORD TOGGLE
+        ================================= */
 
         .toggle-password {
             position: absolute;
@@ -498,8 +454,6 @@ if (isset($_POST['reset_password'])) {
 
             cursor: pointer;
 
-            font-size: 14px;
-
             padding: 5px;
         }
 
@@ -507,9 +461,9 @@ if (isset($_POST['reset_password'])) {
             color: #000;
         }
 
-        /* =========================
+        /* =================================
            PASSWORD NOTE
-        ========================= */
+        ================================= */
 
         .password-note {
             font-size: 11px;
@@ -519,49 +473,35 @@ if (isset($_POST['reset_password'])) {
             margin-top: 7px;
         }
 
-        /* =========================
-           PASSWORD STRENGTH
-        ========================= */
+        /* =================================
+           ERROR
+        ================================= */
 
-        .strength-container {
-            margin-top: 8px;
+        .error-box {
+            display: flex;
 
-            display: none;
+            align-items: center;
+
+            gap: 10px;
+
+            background: #fff0f0;
+
+            border-left: 4px solid #dc3545;
+
+            color: #b02a37;
+
+            padding: 11px 14px;
+
+            border-radius: 6px;
+
+            font-size: 13px;
+
+            margin-bottom: 20px;
         }
 
-        .strength-bar {
-            height: 4px;
-
-            width: 100%;
-
-            background: #ddd;
-
-            border-radius: 10px;
-
-            overflow: hidden;
-        }
-
-        .strength-progress {
-            height: 100%;
-
-            width: 0%;
-
-            background: #000;
-
-            transition: width 0.3s ease;
-        }
-
-        .strength-text {
-            font-size: 10px;
-
-            color: #777;
-
-            margin-top: 4px;
-        }
-
-        /* =========================
+        /* =================================
            BUTTON
-        ========================= */
+        ================================= */
 
         .btn-reset {
             width: 100%;
@@ -580,31 +520,27 @@ if (isset($_POST['reset_password'])) {
 
             font-weight: bold;
 
-            margin-top: 5px;
-
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
 
         .btn-reset:hover {
             background: #333;
 
             color: #fff;
-
-            transform: translateY(-1px);
         }
 
         .btn-reset i {
             margin-left: 7px;
         }
 
-        /* =========================
+        /* =================================
            BACK LOGIN
-        ========================= */
+        ================================= */
 
         .back-login {
             text-align: center;
 
-            margin-top: 20px;
+            margin-top: 22px;
 
             font-size: 13px;
 
@@ -623,9 +559,9 @@ if (isset($_POST['reset_password'])) {
             text-decoration: underline;
         }
 
-        /* =========================
+        /* =================================
            LOGO
-        ========================= */
+        ================================= */
 
         .logo {
             text-align: center;
@@ -634,25 +570,25 @@ if (isset($_POST['reset_password'])) {
         }
 
         .logo img {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
 
             object-fit: cover;
 
             border-radius: 50%;
         }
 
-        /* =========================
+        /* =================================
            SUCCESS
-        ========================= */
+        ================================= */
 
         .success-wrapper {
             text-align: center;
         }
 
         .success-icon {
-            width: 75px;
-            height: 75px;
+            width: 65px;
+            height: 65px;
 
             background: #000;
 
@@ -665,13 +601,13 @@ if (isset($_POST['reset_password'])) {
             align-items: center;
             justify-content: center;
 
-            font-size: 30px;
+            margin: 0 auto 20px;
 
-            margin: 0 auto 22px;
+            font-size: 24px;
         }
 
         .success-wrapper h2 {
-            font-size: 28px;
+            font-size: 30px;
 
             font-weight: 800;
 
@@ -704,8 +640,6 @@ if (isset($_POST['reset_password'])) {
             font-size: 14px;
 
             font-weight: bold;
-
-            transition: 0.3s;
         }
 
         .login-now:hover {
@@ -718,9 +652,9 @@ if (isset($_POST['reset_password'])) {
             margin-left: 7px;
         }
 
-        /* =========================
+        /* =================================
            MOBILE
-        ========================= */
+        ================================= */
 
         @media (max-width: 768px) {
 
@@ -780,7 +714,7 @@ if (isset($_POST['reset_password'])) {
 
             <?php if (!empty($success)): ?>
 
-                <!-- SUCCESS SCREEN -->
+                <!-- SUCCESS -->
 
                 <div class="success-wrapper">
 
@@ -803,6 +737,7 @@ if (isset($_POST['reset_password'])) {
                         href="login.php"
                         class="login-now"
                     >
+
                         Login Now
 
                         <i class="fa-solid fa-arrow-right"></i>
@@ -842,8 +777,8 @@ if (isset($_POST['reset_password'])) {
                 </h1>
 
                 <p class="description">
-                    Create a new password for your Badminton
-                    Kampung Panji account.
+                    Create a new password for your
+                    Badminton Kampung Panji account.
                 </p>
 
                 <!-- EMAIL -->
@@ -892,11 +827,7 @@ if (isset($_POST['reset_password'])) {
 
                 <!-- FORM -->
 
-                <form
-                    method="POST"
-                    autocomplete="off"
-                    onsubmit="return validatePasswords();"
-                >
+                <form method="POST">
 
                     <!-- NEW PASSWORD -->
 
@@ -920,7 +851,6 @@ if (isset($_POST['reset_password'])) {
                                 placeholder="Enter new password"
                                 minlength="6"
                                 required
-                                oninput="checkPasswordStrength()"
                             >
 
                             <button
@@ -937,27 +867,6 @@ if (isset($_POST['reset_password'])) {
 
                         <div class="password-note">
                             Password must be at least 6 characters.
-                        </div>
-
-                        <div
-                            class="strength-container"
-                            id="strengthContainer"
-                        >
-
-                            <div class="strength-bar">
-
-                                <div
-                                    class="strength-progress"
-                                    id="strengthProgress"
-                                ></div>
-
-                            </div>
-
-                            <div
-                                class="strength-text"
-                                id="strengthText"
-                            ></div>
-
                         </div>
 
                     </div>
@@ -1016,7 +925,7 @@ if (isset($_POST['reset_password'])) {
 
                 </form>
 
-                <!-- BACK LOGIN -->
+                <!-- LOGIN -->
 
                 <div class="back-login">
 
@@ -1043,8 +952,9 @@ if (isset($_POST['reset_password'])) {
 
         </div>
 
+
         <!-- =========================
-             RIGHT IMAGE
+             RIGHT SIDE
         ========================= -->
 
         <div class="right">
@@ -1077,20 +987,20 @@ if (isset($_POST['reset_password'])) {
 
     <script>
 
-        /* =========================
-           SHOW / HIDE PASSWORD
-        ========================= */
-
         function togglePassword(inputId, button) {
 
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
+            const input =
+                document.getElementById(inputId);
+
+            const icon =
+                button.querySelector('i');
 
             if (input.type === "password") {
 
                 input.type = "text";
 
                 icon.classList.remove("fa-eye");
+
                 icon.classList.add("fa-eye-slash");
 
             } else {
@@ -1098,111 +1008,11 @@ if (isset($_POST['reset_password'])) {
                 input.type = "password";
 
                 icon.classList.remove("fa-eye-slash");
+
                 icon.classList.add("fa-eye");
 
             }
-        }
 
-
-        /* =========================
-           PASSWORD STRENGTH
-        ========================= */
-
-        function checkPasswordStrength() {
-
-            const password =
-                document.getElementById("password").value;
-
-            const container =
-                document.getElementById("strengthContainer");
-
-            const progress =
-                document.getElementById("strengthProgress");
-
-            const text =
-                document.getElementById("strengthText");
-
-            if (password.length === 0) {
-
-                container.style.display = "none";
-
-                return;
-            }
-
-            container.style.display = "block";
-
-            let strength = 0;
-
-            if (password.length >= 6) {
-                strength++;
-            }
-
-            if (password.length >= 8) {
-                strength++;
-            }
-
-            if (/[A-Z]/.test(password)) {
-                strength++;
-            }
-
-            if (/[0-9]/.test(password)) {
-                strength++;
-            }
-
-            if (/[^A-Za-z0-9]/.test(password)) {
-                strength++;
-            }
-
-
-            if (strength <= 2) {
-
-                progress.style.width = "35%";
-
-                text.textContent = "Weak password";
-
-            } else if (strength <= 4) {
-
-                progress.style.width = "70%";
-
-                text.textContent = "Medium password";
-
-            } else {
-
-                progress.style.width = "100%";
-
-                text.textContent = "Strong password";
-
-            }
-        }
-
-
-        /* =========================
-           VALIDATE PASSWORD
-        ========================= */
-
-        function validatePasswords() {
-
-            const password =
-                document.getElementById("password").value;
-
-            const confirmPassword =
-                document.getElementById("confirm_password").value;
-
-            if (password !== confirmPassword) {
-
-                alert("Passwords do not match.");
-
-                return false;
-            }
-
-            if (password.length < 6) {
-
-                alert("Password must be at least 6 characters.");
-
-                return false;
-            }
-
-            return true;
         }
 
     </script>
