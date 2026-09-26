@@ -6,12 +6,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $current_admin = $admin ?? $_SESSION['user'] ?? ['name' => 'Admin', 'phone' => 'Admin Panel', 'profile_pic' => ''];
 
 $admin_sidebar_items = [
-    ['file' => 'dashboard.php',        'icon' => 'fa-chart-pie',             'label' => 'Dashboard'],
-    ['file' => 'calendar.php',         'icon' => 'fa-calendar-days',           'label' => 'Calendar'],
-    ['file' => 'profile.php',          'icon' => 'fa-user-gear',               'label' => 'Profile'],
+    ['file' => 'dashboard.php',        'icon' => 'fa-chart-pie',            'label' => 'Dashboard'],
+    ['file' => 'calendar.php',         'icon' => 'fa-calendar-days',          'label' => 'Calendar'],
+    ['file' => 'profile.php',          'icon' => 'fa-user-gear',              'label' => 'Profile'],
     ['file' => 'manage_booking.php',  'icon' => 'fa-book',                    'label' => 'Bookings'],
     ['file' => 'manage_court.php',    'icon' => 'fa-table-tennis-paddle-ball', 'label' => 'Courts'],
-    ['file' => 'manage_users.php',    'icon' => 'fa-users',                   'label' => 'Users'],
+    ['file' => 'manage_users.php',    'icon' => 'fa-users',                  'label' => 'Users'],
 ];
 ?>
 <div class="sidebar">
@@ -20,7 +20,7 @@ $admin_sidebar_items = [
         <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);">
             <i class="fa-solid fa-shuttlecock" style="color: #fff; font-size: 0.9rem;"></i>
         </div>
-        <span style="font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TailAdmin</span>
+        <span style="font-weight: 700; font-size: 1.05rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Kampung Panji</span>
     </a>
 
     <!-- Kad Profil Pengguna Bergaya Moden & Interaktif -->
