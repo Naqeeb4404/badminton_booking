@@ -51,10 +51,14 @@ if (isset($_POST['edit'])) {
 // 3. PADAM GELANGGANG (DELETE)
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM courts WHERE id=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->close();
+
+    if ($id > 0) {
+        $stmt = $conn->prepare("UPDATE courts SET status='Deleted' WHERE id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     header("Location: manage_court.php");
     exit();
 }
@@ -91,7 +95,7 @@ if (isset($_GET['edit_id'])) {
 }
 
 // Ambil senarai gelanggang dari database
-$result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
+$result = mysqli_query($conn, "SELECT * FROM courts WHERE status != 'Deleted' AND status != 'Disabled' ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
