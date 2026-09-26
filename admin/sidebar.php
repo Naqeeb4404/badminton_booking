@@ -77,13 +77,15 @@ $admin_sidebar_items = [
         <a href="manage_payment.php" class="sidebar-nav-link<?php echo $current_page === 'manage_payment.php' ? ' active' : ''; ?>">
             <div class="sidebar-nav-link-content">
                 <i class="fa-solid fa-file-invoice-dollar"></i>
-                <span>monthly</span>
-            </div>
-
-        <a href="manage_payment.php" class="sidebar-nav-link<?php echo $current_page === 'manage_payment.php' ? ' active' : ''; ?>">
-            <div class="sidebar-nav-link-content">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
                 <span>Invoice / Payments</span>
+            </div>
+        </a>
+
+        <!-- Menu Tambahan untuk Laporan Pendapatan -->
+        <a href="monthly_revenue.php" class="sidebar-nav-link<?php echo $current_page === 'monthly_revenue.php' ? ' active' : ''; ?>">
+            <div class="sidebar-nav-link-content">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Revenue Report</span>
             </div>
         </a>
     </div>
