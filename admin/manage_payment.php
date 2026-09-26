@@ -419,37 +419,37 @@ $result = mysqli_query(
         .payment-id {
             font-weight: 800;
 
-            color: #000000;
+            color: #000000 !important;
         }
 
         .customer-name {
             font-weight: 700;
 
-            color: #000000;
+            color: #000000 !important;
         }
 
         .customer-email {
             font-size: 11px;
 
-            color: #000000;
+            color: #000000 !important;
         }
 
         .booking-court {
             font-weight: 700;
 
-            color: #000000;
+            color: #000000 !important;
         }
 
         .booking-info {
             font-size: 11px;
 
-            color: #000000;
+            color: #000000 !important;
         }
 
         .amount {
             font-weight: 800;
 
-            color: #000000;
+            color: #000000 !important;
 
             white-space: nowrap;
         }
@@ -481,19 +481,19 @@ $result = mysqli_query(
         .status-approved {
             background: #dcfce7;
 
-            color: #166534 !important; /* Kekalkan warna teks badge */
+            color: #166534 !important;
         }
 
         .status-rejected {
             background: #fee2e2;
 
-            color: #991b1b !important; /* Kekalkan warna teks badge */
+            color: #991b1b !important;
         }
 
         .status-pending {
             background: #fef3c7;
 
-            color: #92400e !important; /* Kekalkan warna teks badge */
+            color: #92400e !important;
         }
 
         /* =========================
@@ -1020,7 +1020,7 @@ $result = mysqli_query(
 
                             <td>
 
-                                <span class="fw-semibold text-dark">
+                                <span class="fw-semibold" style="color: #000000 !important;">
                                     <?= htmlspecialchars(
                                         $r['payment_method'] ?? '-'
                                     ) ?>
