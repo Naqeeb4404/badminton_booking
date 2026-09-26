@@ -14,9 +14,7 @@ if(isset($_POST['court'])) {
     $booking_date = $_POST['date'] ?? '';
     $booking_time = $_POST['time'] ?? '';
 
-    // Court/date/time are already chosen on this dashboard.
-    // Continue directly to booking creation instead of asking for the court again.
-    header("Location: create_booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
+    header("Location: ../booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&duration=1&court_id=".urlencode($court_id));
     exit();
 }
 ?>
@@ -410,8 +408,21 @@ if(isset($_POST['court'])) {
 
                 <hr class="my-4">
 
-                <!-- Langkah 2: Pilih Masa Mula -->
-                <div class="step">2. Choose a start time</div>
+                <!-- Langkah 2: Pilih Tempoh -->
+                <div class="step">2. Choose duration (hours)</div>
+                <div class="time-slots mb-4">
+                    <?php for($d=1; $d<=4; $d++) { ?>
+                    <label class="time-slot-btn <?php echo $d===1 ? 'active' : ''; ?>" onclick="updateTimeCard(this)">
+                        <input type="radio" name="duration" value="<?php echo $d; ?>" <?php echo $d===1 ? 'checked' : ''; ?> required>
+                        <?php echo $d; ?> Hour<?php echo $d>1 ? 's' : ''; ?>
+                    </label>
+                    <?php } ?>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Langkah 3: Pilih Masa Mula -->
+                <div class="step">3. Choose a start time</div>
                 <div class="time-slots mb-4">
                     <?php 
                     $times = ['08:00', '10:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
@@ -428,8 +439,8 @@ if(isset($_POST['court'])) {
 
                 <hr class="my-4">
 
-                <!-- Langkah 3: Pilih Gelanggang (Format Jadual) -->
-                <div class="step">3. Choose a court</div>
+                <!-- Langkah 4: Pilih Gelanggang (Format Jadual) -->
+                <div class="step">4. Choose a court</div>
                 
                 <div class="table-responsive">
                     <table class="table table-custom align-middle mb-0">
