@@ -59,19 +59,25 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// 4. TUKAR STATUS (Available / Not Available)
+// 4. TUKAR STATUS
 if (isset($_GET['status']) && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
-    $status = $_GET['status'] === 'Available' ? 'Available' : 'Not Available';
+    $status = $_GET['status'];
+
+    $allowed_statuses = ['Available', 'Unavailable', 'Disabled', 'Deleted'];
+
+    if (!in_array($status, $allowed_statuses, true)) {
+        $status = 'Available';
+    }
 
     $stmt = $conn->prepare("UPDATE courts SET status=? WHERE id=?");
     $stmt->bind_param("si", $status, $id);
     $stmt->execute();
     $stmt->close();
+
     header("Location: manage_court.php");
     exit();
 }
-
 // 5. AMBIL DATA GELANGGANG UNTUK DI-EDIT (JIKA ?edit_id WUJUD)
 $editCourt = null;
 if (isset($_GET['edit_id'])) {
