@@ -280,7 +280,6 @@ $result = mysqli_query(
 
             font-weight: 700;
 
-            /* Ditukar kepada warna putih */
             color: #ffffff;
         }
 
@@ -289,7 +288,6 @@ $result = mysqli_query(
 
             font-weight: 700;
 
-            /* Ditukar kepada warna putih */
             color: #ffffff;
 
             margin-bottom: 7px;
@@ -373,7 +371,6 @@ $result = mysqli_query(
             background:
                 rgba(248, 250, 252, 0.9);
 
-            /* Ditukar kepada warna hitam */
             color: #000000;
 
             font-size: 11px;
@@ -404,8 +401,8 @@ $result = mysqli_query(
 
             font-size: 13px;
             
-            /* Tetapkan warna teks asas dalam jadual kepada hitam */
-            color: #000000;
+            /* Tetapkan semua warna teks dalam jadual kepada hitam */
+            color: #000000 !important;
         }
 
         .payment-table tbody tr {
@@ -434,8 +431,7 @@ $result = mysqli_query(
         .customer-email {
             font-size: 11px;
 
-            /* Ditukar kepada hitam pekat/hampir hitam untuk kebolehbacaan */
-            color: #1e293b;
+            color: #000000;
         }
 
         .booking-court {
@@ -447,7 +443,7 @@ $result = mysqli_query(
         .booking-info {
             font-size: 11px;
 
-            color: #1e293b;
+            color: #000000;
         }
 
         .amount {
@@ -485,19 +481,19 @@ $result = mysqli_query(
         .status-approved {
             background: #dcfce7;
 
-            color: #166534;
+            color: #166534 !important; /* Kekalkan warna teks badge */
         }
 
         .status-rejected {
             background: #fee2e2;
 
-            color: #991b1b;
+            color: #991b1b !important; /* Kekalkan warna teks badge */
         }
 
         .status-pending {
             background: #fef3c7;
 
-            color: #92400e;
+            color: #92400e !important; /* Kekalkan warna teks badge */
         }
 
         /* =========================
@@ -531,7 +527,7 @@ $result = mysqli_query(
 
             margin-top: 5px;
 
-            color: #2563eb;
+            color: #2563eb !important;
 
             text-decoration: none;
 
@@ -541,7 +537,7 @@ $result = mysqli_query(
         }
 
         .manage-link:hover {
-            color: #1d4ed8;
+            color: #1d4ed8 !important;
 
             text-decoration: underline;
         }
