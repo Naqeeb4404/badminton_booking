@@ -232,7 +232,7 @@ $result = mysqli_query($conn, $query);
     <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR -->
     <?php include __DIR__ . '/sidebar.php'; ?>

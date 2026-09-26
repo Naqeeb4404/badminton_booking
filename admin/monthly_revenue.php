@@ -9,8 +9,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 }
 
 // 1. Filter Bulan (untuk Monthly & Daily)
-$user = $_SESSION['user'];
-
 $selected_month = $_GET['month'] ?? date('Y-m');
 if (!preg_match('/^\d{4}-\d{2}$/', $selected_month)) {
     $selected_month = date('Y-m');
@@ -83,47 +81,12 @@ $month_name = date("F Y", strtotime($selected_month . "-01"));
 $date_name = date("d M Y", strtotime($selected_date));
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revenue Report - Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="sidebar.css">
-    <style>
-        .container-box { max-width: 1200px; margin: 0 auto; padding: 0; }
-        .page-title { font-weight: 800; color:#111827; }
-        .revenue-card, .filter-card { border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .filter-card { padding: 20px; margin-bottom: 25px; }
-        .revenue-card { padding: 25px; height: 100%; }
-        .revenue-label { color: #64748b; font-size: 14px; font-weight: 700; text-transform: uppercase; }
-        .revenue-amount { font-size: 32px; font-weight: 800; margin-top: 8px; color: #1e293b; }
-    </style>
-</head>
-
-<body class="admin-page">
-    <?php include __DIR__ . '/sidebar.php'; ?>
-
-    <div class="main-content">
-        <header class="topbar">
-            <form action="" method="GET" class="search-form">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" name="search" class="form-control search-input" placeholder="Taip untuk cari..." autocomplete="off">
-            </form>
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-pill">
-                    <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($user['name'], 0, 1))); ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($user['name']); ?></div>
-                </div>
-                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar</a>
-            </div>
-        </header>
-        <main class="content-body">
-<div class="container-box">
+<!DOCTYPE html><html lang="ms"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Laporan Kewangan | Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><link rel="stylesheet" href="sidebar.css">
+<style>.revenue-page .container-box{max-width:1200px;margin:0 auto;padding:0}.revenue-page .page-title{font-weight:700}.revenue-page .card{border:none;border-radius:16px;box-shadow:0 5px 20px rgba(0,0,0,.06)}.revenue-page .filter-card{padding:20px;margin-bottom:25px}.revenue-page .revenue-card{padding:25px;height:100%}.revenue-page .revenue-label{color:#6c757d;font-size:14px;font-weight:600;text-transform:uppercase}.revenue-page .revenue-amount{font-size:32px;font-weight:700;margin-top:8px;color:#1e293b}</style>
+</head><body class="admin-page revenue-page">
+<?php include __DIR__ . '/sidebar.php'; ?><div class="main-content"><header class="topbar"><div class="search-form"><i class="fa-solid fa-search"></i><input type="text" class="form-control search-input" placeholder="Taip untuk cari..." autocomplete="off"></div><div class="d-flex align-items-center gap-3"><div class="user-pill"><div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['user']['name'] ?? 'A',0,1))); ?></div><div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div></div><a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar</a></div></header><main class="content-body"><div class="container-box">
 
     <!-- PAGE TITLE -->
     <div class="mb-4">
@@ -192,8 +155,5 @@ $date_name = date("d M Y", strtotime($selected_date));
             </div>
         </div>
     </div>
-        </main>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+</div></main></div></body></html>

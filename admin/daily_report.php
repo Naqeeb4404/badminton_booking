@@ -34,126 +34,93 @@ $courtUsageQuery->execute();
 $courtUsageResult = $courtUsageQuery->get_result();
 ?>
 <!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Report - Admin</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="sidebar.css">
-</head>
-
-<body class="admin-report-page">
-
-    <?php include __DIR__ . '/sidebar.php'; ?>
-
-    <main class="main-content">
-        <div class="report-content">
-
-            <div class="report-header d-flex flex-wrap justify-content-between align-items-end gap-3">
-                <div>
-                    <h2><i class="fa-solid fa-calendar-day me-2"></i>Daily Report</h2>
-                    <p>Ringkasan tempahan, pelanggan dan pendapatan untuk tarikh yang dipilih.</p>
-                </div>
-
-                <form method="GET" class="d-flex gap-2 align-items-end">
-                    <div>
-                        <label for="report-date" class="form-label fw-semibold mb-1">Tarikh</label>
-                        <input id="report-date" type="date" name="date"
-                               value="<?= htmlspecialchars($reportDate) ?>"
-                               class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-filter me-1"></i> Papar
-                    </button>
-                </form>
-            </div>
-
-            <div class="row g-4 mb-4">
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100">
-                        <span class="text-muted small">Jumlah Tempahan</span>
-                        <h3 class="fw-bold mb-0 mt-2"><?= (int)($stats['total_bookings'] ?? 0) ?></h3>
-                    </div>
-                </div>
-
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100 border-start border-success border-4">
-                        <span class="text-muted small">Tempahan Diluluskan</span>
-                        <h3 class="fw-bold text-success mb-0 mt-2"><?= (int)($stats['approved_bookings'] ?? 0) ?></h3>
-                    </div>
-                </div>
-
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100 border-start border-primary border-4">
-                        <span class="text-muted small">Pendapatan Harian</span>
-                        <h3 class="fw-bold text-primary mb-0 mt-2">
-                            RM <?= number_format((float)($stats['total_revenue'] ?? 0), 2) ?>
-                        </h3>
-                    </div>
-                </div>
-
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100">
-                        <span class="text-muted small">Dalam Proses (Pending)</span>
-                        <h3 class="fw-bold text-warning mb-0 mt-2"><?= (int)($stats['pending_bookings'] ?? 0) ?></h3>
-                    </div>
-                </div>
-
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100">
-                        <span class="text-muted small">Ditolak</span>
-                        <h3 class="fw-bold text-secondary mb-0 mt-2"><?= (int)($stats['rejected_bookings'] ?? 0) ?></h3>
-                    </div>
-                </div>
-
-                <div class="col-xl-4 col-md-6">
-                    <div class="card report-card p-4 h-100">
-                        <span class="text-muted small">Bilangan Pelanggan Unik</span>
-                        <h3 class="fw-bold text-info mb-0 mt-2"><?= (int)($stats['total_customers'] ?? 0) ?></h3>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card report-card overflow-hidden">
-                <div class="card-header bg-white border-0 py-3 px-4">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="fa-solid fa-table-list me-2"></i>
-                        Penggunaan Gelanggang
-                    </h5>
-                    <small class="text-muted">
-                        Tarikh: <?= htmlspecialchars($reportDate) ?>
-                    </small>
-                </div>
-
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="px-4">Nama Gelanggang</th>
-                                    <th>Jumlah Tempahan Diluluskan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while ($c = $courtUsageResult->fetch_assoc()): ?>
-                                    <tr>
-                                        <td class="px-4 fw-bold"><?= htmlspecialchars($c['court_name']) ?></td>
-                                        <td><?= (int)$c['count_booked'] ?> sesi</td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
+<html lang="ms"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan Harian - Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="sidebar.css"></head>
+<body class="admin-page">
+<?php include __DIR__ . '/sidebar.php'; ?>
+<div class="main-content">
+<header class="topbar"><div class="search-form"><i class="fa-solid fa-search"></i><input type="text" class="form-control search-input" placeholder="Taip untuk cari..." autocomplete="off"></div><div class="d-flex align-items-center gap-3"><div class="user-pill"><div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['user']['name'] ?? 'A',0,1))); ?></div><div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div></div><a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar</a></div></header>
+<main class="content-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Laporan Harian Tempahan</h2>
+            <form method="GET" class="d-flex gap-2">
+                <input type="date" name="date" value="<?= htmlspecialchars($reportDate) ?>" class="form-control form-control-sm">
+                <button type="submit" class="btn btn-primary btn-sm">Papar Laporan</button>
+            </form>
         </div>
-    </main>
 
+        <!-- Kad Ringkasan Laporan -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3">
+                    <span class="text-muted small">Jumlah Tempahan</span>
+                    <h4 class="fw-bold mb-0"><?= $stats['total_bookings'] ?? 0 ?></h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3 border-start border-success border-4">
+                    <span class="text-muted small">Tempahan Diluluskan</span>
+                    <h4 class="fw-bold text-success mb-0"><?= $stats['approved_bookings'] ?? 0 ?></h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3 border-start border-danger border-4">
+                    <span class="text-muted small">Pendapatan Harian</span>
+                    <h4 class="fw-bold text-danger mb-0">RM <?= number_format($stats['total_revenue'] ?? 0, 2) ?></h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3">
+                    <span class="text-muted small">Dalam Proses (Pending)</span>
+                    <h4 class="fw-bold text-warning mb-0"><?= $stats['pending_bookings'] ?? 0 ?></h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3">
+                    <span class="text-muted small">Ditolak</span>
+                    <h4 class="fw-bold text-secondary mb-0"><?= $stats['rejected_bookings'] ?? 0 ?></h4>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-3">
+                    <span class="text-muted small">Bilangan Pelanggan Unik</span>
+                    <h4 class="fw-bold text-info mb-0"><?= $stats['total_customers'] ?? 0 ?></h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jadual Penggunaan Gelanggang -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0">Status Penggunaan Gelanggang pada <?= htmlspecialchars($reportDate) ?></h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Gelanggang</th>
+                                <th>Jumlah Tempahan Diluluskan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while($c = $courtUsageResult->fetch_assoc()): ?>
+                            <tr>
+                                <td class="fw-bold"><?= htmlspecialchars($c['court_name']) ?></td>
+                                <td><?= $c['count_booked'] ?> sesi</td>
+                            </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html></main></div></body></html>
