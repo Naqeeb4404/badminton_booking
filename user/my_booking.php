@@ -720,12 +720,12 @@ body {
 
                 <?php foreach($notifications as $notification): ?>
 
-                    <div class="notification-item 
-                        <?php echo ($notification['status'] === 'Unread') 
-                            ? 'notification-unread' 
-                            : ''; 
-                        ?>"
-                    >
+                  <div 
+    class="notification-item <?php echo ($notification['status'] === 'Unread') ? 'notification-unread' : ''; ?>"
+    data-notification-id="<?php echo (int)$notification['id']; ?>"
+    onclick="markNotificationRead(this)"
+    style="cursor: pointer;"
+>
 
                         <div class="notification-icon">
 
@@ -1257,7 +1257,87 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
 
+function markNotificationRead(element) {
+
+    const notificationId = element.dataset.notificationId;
+
+    if (!notificationId) {
+        return;
+    }
+
+    // Already read
+    if (!element.classList.contains('notification-unread')) {
+        return;
+    }
+
+    fetch('mark_notification_read.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'notification_id=' + encodeURIComponent(notificationId)
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.success) {
+
+            // Remove unread background
+            element.classList.remove('notification-unread');
+
+            // Change icon
+            const icon = element.querySelector('.notification-icon i');
+
+            if (icon) {
+                icon.className = 'fa-solid fa-check';
+            }
+
+            // Update notification count
+            const countBadge = document.querySelector('.notification-count');
+
+            if (countBadge) {
+
+                let currentCount = parseInt(countBadge.textContent.trim()) || 0;
+
+                currentCount--;
+
+                if (currentCount <= 0) {
+                    countBadge.remove();
+                } else {
+                    countBadge.textContent = currentCount;
+                }
+            }
+
+            // Update "X Unread" badge
+            const unreadBadge = document.querySelector(
+                '#notifications .badge.bg-danger'
+            );
+
+            if (unreadBadge) {
+
+                let currentUnread = parseInt(
+                    unreadBadge.textContent.trim()
+                ) || 0;
+
+                currentUnread--;
+
+                if (currentUnread <= 0) {
+                    unreadBadge.remove();
+                } else {
+                    unreadBadge.textContent = currentUnread + ' Unread';
+                }
+            }
+        }
+
+    })
+    .catch(error => {
+        console.error('Notification error:', error);
+    });
+}
+
+</script>
 </body>
 
 </html>
