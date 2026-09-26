@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 
@@ -12,8 +11,6 @@ if (
     exit();
 }
 
-// Payment status is driven by the booking's Approve/Reject decision.
-// This page is a read-only record of receipts/payments for reference.
 $result = mysqli_query(
     $conn,
     "SELECT 
@@ -1350,4 +1347,3 @@ resetButton.addEventListener(
 
 </body>
 </html>
-```
