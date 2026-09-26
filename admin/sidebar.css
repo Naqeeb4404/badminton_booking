@@ -183,3 +183,82 @@ body.admin-page {
         width: 220px;
     }
 }
+
+
+/* =========================================================
+   REPORT PAGES - SHARED ADMIN LAYOUT
+   ========================================================= */
+body.admin-report-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh;
+    background: #f1f5f9 !important;
+    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+}
+
+.admin-report-page .main-content {
+    margin-left: 280px !important;
+    width: calc(100% - 280px);
+    min-height: 100vh;
+    padding: 0 !important;
+}
+
+.admin-report-page .report-content {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 36px 40px 50px;
+}
+
+.admin-report-page .report-header {
+    margin-bottom: 24px;
+}
+
+.admin-report-page .report-header h2 {
+    margin-bottom: 6px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.admin-report-page .report-header p {
+    margin-bottom: 0;
+    color: #64748b;
+}
+
+.admin-report-page .report-card {
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+}
+
+.admin-report-page .report-filter {
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.admin-report-page .report-filter .form-control,
+.admin-report-page .report-filter .form-select {
+    min-height: 42px;
+}
+
+@media (max-width: 992px) {
+    .admin-report-page .main-content {
+        margin-left: 280px !important;
+        width: calc(100% - 280px);
+    }
+
+    .admin-report-page .report-content {
+        padding: 28px 24px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-report-page .main-content {
+        margin-left: 240px !important;
+        width: calc(100% - 240px);
+    }
+
+    .admin-report-page .report-content {
+        padding: 22px 16px 35px;
+    }
+}

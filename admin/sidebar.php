@@ -12,6 +12,8 @@ $admin_sidebar_items = [
     ['file' => 'manage_booking.php',  'icon' => 'fa-book',                 'label' => 'Bookings'],
     ['file' => 'manage_court.php',    'icon' => 'fa-table-tennis-paddle-ball', 'label' => 'Courts'],
     ['file' => 'manage_users.php',    'icon' => 'fa-users',                'label' => 'Users'],
+    ['file' => 'daily_report.php',    'icon' => 'fa-calendar-day',          'label' => 'Daily Report'],
+    ['file' => 'monthly_revenue.php', 'icon' => 'fa-chart-line',            'label' => 'Revenue Report'],
 ];
 ?>
 <div class="sidebar">
@@ -80,21 +82,5 @@ $admin_sidebar_items = [
                 <span>Invoice / Payments</span>
             </div>
         </a>
-
-        <!-- Menu Laporan Pendapatan -->
-        <a href="monthly_revenue.php" class="sidebar-nav-link<?php echo $current_page === 'monthly_revenue.php' ? ' active' : ''; ?>">
-            <div class="sidebar-nav-link-content">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Revenue Report</span>
-            </div>
-        </a>
-
-        <!-- Menu Laporan Harian -->
-        <a href="daily_report.php" class="sidebar-nav-link<?php echo $current_page === 'daily_report.php' ? ' active' : ''; ?>">
-            <div class="sidebar-nav-link-content">
-                <i class="fa-solid fa-calendar-day"></i>
-                <span>Daily Report</span>
-            </div>
-        </a>
-    </div>
+</div>
 </div>

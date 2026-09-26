@@ -80,131 +80,127 @@ mysqli_stmt_close($stmt);
 $month_name = date("F Y", strtotime($selected_month . "-01"));
 $date_name = date("d M Y", strtotime($selected_date));
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Kewangan | Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Revenue Report - Admin</title>
 
-    <style>
-        body {
-            background: #f5f6fa;
-            font-family: Arial, sans-serif;
-        }
-        .container-box {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-        .page-title {
-            font-weight: 700;
-        }
-        .card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
-        }
-        .filter-card {
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-        .revenue-card {
-            padding: 25px;
-            height: 100%;
-        }
-        .revenue-label {
-            color: #6c757d;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .revenue-amount {
-            font-size: 32px;
-            font-weight: 700;
-            margin-top: 8px;
-            color: #1e293b;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-report-page">
 
-<div class="container-box">
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
-    <!-- PAGE TITLE -->
-    <div class="mb-4">
-        <h2 class="page-title"><i class="fa-solid fa-chart-line text-warning"></i> Laporan Pendapatan (Revenue)</h2>
-        <p class="text-muted">Semak jumlah pendapatan kutipan pembayaran (Approved) secara harian, bulanan, dan tahunan.</p>
-    </div>
+    <main class="main-content">
+        <div class="report-content">
 
-    <!-- FILTER SECTION -->
-    <div class="card filter-card">
-        <form method="GET" class="row align-items-end g-3">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Pilih Tarikh Harian</label>
-                <input type="date" name="date" class="form-control" value="<?php echo htmlspecialchars($selected_date); ?>">
+            <div class="report-header">
+                <h2><i class="fa-solid fa-chart-line text-warning me-2"></i>Revenue Report</h2>
+                <p>Semak pendapatan daripada pembayaran yang telah diluluskan secara harian, bulanan dan tahunan.</p>
             </div>
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Pilih Bulan</label>
-                <input type="month" name="month" class="form-control" value="<?php echo htmlspecialchars($selected_month); ?>">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Pilih Tahun</label>
-                <select name="year" class="form-select">
-                    <?php 
-                    $current_yr = date('Y');
-                    for ($y = $current_yr; $y >= $current_yr - 5; $y--) {
-                        $selected = ($y == $selected_year) ? 'selected' : '';
-                        echo "<option value='$y' $selected>$y</option>";
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="col-md-1">
-                <button type="submit" class="btn btn-warning w-100 text-white fw-bold"><i class="fa-solid fa-filter"></i></button>
-            </div>
-        </form>
-    </div>
 
-    <!-- REVENUE STATS CARDS -->
-    <div class="row g-4">
-        <!-- 1. JUMLAH HARIAN -->
-        <div class="col-md-4">
-            <div class="card revenue-card border-start border-primary border-4">
-                <div class="revenue-label">Pendapatan Harian</div>
-                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar"></i> <?php echo $date_name; ?></div>
-                <div class="revenue-amount text-primary">RM <?php echo number_format($total_daily_revenue, 2); ?></div>
-                <div class="mt-2 text-muted small"><i class="fa-solid fa-receipt"></i> <?php echo $total_daily_count; ?> transaksi berjaya</div>
+            <div class="card report-card report-filter">
+                <form method="GET" class="row align-items-end g-3">
+
+                    <div class="col-xl-4 col-md-6">
+                        <label for="revenue-date" class="form-label fw-bold">Pilih Tarikh Harian</label>
+                        <input id="revenue-date" type="date" name="date"
+                               class="form-control"
+                               value="<?= htmlspecialchars($selected_date) ?>">
+                    </div>
+
+                    <div class="col-xl-4 col-md-6">
+                        <label for="revenue-month" class="form-label fw-bold">Pilih Bulan</label>
+                        <input id="revenue-month" type="month" name="month"
+                               class="form-control"
+                               value="<?= htmlspecialchars($selected_month) ?>">
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <label for="revenue-year" class="form-label fw-bold">Pilih Tahun</label>
+                        <select id="revenue-year" name="year" class="form-select">
+                            <?php
+                            $current_yr = date('Y');
+                            for ($y = $current_yr; $y >= $current_yr - 5; $y--) {
+                                $selected = ($y == $selected_year) ? 'selected' : '';
+                                echo "<option value='$y' $selected>$y</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-1 col-md-6">
+                        <button type="submit" class="btn btn-warning w-100 fw-bold">
+                            <i class="fa-solid fa-filter"></i>
+                            <span class="d-xl-none ms-1">Filter</span>
+                        </button>
+                    </div>
+
+                </form>
             </div>
+
+            <div class="row g-4">
+
+                <div class="col-xl-4 col-md-6">
+                    <div class="card report-card p-4 h-100 border-start border-primary border-4">
+                        <div class="text-muted small fw-semibold text-uppercase">Pendapatan Harian</div>
+                        <div class="text-muted small mt-2">
+                            <i class="fa-regular fa-calendar me-1"></i><?= htmlspecialchars($date_name) ?>
+                        </div>
+                        <div class="fs-2 fw-bold text-primary mt-2">
+                            RM <?= number_format($total_daily_revenue, 2) ?>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            <i class="fa-solid fa-receipt me-1"></i>
+                            <?= $total_daily_count ?> transaksi berjaya
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <div class="card report-card p-4 h-100 border-start border-success border-4">
+                        <div class="text-muted small fw-semibold text-uppercase">Pendapatan Bulanan</div>
+                        <div class="text-muted small mt-2">
+                            <i class="fa-regular fa-calendar-days me-1"></i><?= htmlspecialchars($month_name) ?>
+                        </div>
+                        <div class="fs-2 fw-bold text-success mt-2">
+                            RM <?= number_format($total_monthly_revenue, 2) ?>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            <i class="fa-solid fa-receipt me-1"></i>
+                            <?= $total_monthly_count ?> transaksi berjaya
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6">
+                    <div class="card report-card p-4 h-100 border-start border-warning border-4">
+                        <div class="text-muted small fw-semibold text-uppercase">Pendapatan Tahunan</div>
+                        <div class="text-muted small mt-2">
+                            <i class="fa-solid fa-calendar-check me-1"></i>
+                            Tahun <?= (int)$selected_year ?>
+                        </div>
+                        <div class="fs-2 fw-bold text-warning mt-2">
+                            RM <?= number_format($total_yearly_revenue, 2) ?>
+                        </div>
+                        <div class="mt-2 text-muted small">
+                            <i class="fa-solid fa-receipt me-1"></i>
+                            <?= $total_yearly_count ?> transaksi berjaya
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
+    </main>
 
-        <!-- 2. JUMLAH BULANAN -->
-        <div class="col-md-4">
-            <div class="card revenue-card border-start border-success border-4">
-                <div class="revenue-label">Pendapatan Bulanan</div>
-                <div class="text-muted small mb-2"><i class="fa-regular fa-calendar-days"></i> <?php echo $month_name; ?></div>
-                <div class="revenue-amount text-success">RM <?php echo number_format($total_monthly_revenue, 2); ?></div>
-                <div class="mt-2 text-muted small"><i class="fa-solid fa-receipt"></i> <?php echo $total_monthly_count; ?> transaksi berjaya</div>
-            </div>
-        </div>
-
-        <!-- 3. JUMLAH TAHUNAN -->
-        <div class="col-md-4">
-            <div class="card revenue-card border-start border-warning border-4">
-                <div class="revenue-label">Pendapatan Keseluruhan Tahun</div>
-                <div class="text-muted small mb-2"><i class="fa-solid fa-calendar-check"></i> Tahun <?php echo $selected_year; ?></div>
-                <div class="revenue-amount text-warning">RM <?php echo number_format($total_yearly_revenue, 2); ?></div>
-                <div class="mt-2 text-muted small"><i class="fa-solid fa-receipt"></i> <?php echo $total_yearly_count; ?> transaksi berjaya</div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
