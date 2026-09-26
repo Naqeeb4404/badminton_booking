@@ -340,9 +340,9 @@ $result = $conn->query($query);
         .search-form { display: none; }
     }
 </style>
-<link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css">
 </head>
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR -->
     <?php include __DIR__ . '/sidebar.php'; ?>

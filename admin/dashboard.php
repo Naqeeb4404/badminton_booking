@@ -364,7 +364,7 @@ $pendingBookings = (int)$pendingRow['total'];
     <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR -->
     <?php include __DIR__ . '/sidebar.php'; ?>

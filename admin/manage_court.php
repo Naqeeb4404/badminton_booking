@@ -348,7 +348,7 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
     <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR MENU -->
     <?php include __DIR__ . '/sidebar.php'; ?>

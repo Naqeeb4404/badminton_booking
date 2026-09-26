@@ -244,7 +244,7 @@ $total_users = $user_row['total_users'];
     <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR MENU LENGKAP -->
     <?php include __DIR__ . '/sidebar.php'; ?>

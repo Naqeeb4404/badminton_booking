@@ -96,7 +96,6 @@ function e($value) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="sidebar.css">
 
 <style>
     :root {
@@ -336,6 +335,7 @@ function e($value) {
         .grid-2 { grid-template-columns: 1fr; }
     }
 </style>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 <body class="admin-page">
 

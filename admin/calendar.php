@@ -368,7 +368,7 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
     <link rel="stylesheet" href="sidebar.css">
 </head>
 
-<body>
+<body class="admin-page">
 
     <!-- SIDEBAR -->
     <?php include __DIR__ . '/sidebar.php'; ?>
