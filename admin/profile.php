@@ -96,6 +96,7 @@ function e($value) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="sidebar.css">
 
 <style>
     :root {
@@ -117,21 +118,26 @@ function e($value) {
         background-color: var(--bg-main);
         font-family: 'Plus Jakarta Sans', sans-serif;
         color: var(--text-main);
-        padding: 30px;
+        display: flex;
+        min-height: 100vh;
+        overflow-x: hidden;
     }
 
-    .app-layout {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        gap: 25px;
-        max-width: 1200px;
-        margin: 0 auto;
+    /* Tetapan kontena utama supaya selari dengan skrol gaya dashboard */
+    .main-content {
+        margin-left: 260px;
+        flex-grow: 1;
+        padding: 30px;
+        box-sizing: border-box;
+        overflow-y: auto;
     }
 
     .content-area {
         display: flex;
         flex-direction: column;
         gap: 25px;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     .top-nav {
@@ -326,11 +332,10 @@ function e($value) {
     .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
     @media (max-width: 900px) {
-        .app-layout { grid-template-columns: 1fr; }
+        .main-content { margin-left: 0; padding: 15px; }
         .grid-2 { grid-template-columns: 1fr; }
     }
 </style>
-<link rel="stylesheet" href="sidebar.css">
 </head>
 <body class="admin-page">
 
