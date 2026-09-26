@@ -96,9 +96,7 @@ if (isset($_POST['reset_password'])) {
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Reset Password - Badminton Kampung Panji
-    </title>
+    <title>Reset Password - Badminton Kampung Panji</title>
 
     <!-- Bootstrap -->
     <link
@@ -142,6 +140,8 @@ if (isset($_POST['reset_password'])) {
             align-items: center;
 
             padding: 20px;
+
+            overflow: hidden;
         }
 
 
@@ -182,7 +182,7 @@ if (isset($_POST['reset_password'])) {
 
             background: #eef2f3;
 
-            padding: 45px 55px;
+            padding: 40px 55px;
 
             display: flex;
 
@@ -190,7 +190,7 @@ if (isset($_POST['reset_password'])) {
 
             justify-content: center;
 
-            overflow-y: auto;
+            overflow: hidden;
         }
 
 
@@ -291,7 +291,7 @@ if (isset($_POST['reset_password'])) {
 
         .back-top {
 
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
 
@@ -322,36 +322,6 @@ if (isset($_POST['reset_password'])) {
 
 
         /* =====================================================
-           ICON BOX
-        ===================================================== */
-
-        .icon-box {
-
-            width: 55px;
-
-            height: 55px;
-
-            background: #000;
-
-            color: #fff;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 21px;
-
-            margin-bottom: 16px;
-
-            flex-shrink: 0;
-        }
-
-
-        /* =====================================================
            TITLE
         ===================================================== */
 
@@ -366,6 +336,10 @@ if (isset($_POST['reset_password'])) {
             margin-bottom: 8px;
         }
 
+
+        /* =====================================================
+           DESCRIPTION
+        ===================================================== */
 
         .description {
 
@@ -459,7 +433,7 @@ if (isset($_POST['reset_password'])) {
 
         .form-group {
 
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
 
@@ -473,7 +447,7 @@ if (isset($_POST['reset_password'])) {
 
             color: #222;
 
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
 
@@ -490,7 +464,7 @@ if (isset($_POST['reset_password'])) {
 
 
         /* =====================================================
-           INPUT LEFT ICON
+           INPUT ICON
         ===================================================== */
 
         .input-icon {
@@ -597,12 +571,12 @@ if (isset($_POST['reset_password'])) {
 
             color: #777;
 
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
 
         /* =====================================================
-           ERROR BOX
+           ERROR
         ===================================================== */
 
         .error-box {
@@ -619,18 +593,18 @@ if (isset($_POST['reset_password'])) {
 
             color: #b02a37;
 
-            padding: 10px 14px;
+            padding: 9px 14px;
 
             border-radius: 6px;
 
             font-size: 13px;
 
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
 
         /* =====================================================
-           RESET BUTTON
+           BUTTON
         ===================================================== */
 
         .btn-reset {
@@ -672,14 +646,14 @@ if (isset($_POST['reset_password'])) {
 
 
         /* =====================================================
-           BACK TO LOGIN
+           LOGIN LINK
         ===================================================== */
 
         .back-login {
 
             text-align: center;
 
-            margin-top: 16px;
+            margin-top: 14px;
 
             font-size: 13px;
 
@@ -711,15 +685,15 @@ if (isset($_POST['reset_password'])) {
 
             text-align: center;
 
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
 
         .logo img {
 
-            width: 42px;
+            width: 40px;
 
-            height: 42px;
+            height: 40px;
 
             object-fit: cover;
 
@@ -831,7 +805,7 @@ if (isset($_POST['reset_password'])) {
 
                 padding: 15px;
 
-                align-items: center;
+                overflow: auto;
             }
 
 
@@ -857,7 +831,7 @@ if (isset($_POST['reset_password'])) {
 
                 padding: 35px 30px;
 
-                overflow-y: visible;
+                overflow: visible;
             }
 
 
@@ -890,16 +864,6 @@ if (isset($_POST['reset_password'])) {
 
                 font-size: 29px;
             }
-
-
-            .icon-box {
-
-                width: 50px;
-
-                height: 50px;
-
-                font-size: 19px;
-            }
         }
 
     </style>
@@ -908,6 +872,7 @@ if (isset($_POST['reset_password'])) {
 
 
 <body>
+
 
     <div class="reset-container">
 
@@ -922,7 +887,7 @@ if (isset($_POST['reset_password'])) {
             <?php if (!empty($success)): ?>
 
 
-                <!-- SUCCESS MESSAGE -->
+                <!-- SUCCESS -->
 
                 <div class="success-wrapper">
 
@@ -976,17 +941,6 @@ if (isset($_POST['reset_password'])) {
                         Back
 
                     </a>
-
-                </div>
-
-
-                <!-- =================================================
-                     ICON
-                ================================================= -->
-
-                <div class="icon-box">
-
-                    <i class="fa-solid fa-lock"></i>
 
                 </div>
 
@@ -1063,7 +1017,7 @@ if (isset($_POST['reset_password'])) {
 
 
                 <!-- =================================================
-                     RESET FORM
+                     FORM
                 ================================================= -->
 
                 <form method="POST">
@@ -1168,7 +1122,7 @@ if (isset($_POST['reset_password'])) {
                     </div>
 
 
-                    <!-- SUBMIT -->
+                    <!-- BUTTON -->
 
                     <button
                         type="submit"
@@ -1187,7 +1141,7 @@ if (isset($_POST['reset_password'])) {
 
 
                 <!-- =================================================
-                     LOGIN LINK
+                     LOGIN
                 ================================================= -->
 
                 <div class="back-login">
