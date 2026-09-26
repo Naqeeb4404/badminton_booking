@@ -228,7 +228,7 @@ button:hover{
                 </div>
                 <div>
                     <span>Time</span>
-                    <span><?= $booking['booking_time']; ?></span>
+                    <span><?= htmlspecialchars($booking['booking_time']); ?> (<?= (int)($booking['duration_hours'] ?? 1); ?> hour<?= ((int)($booking['duration_hours'] ?? 1) > 1 ? 's' : ''); ?>)</span>
                 </div>
                 <div class="total">
                     <span>Total</span>
