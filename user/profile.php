@@ -89,7 +89,7 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - AceTime</title>
+    <title>User Profile - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -381,7 +381,7 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
 
         <!-- Header Navigation -->
         <nav class="custom-navbar">
-            <a href="#" class="brand-logo">AceTime</a>
+            <a href="#" class="brand-logo">Badminton Kampung Panji</a>
             <a href="dashboard.php" class="btn-black">
                 <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
             </a>
@@ -614,10 +614,10 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
                         <?php else: ?>
                             <div class="notif-item">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="fw-bold mb-0 text-white">Selamat Datang ke AceTime!</h6>
+                                    <h6 class="fw-bold mb-0 text-white">Selamat Datang ke Badminton Kampung Panji!</h6>
                                     <small class="text-white-50">Baru sahaja</small>
                                 </div>
-                                <p class="text-white-50 small mb-0">Terima kasih kerana memilih AceTime untuk tempahan gelanggang anda.</p>
+                                <p class="text-white-50 small mb-0">Terima kasih kerana memilih Badminton Kampung Panji untuk tempahan gelanggang anda.</p>
                             </div>
                         <?php endif; ?>
                     </div>

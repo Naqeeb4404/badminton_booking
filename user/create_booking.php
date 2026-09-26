@@ -3,20 +3,20 @@ session_start();
 include __DIR__ . '/../config/db.php';
 
 if(!isset($_SESSION['user'])){
-    $date = $_POST['date'] ?? '';
-    $time = $_POST['time'] ?? '';
-    $court = $_POST['court_id'] ?? '';
+    $date = $_POST['date'] ?? $_GET['date'] ?? '';
+    $time = $_POST['time'] ?? $_GET['time'] ?? '';
+    $court = $_POST['court_id'] ?? $_GET['court_id'] ?? '';
     header("Location: ../auth/login.php?return=booking&date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court));
     exit();
 }
 
 $user_id = (int)$_SESSION['user']['id'];
-$date = $_POST['date'] ?? '';
-$time = $_POST['time'] ?? '';
-$court_id = (int)($_POST['court_id'] ?? 0);
+$date = $_POST['date'] ?? $_GET['date'] ?? '';
+$time = $_POST['time'] ?? $_GET['time'] ?? '';
+$court_id = (int)($_POST['court_id'] ?? $_GET['court_id'] ?? 0);
 
 if(!$date || !$time || !$court_id || $date < date('Y-m-d')){
-    header("Location: ../booking.php?error=".urlencode('Maklumat booking tidak lengkap.'));
+    header("Location: dashboard.php?court_id=".urlencode($court_id)."&error=".urlencode('Maklumat booking tidak lengkap.'));
     exit();
 }
 
@@ -35,7 +35,7 @@ try {
 
     if(!$court || $court['status'] !== 'Available'){
         $conn->rollback();
-        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Gelanggang ini tidak tersedia.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Gelanggang ini tidak tersedia.'));
         exit();
     }
 
@@ -49,7 +49,7 @@ try {
 
     if($exists){
         $conn->rollback();
-        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
         exit();
     }
 
@@ -62,6 +62,7 @@ try {
     $conn->commit();
 
     $_SESSION['latest_booking_id'] = $booking_id;
+    $_SESSION['selected_court_id'] = $court_id;
     header("Location: payment.php");
     exit();
 
@@ -71,9 +72,9 @@ try {
     // a second request for the exact same court/date/time slipped past the row
     // lock above and hit the database's own uniqueness guarantee instead.
     if($e->getCode() === 1062){
-        header("Location: ../booking.php?date=".urlencode($date)."&time=".urlencode($time)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
     }else{
-        header("Location: ../booking.php?error=".urlencode('Booking gagal. Sila cuba lagi.'));
+        header("Location: dashboard.php?court_id=".urlencode($court_id)."&error=".urlencode('Booking gagal. Sila cuba lagi.'));
     }
     exit();
 }

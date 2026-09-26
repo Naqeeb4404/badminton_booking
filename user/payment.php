@@ -13,7 +13,7 @@ if($booking_id > 0){ $_SESSION['latest_booking_id'] = $booking_id; }
 
 // ambil booking terakhir (must belong to this user)
 $stmt = $conn->prepare("
-SELECT bookings.*, courts.court_name, courts.price
+SELECT bookings.*, courts.court_name, 10.00 AS price
 FROM bookings
 JOIN courts ON bookings.court_id = courts.id
 WHERE bookings.user_id = ? AND bookings.id = ?

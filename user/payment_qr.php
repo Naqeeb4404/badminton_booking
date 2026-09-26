@@ -17,7 +17,7 @@ $_SESSION['selected_payment_method'] = $payment_method;
 
 // ambil booking terakhir user (must belong to this user)
 $stmt = $conn->prepare("
-SELECT bookings.*, courts.court_name, courts.price
+SELECT bookings.*, courts.court_name, 10.00 AS price
 FROM bookings
 JOIN courts ON bookings.court_id = courts.id
 WHERE bookings.user_id = ? AND bookings.id = ?

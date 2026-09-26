@@ -19,7 +19,7 @@ if(!in_array($payment_method, $allowedMethods, true)){ $payment_method = 'MAE'; 
 // browser posted, and make sure it belongs to this user and is still
 // awaiting payment.
 $stmt = $conn->prepare("
-SELECT bookings.id, bookings.status, courts.price
+SELECT bookings.id, bookings.status, 10.00 AS price
 FROM bookings
 JOIN courts ON bookings.court_id = courts.id
 WHERE bookings.id = ? AND bookings.user_id = ?

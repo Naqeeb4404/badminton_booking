@@ -20,7 +20,7 @@ $stmt = $conn->prepare("
 SELECT
     bookings.*,
     courts.court_name,
-    courts.price,
+    10.00 AS price,
     payments.status AS payment_status,
     payments.receipt AS payment_receipt
 FROM bookings

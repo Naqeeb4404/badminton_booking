@@ -9,13 +9,30 @@ if(!isset($_SESSION['user'])){
 
 $user_id = $_SESSION['user']['id'];
 
-if(isset($_POST['court'])) {
-    $court_id = $_POST['court'] ?? '';
+// The dashboard is now the single booking page.
+// Do not send the user to another page that asks for the court again.
+if(isset($_POST['court_id'])) {
+    $court_id = (int)($_POST['court_id'] ?? 0);
     $booking_date = $_POST['date'] ?? '';
     $booking_time = $_POST['time'] ?? '';
 
-    header("Location: ../booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
+    $_SESSION['selected_court_id'] = $court_id;
+
+    header("Location: create_booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
     exit();
+}
+
+// If a court was selected before login, keep that selection after login.
+$selected_court_id = (int)($_GET['court_id'] ?? $_SESSION['selected_court_id'] ?? 0);
+$selected_date = $_GET['date'] ?? date('Y-m-d');
+$selected_time = $_GET['time'] ?? '18:00:00';
+$selected_court = null;
+if($selected_court_id > 0){
+    $stmt = $conn->prepare("SELECT id, court_name, status, price FROM courts WHERE id=? LIMIT 1");
+    $stmt->bind_param("i", $selected_court_id);
+    $stmt->execute();
+    $selected_court = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 }
 ?>
 
@@ -25,7 +42,7 @@ if(isset($_POST['court'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Court - Badminton Kampung Panji</title>
+    <title>Badminton Kampung Panji - Dashboard</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -356,7 +373,7 @@ if(isset($_POST['court'])) {
             </div>
             <div class="brand-text">
                 <span>BADMINTON</span>
-                <small>Labuan F.T</small>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -377,6 +394,12 @@ if(isset($_POST['court'])) {
         </div>
     </nav>
 
+    <?php if(isset($_GET['error'])): ?>
+        <div class="wrap" style="margin-bottom:0;">
+            <div class="alert alert-danger rounded-4 fw-bold"><?php echo htmlspecialchars($_GET['error']); ?></div>
+        </div>
+    <?php endif; ?>
+
     <div class="hero">
         <h1>Book your court.</h1>
         <p>Lihat kekosongan masa nyata, bandingkan gelanggang dan buat tempahan dalam beberapa saat.</p>
@@ -384,7 +407,7 @@ if(isset($_POST['court'])) {
 
     <div class="wrap">
         <div class="panel">
-            <form method="POST">
+            <form method="POST" action="dashboard.php">
                 <!-- Langkah 1: Pilih Tarikh -->
                 <div class="step">1. Choose a date</div>
                 <div class="dates mb-4">
@@ -414,8 +437,8 @@ if(isset($_POST['court'])) {
                     <?php 
                     $times = ['08:00', '10:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
                     foreach($times as $index => $t) {
-                        $t_checked = ($index === 4) ? 'checked' : ''; 
-                        $t_active = ($index === 4) ? 'active' : '';
+                        $t_checked = (($t . ':00') === $selected_time) ? 'checked' : '';
+                        $t_active = (($t . ':00') === $selected_time) ? 'active' : '';
                     ?>
                     <label class="time-slot-btn <?php echo $t_active; ?>" onclick="updateTimeCard(this)">
                         <input type="radio" name="time" value="<?php echo $t; ?>:00" <?php echo $t_checked; ?> required>
@@ -426,60 +449,135 @@ if(isset($_POST['court'])) {
 
                 <hr class="my-4">
 
-                <!-- Langkah 3: Pilih Gelanggang (Format Jadual) -->
+                <!-- Langkah 3: Pilih Gelanggang -->
                 <div class="step">3. Choose a court</div>
-                
-                <div class="table-responsive">
-                    <table class="table table-custom align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th style="width: 80px;">ID</th>
-                                <th>Nama Gelanggang</th>
-                                <th style="width: 160px;" class="text-center">Status</th>
-                                <th style="width: 180px;" class="text-end">Tindakan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $result = mysqli_query($conn, "SELECT * FROM courts");
-                            while($row = mysqli_fetch_assoc($result)){
-                                $is_available = ($row['status'] == 'Available');
-                                $row_class = $is_available ? '' : 'unavailable';
-                            ?>
-                            <tr class="<?php echo $row_class; ?>">
-                                <td class="fw-bold" style="color: #818cf8;">#<?php echo $row['id']; ?></td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="../images/court<?php echo $row['id']; ?>.jpg" 
-                                             alt="Court Image"
-                                             style="width: 55px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--credix-border);"
-                                             onerror="this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop'">
-                                        <span class="fw-bold fs-6"><?php echo htmlspecialchars($row['court_name']); ?></span>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <?php if($is_available) { ?>
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #34d399;"><i class="fa-solid fa-circle-check me-1"></i> Available</span>
-                                    <?php } else { ?>
-                                        <span style="font-size: 0.78rem; font-weight: 800; color: #f87171;"><i class="fa-solid fa-circle-xmark me-1"></i> Not Available</span>
-                                    <?php } ?>
-                                </td>
-                                <td class="text-end">
-                                    <?php if($is_available) { ?>
-                                        <button type="submit" name="court" value="<?php echo $row['id']; ?>" class="btn btn-book w-100">
-                                            Book Court
-                                        </button>
-                                    <?php } else { ?>
-                                        <button class="btn btn-dark w-100" disabled style="border-radius: 50px; padding: 10px; font-weight: 700; font-size: 0.85rem; opacity: 0.5;">
-                                            Unavailable
-                                        </button>
-                                    <?php } ?>
-                                </td>
-                            </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                </div>
+
+                <?php
+                // Find courts already booked for the selected date + time.
+                $selected_date_for_check = $_POST['date'] ?? $_GET['date'] ?? date('Y-m-d');
+                $selected_time_for_check = $_POST['time'] ?? $_GET['time'] ?? '18:00:00';
+                $bookedCourtIds = [];
+
+                $slotStmt = $conn->prepare("
+                    SELECT court_id
+                    FROM bookings
+                    WHERE booking_date = ?
+                      AND booking_time = ?
+                      AND status IN ('Pending','Approved')
+                ");
+                if($slotStmt){
+                    $slotStmt->bind_param("ss", $selected_date_for_check, $selected_time_for_check);
+                    $slotStmt->execute();
+                    $slotResult = $slotStmt->get_result();
+                    while($slot = $slotResult->fetch_assoc()){
+                        $bookedCourtIds[] = (int)$slot['court_id'];
+                    }
+                    $slotStmt->close();
+                }
+                ?>
+
+                <?php if($selected_court): ?>
+                    <?php
+                    $selectedIsBooked = in_array((int)$selected_court['id'], $bookedCourtIds, true);
+                    $selectedIsAvailable = ($selected_court['status'] === 'Available' && !$selectedIsBooked);
+                    ?>
+                    <div class="selected-court-card" style="border:1px solid rgba(99,102,241,.45);background:linear-gradient(135deg,rgba(99,102,241,.14),rgba(168,85,247,.12));border-radius:18px;padding:20px;">
+                        <div class="d-flex justify-content-between align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="../images/court<?php echo (int)$selected_court['id']; ?>.jpg"
+                                     alt="Court Image"
+                                     style="width:80px;height:55px;object-fit:cover;border-radius:10px;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop'">
+                                <div>
+                                    <div style="font-size:.7rem;color:#818cf8;font-weight:800;text-transform:uppercase;">Court Selected</div>
+                                    <div class="fw-bold fs-5"><?php echo htmlspecialchars($selected_court['court_name']); ?></div>
+                                    <div class="small text-muted">RM 10.00 / slot</div>
+                                </div>
+                            </div>
+                            <?php if($selectedIsAvailable): ?>
+                                <span style="font-size:.78rem;font-weight:800;color:#34d399;">
+                                    <i class="fa-solid fa-circle-check me-1"></i> Available
+                                </span>
+                            <?php else: ?>
+                                <span style="font-size:.78rem;font-weight:800;color:#f87171;">
+                                    <i class="fa-solid fa-circle-xmark me-1"></i> Slot Unavailable
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <input type="hidden" name="court_id" value="<?php echo (int)$selected_court['id']; ?>">
+
+                        <?php if($selectedIsAvailable): ?>
+                            <button type="submit" class="btn btn-book w-100 mt-3">
+                                Continue Booking — RM 10
+                            </button>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-dark w-100 mt-3" disabled style="border-radius:50px;padding:10px;font-weight:700;">
+                                Slot Already Booked
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:80px;">ID</th>
+                                    <th>Nama Gelanggang</th>
+                                    <th style="width:160px;" class="text-center">Status</th>
+                                    <th style="width:180px;" class="text-end">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id");
+                                while($row = mysqli_fetch_assoc($result)){
+                                    $slotBooked = in_array((int)$row['id'], $bookedCourtIds, true);
+                                    $is_available = ($row['status'] == 'Available' && !$slotBooked);
+                                    $row_class = $is_available ? '' : 'unavailable';
+                                ?>
+                                <tr class="<?php echo $row_class; ?>">
+                                    <td class="fw-bold" style="color:#818cf8;">#<?php echo (int)$row['id']; ?></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="../images/court<?php echo (int)$row['id']; ?>.jpg"
+                                                 alt="Court Image"
+                                                 style="width:55px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--credix-border);"
+                                                 onerror="this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=500&auto=format&fit=crop'">
+                                            <div>
+                                                <span class="fw-bold fs-6"><?php echo htmlspecialchars($row['court_name']); ?></span>
+                                                <div class="small text-muted">RM 10.00 / slot</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if($is_available): ?>
+                                            <span style="font-size:.78rem;font-weight:800;color:#34d399;">
+                                                <i class="fa-solid fa-circle-check me-1"></i> Available
+                                            </span>
+                                        <?php else: ?>
+                                            <span style="font-size:.78rem;font-weight:800;color:#f87171;">
+                                                <i class="fa-solid fa-circle-xmark me-1"></i> Booked / Unavailable
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php if($is_available): ?>
+                                            <button type="submit" name="court_id" value="<?php echo (int)$row['id']; ?>" class="btn btn-book w-100">
+                                                Book Court — RM 10
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="button" class="btn btn-dark w-100" disabled style="border-radius:50px;padding:10px;font-weight:700;font-size:.85rem;opacity:.5;">
+                                                Unavailable
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </form>
         </div>
     </div>

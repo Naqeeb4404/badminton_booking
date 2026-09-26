@@ -45,7 +45,7 @@ $feedbacks = mysqli_query($conn, "
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback & Report - AceTime</title>
+    <title>Feedback & Report - Badminton Kampung Panji</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -56,7 +56,7 @@ $feedbacks = mysqli_query($conn, "
 
     <style>
         :root {
-            --bg-left: #181818;        /* Tema Gelap AceTime untuk Sebelah Kiri */
+            --bg-left: #181818;        /* Tema Gelap Badminton Kampung Panji untuk Sebelah Kiri */
             --bg-right: #f4f4f4;       /* Latar Belakang Cerah Sebelah Kanan */
             --accent-orange: #d9622b;  /* Warna Aksen Utama */
             --card-white: #ffffff;
@@ -258,7 +258,7 @@ $feedbacks = mysqli_query($conn, "
             <!-- SEBELAH KIRI: BORANG FEEDBACK -->
             <div class="col-lg-5 left-panel">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="#" class="brand-logo">AceTime</a>
+                    <a href="#" class="brand-logo">Badminton Kampung Panji</a>
                     <a href="dashboard.php" class="btn btn-outline-light btn-sm rounded-pill px-3">
                         <i class="fa-solid fa-arrow-left me-1"></i> Kembali
                     </a>
