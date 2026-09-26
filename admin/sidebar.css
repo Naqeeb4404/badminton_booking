@@ -8,3 +8,52 @@ body.admin-page{margin:0!important;padding:0!important;min-height:100vh;display:
 .main-content{margin-left:280px!important;flex:1 1 auto!important;width:calc(100% - 280px);height:100vh!important;min-height:100vh!important;display:flex!important;flex-direction:column!important;overflow-y:auto!important;overflow-x:hidden!important}
 .admin-page .topbar,.admin-page .top-nav{min-height:80px;height:80px;flex:0 0 80px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 40px;position:sticky!important;top:0;z-index:99}.admin-page .topbar .search-form,.admin-page .top-nav .search-form{position:relative;width:350px}.admin-page .topbar .search-input,.admin-page .top-nav .search-input{background:#f8fafc!important;border:1px solid #e2e8f0!important;border-radius:50px!important;padding:10px 20px 10px 45px!important;font-size:.85rem!important;width:100%!important;box-shadow:none!important;outline:none!important}.admin-page .topbar .search-form i,.admin-page .top-nav .search-form i{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#94a3b8;z-index:5;pointer-events:none}.admin-page .topbar .user-pill,.admin-page .top-nav .user-pill{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:50px;padding:6px 14px 6px 6px}.admin-page .topbar .user-avatar,.admin-page .top-nav .user-avatar,.admin-page .top-nav .user-avatar-top{width:38px;height:38px;border-radius:50%;background:#1c2434;color:#ccff00;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;background-size:cover;background-position:center}.admin-page .content-body{padding:40px;flex:0 0 auto;min-height:calc(100vh - 80px);width:100%;box-sizing:border-box}
 @media(max-width:768px){body.admin-page{overflow:hidden}.sidebar{width:70px!important}.sidebar .sidebar-brand span,.sidebar .menu-label,.sidebar .sidebar-nav-link span,.sidebar .badge,.sidebar .sidebar-profile-card h4,.sidebar .sidebar-profile-card span{display:none!important}.sidebar-profile-card{margin:0 10px 12px!important;padding:8px!important}.main-content{margin-left:70px!important;width:calc(100% - 70px)}.admin-page .topbar,.admin-page .top-nav{padding:0 20px}.admin-page .topbar .search-form,.admin-page .top-nav .search-form{width:220px}.admin-page .content-body{padding:20px}}
+
+/* ===== SHARED DASHBOARD SCROLL BEHAVIOUR ===== */
+html { height: 100%; }
+body.admin-page {
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden !important;
+}
+body.admin-page .sidebar {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+body.admin-page .sidebar-menu {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+body.admin-page .main-content {
+    height: 100vh !important;
+    min-height: 0 !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+body.admin-page .topbar,
+body.admin-page .top-nav {
+    position: sticky !important;
+    top: 0 !important;
+    flex: 0 0 80px !important;
+    z-index: 99 !important;
+}
+body.admin-page .content-body {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-height: calc(100vh - 80px) !important;
+    box-sizing: border-box !important;
+}
+body.admin-page .content-body > * {
+    max-width: 100%;
+}
