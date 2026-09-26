@@ -19,7 +19,13 @@ mysqli_free_result($msg_query);
 // 1. TAMBAH GELANGGANG (ADD COURT)
 if (isset($_POST['add'])) {
     $court_name = trim($_POST['court_name'] ?? '');
-    $status = ($_POST['status'] ?? '') === 'Available' ? 'Available' : 'Not Available';
+    $status = $_POST['status'] ?? 'Available';
+
+$allowed_statuses = ['Available', 'Unavailable', 'Disabled', 'Deleted'];
+
+if (!in_array($status, $allowed_statuses, true)) {
+    $status = 'Available';
+}
     $price = (float)($_POST['price'] ?? 0);
 
     if ($court_name !== '') {
