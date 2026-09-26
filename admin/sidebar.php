@@ -82,11 +82,19 @@ $admin_sidebar_items = [
             </div>
         </a>
 
-        <!-- Menu Tambahan untuk Laporan Pendapatan -->
+        <!-- Menu Laporan Pendapatan -->
         <a href="monthly_revenue.php" class="sidebar-nav-link<?php echo $current_page === 'monthly_revenue.php' ? ' active' : ''; ?>">
             <div class="sidebar-nav-link-content">
                 <i class="fa-solid fa-chart-line"></i>
                 <span>Revenue Report</span>
+            </div>
+        </a>
+
+        <!-- Menu Laporan Harian -->
+        <a href="daily_report.php" class="sidebar-nav-link<?php echo $current_page === 'daily_report.php' ? ' active' : ''; ?>">
+            <div class="sidebar-nav-link-content">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>Daily Report</span>
             </div>
         </a>
     </div>

@@ -9,15 +9,17 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 
 $reportDate = $_GET['date'] ?? date('Y-m-d');
 
-// Statistik Harian
+// Statistik Harian (Menggunakan LEFT JOIN payments untuk total_revenue yang tepat)
 $summaryQuery = $conn->prepare("SELECT 
-    COUNT(*) as total_bookings,
-    SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_bookings,
-    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_bookings,
-    SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_bookings,
-    SUM(CASE WHEN status = 'approved' THEN total_amount ELSE 0 END) as total_revenue,
-    COUNT(DISTINCT user_id) as total_customers
-    FROM bookings WHERE booking_date = ?");
+    COUNT(b.id) as total_bookings,
+    SUM(CASE WHEN b.status = 'Approved' THEN 1 ELSE 0 END) as approved_bookings,
+    SUM(CASE WHEN b.status = 'Pending' THEN 1 ELSE 0 END) as pending_bookings,
+    SUM(CASE WHEN b.status = 'Rejected' THEN 1 ELSE 0 END) as rejected_bookings,
+    SUM(CASE WHEN b.status = 'Approved' THEN COALESCE(p.amount, 0) ELSE 0 END) as total_revenue,
+    COUNT(DISTINCT b.user_id) as total_customers
+    FROM bookings b 
+    LEFT JOIN payments p ON b.id = p.booking_id
+    WHERE b.booking_date = ?");
 $summaryQuery->bind_param("s", $reportDate);
 $summaryQuery->execute();
 $stats = $summaryQuery->get_result()->fetch_assoc();
@@ -25,8 +27,8 @@ $stats = $summaryQuery->get_result()->fetch_assoc();
 // Penggunaan Gelanggang (Court Usage) pada tarikh tersebut
 $courtUsageQuery = $conn->prepare("SELECT c.court_name, COUNT(b.id) as count_booked 
     FROM courts c 
-    LEFT JOIN bookings b ON c.id = b.court_id AND b.booking_date = ? AND b.status = 'approved'
-    GROUP BY c.id");
+    LEFT JOIN bookings b ON c.id = b.court_id AND b.booking_date = ? AND b.status = 'Approved'
+    GROUP BY c.id, c.court_name");
 $courtUsageQuery->bind_param("s", $reportDate);
 $courtUsageQuery->execute();
 $courtUsageResult = $courtUsageQuery->get_result();
@@ -35,10 +37,25 @@ $courtUsageResult = $courtUsageQuery->get_result();
 <html lang="ms">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Harian - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+        }
+        .main-content {
+            margin-left: 260px;
+            flex-grow: 1;
+            padding: 20px;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
     <?php include __DIR__ . '/sidebar.php'; ?>
@@ -119,6 +136,7 @@ $courtUsageResult = $courtUsageQuery->get_result();
             </div>
         </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
