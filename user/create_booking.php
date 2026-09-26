@@ -6,14 +6,13 @@ if(!isset($_SESSION['user'])){
     $date = $_POST['date'] ?? $_GET['date'] ?? '';
     $time = $_POST['time'] ?? $_GET['time'] ?? '';
     $court = $_POST['court_id'] ?? $_GET['court_id'] ?? '';
-    header("Location: ../auth/login.php?return=booking&date=".urlencode($date)."&time=".urlencode($time)."&duration=".urlencode($duration)."&court_id=".urlencode($court));
+    header("Location: ../auth/login.php?return=booking&date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court));
     exit();
 }
 
 $user_id = (int)$_SESSION['user']['id'];
 $date = $_POST['date'] ?? $_GET['date'] ?? '';
 $time = $_POST['time'] ?? $_GET['time'] ?? '';
-$duration = max(1, min(3, (int)($_POST['duration'] ?? $_GET['duration'] ?? $_SESSION['selected_duration'] ?? 1)));
 $court_id = (int)($_POST['court_id'] ?? $_GET['court_id'] ?? 0);
 
 if(!$date || !$time || !$court_id || $date < date('Y-m-d')){
@@ -36,36 +35,26 @@ try {
 
     if(!$court || $court['status'] !== 'Available'){
         $conn->rollback();
-        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&duration=".urlencode($duration)."&court_id=".urlencode($court_id)."&error=".urlencode('Gelanggang ini tidak tersedia.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Gelanggang ini tidak tersedia.'));
         exit();
     }
 
-    // Check every hourly segment covered by this booking.
-    $stmt = $conn->prepare("SELECT id, booking_time, COALESCE(duration_hours,1) AS duration_hours FROM bookings WHERE court_id=? AND booking_date=? AND status IN ('Pending','Approved') FOR UPDATE");
-    $stmt->bind_param("is", $court_id, $date);
+    // Lock any existing conflicting rows for this exact court/date/time so a
+    // concurrent request has to wait for this transaction to finish first.
+    $stmt = $conn->prepare("SELECT id FROM bookings WHERE court_id=? AND booking_date=? AND booking_time=? AND status IN ('Pending','Approved') LIMIT 1 FOR UPDATE");
+    $stmt->bind_param("iss", $court_id, $date, $time);
     $stmt->execute();
-    $rows = $stmt->get_result();
-    $requestedStart = strtotime($date . ' ' . $time);
-    $requestedEnd = $requestedStart + ($duration * 3600);
-    $conflict = false;
-    while($existing = $rows->fetch_assoc()){
-        $existingStart = strtotime($date . ' ' . $existing['booking_time']);
-        $existingEnd = $existingStart + ((int)$existing['duration_hours'] * 3600);
-        if($requestedStart < $existingEnd && $requestedEnd > $existingStart){
-            $conflict = true;
-            break;
-        }
-    }
+    $exists = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if($conflict){
+    if($exists){
         $conn->rollback();
-        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&duration=".urlencode($duration)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot dalam tempoh pilihan anda sudah ditempah. Sila pilih masa atau tempoh lain.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
         exit();
     }
 
-    $stmt = $conn->prepare("INSERT INTO bookings (user_id,court_id,booking_date,booking_time,duration_hours,status) VALUES (?,?,?,?,?,'Pending')");
-    $stmt->bind_param("iissi", $user_id, $court_id, $date, $time, $duration);
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id,court_id,booking_date,booking_time,status) VALUES (?,?,?,?, 'Pending')");
+    $stmt->bind_param("iiss", $user_id, $court_id, $date, $time);
     $stmt->execute();
     $booking_id = $conn->insert_id;
     $stmt->close();
@@ -83,7 +72,7 @@ try {
     // a second request for the exact same court/date/time slipped past the row
     // lock above and hit the database's own uniqueness guarantee instead.
     if($e->getCode() === 1062){
-        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&duration=".urlencode($duration)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
+        header("Location: dashboard.php?date=".urlencode($date)."&time=".urlencode($time)."&court_id=".urlencode($court_id)."&error=".urlencode('Slot baru sahaja ditempah oleh pengguna lain.'));
     }else{
         header("Location: dashboard.php?court_id=".urlencode($court_id)."&error=".urlencode('Booking gagal. Sila cuba lagi.'));
     }

@@ -236,7 +236,7 @@ button:disabled{
         <div class="details">
             <div><span>Court</span><span><?= $booking['court_name']; ?></span></div>
             <div><span>Date</span><span><?= $booking['booking_date']; ?></span></div>
-            <div><span>Time</span><span><?= htmlspecialchars($booking['booking_time']); ?> (<?= (int)($booking['duration_hours'] ?? 1); ?> hour<?= ((int)($booking['duration_hours'] ?? 1) > 1 ? 's' : ''); ?>)</span></div>
+            <div><span>Time</span><span><?= $booking['booking_time']; ?></span></div>
             <div class="total"><span>Amount</span><span>RM <?= $booking['price']; ?></span></div>
         </div>
 
