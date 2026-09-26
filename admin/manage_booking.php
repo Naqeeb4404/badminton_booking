@@ -20,9 +20,8 @@ if (isset($_POST['booking_action'], $_POST['booking_id'])) {
     if (in_array($action, ['Approved', 'Rejected'], true)) {
         $conn->begin_transaction();
         try {
-            $stmt = $conn->prepare("SELECT id, court_id, booking_date, booking_time, status FROM bookings WHERE id=? LIMIT 1 FOR UPDATE");
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
+$stmt = $conn->prepare("SELECT id, user_id, court_id, booking_date, booking_time, status FROM bookings WHERE id=? LIMIT 1 FOR UPDATE");
+$stmt->bind_param("i", $id);            $stmt->execute();
             $b = $stmt->get_result()->fetch_assoc();
             $stmt->close();
 
@@ -83,9 +82,42 @@ if (isset($_POST['booking_action'], $_POST['booking_id'])) {
                 $updPay->close();
             }
 
-            $conn->commit();
-            header("Location: manage_booking.php");
-            exit();
+           // Create notification for customer
+if ($action === 'Approved') {
+    $notificationTitle = "Booking Approved";
+    $notificationMessage = "Your booking #{$id} has been approved. Your badminton court booking is confirmed.";
+} else {
+    $notificationTitle = "Booking Rejected";
+
+    if ($reason !== '') {
+        $notificationMessage = "Your booking #{$id} has been rejected. Reason: {$reason}";
+    } else {
+        $notificationMessage = "Your booking #{$id} has been rejected by the admin.";
+    }
+}
+
+$notificationStatus = "Unread";
+
+$notify = $conn->prepare("
+    INSERT INTO notifications
+    (user_id, title, message, status, created_at)
+    VALUES (?, ?, ?, ?, NOW())
+");
+
+$notify->bind_param(
+    "isss",
+    $b['user_id'],
+    $notificationTitle,
+    $notificationMessage,
+    $notificationStatus
+);
+
+$notify->execute();
+$notify->close();
+
+$conn->commit();
+header("Location: manage_booking.php");
+exit();
         } catch (mysqli_sql_exception $e) {
             $conn->rollback();
             header("Location: manage_booking.php?error=" . urlencode("Action failed. Please try again."));
