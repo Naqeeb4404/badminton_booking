@@ -28,7 +28,8 @@ $salesStmt->execute();
 $todaySales = (float)$salesStmt->get_result()->fetch_assoc()['total'];
 $salesStmt->close();
 
-$userRow = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role='user'")->fetch_assoc();
+$adminRow = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role='admin'")->fetch_assoc();
+$totalAdmins = (int)$adminRow['total'];
 $totalUsers = (int)$userRow['total'];
 
 $pendingRow = $conn->query("SELECT COUNT(*) AS total FROM bookings WHERE status='Pending'")->fetch_assoc();
@@ -407,15 +408,23 @@ $pendingBookings = (int)$pendingRow['total'];
 </div>
 
             <!-- KAD STATISTIK -->
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="stat-card">
-                        <div class="stat-icon icon-blue"><i class="fa-solid fa-calendar-check"></i></div>
-                        <span class="text-muted fs-7">Court Ditempah (Hari Ini)</span>
-                        <h3 class="fw-bold mt-1 mb-0"><?= $todayBookings ?></h3>
-                        <small class="text-muted fw-semibold">Booking hari ini</small>
-                    </div>
-                </div>
+          <div class="col-12 col-sm-6 col-xl-3">
+    <div class="stat-card">
+        <div class="stat-icon icon-purple">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <span class="text-muted fs-7">Jumlah Admin</span>
+
+        <h3 class="fw-bold mt-1 mb-0">
+            <?= $totalAdmins ?> Admin
+        </h3>
+
+        <small class="text-muted fw-semibold">
+            Akaun pentadbir sistem
+        </small>
+    </div>
+</div>
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="stat-card">
                         <div class="stat-icon icon-green"><i class="fa-solid fa-table-tennis-paddle-ball"></i></div>
