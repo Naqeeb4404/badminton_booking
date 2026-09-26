@@ -3,7 +3,41 @@
 // This file is included by every page in /admin so the layout stays identical.
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$current_admin = $admin ?? $_SESSION['user'] ?? ['name' => 'Admin', 'phone' => 'Admin Panel', 'profile_pic' => ''];
+$current_admin = $_SESSION['user'] ?? ['name' => 'Admin', 'phone' => 'Admin Panel', 'profile_pic' => ''];
+
+// Always fetch the latest admin record. This is the single source of truth for
+// the sidebar avatar and the top-right avatar on every admin page.
+if (isset($conn) && !empty($_SESSION['user']['id'])) {
+    $sidebar_admin_id = (int) $_SESSION['user']['id'];
+    $sidebar_stmt = mysqli_prepare($conn, "SELECT id, name, email, phone, role, profile_pic FROM users WHERE id = ? LIMIT 1");
+    if ($sidebar_stmt) {
+        mysqli_stmt_bind_param($sidebar_stmt, "i", $sidebar_admin_id);
+        mysqli_stmt_execute($sidebar_stmt);
+        $sidebar_result = mysqli_stmt_get_result($sidebar_stmt);
+        $fresh_admin = $sidebar_result ? mysqli_fetch_assoc($sidebar_result) : null;
+        mysqli_stmt_close($sidebar_stmt);
+        if ($fresh_admin) {
+            $current_admin = $fresh_admin;
+            $_SESSION['user']['name'] = $fresh_admin['name'];
+            $_SESSION['user']['email'] = $fresh_admin['email'];
+            $_SESSION['user']['phone'] = $fresh_admin['phone'];
+            $_SESSION['user']['role'] = $fresh_admin['role'];
+            $_SESSION['user']['profile_pic'] = $fresh_admin['profile_pic'];
+        }
+    }
+}
+
+$admin_photo = trim((string)($current_admin['profile_pic'] ?? ''));
+$admin_photo_url = '';
+if ($admin_photo !== '') {
+    $admin_photo_path = __DIR__ . '/../uploads/' . basename($admin_photo);
+    $admin_photo_version = is_file($admin_photo_path) ? (string) filemtime($admin_photo_path) : (string) time();
+    $admin_photo_url = '../uploads/' . rawurlencode(basename($admin_photo)) . '?v=' . $admin_photo_version;
+}
+$admin_photo_style = $admin_photo_url !== ''
+    ? "background-image:url('" . htmlspecialchars($admin_photo_url, ENT_QUOTES, 'UTF-8') . "'); background-size:cover; background-position:center; background-repeat:no-repeat;"
+    : '';
+$admin_initial = strtoupper(substr((string)($current_admin['name'] ?? 'A'), 0, 1));
 
 $admin_sidebar_items = [
     ['file' => 'dashboard.php',       'icon' => 'fa-chart-pie',            'label' => 'Dashboard'],
@@ -19,8 +53,8 @@ $admin_sidebar_items = [
     <div class="sidebar-profile-card">
         <div class="sidebar-profile-main">
             <div class="sidebar-avatar-wrap">
-                <div class="sidebar-avatar" style="<?php echo !empty($current_admin['profile_pic']) ? "background-image:url(\"../uploads/" . htmlspecialchars($current_admin['profile_pic'], ENT_QUOTES, 'UTF-8') . "\");" : ''; ?>">
-                    <?php echo empty($current_admin['profile_pic']) ? htmlspecialchars(strtoupper(substr($current_admin['name'] ?? 'A', 0, 1)), ENT_QUOTES, 'UTF-8') : ''; ?>
+                <div class="sidebar-avatar" style="<?php echo $admin_photo_style; ?>">
+                    <?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?>
                 </div>
                 <span class="sidebar-online-dot"></span>
             </div>

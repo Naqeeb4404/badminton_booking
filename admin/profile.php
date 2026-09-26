@@ -35,6 +35,9 @@ if (isset($_POST['update_profile'])) {
         
         if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target)) {
             mysqli_query($conn, "UPDATE users SET profile_pic = '$filename' WHERE id = '$admin_id'");
+            // Keep the logged-in session in sync immediately so every admin page
+            // shows the same newly uploaded avatar without needing to log in again.
+            $_SESSION['user']['profile_pic'] = $filename;
         }
     }
 
@@ -352,10 +355,10 @@ function e($value) {
 
             <div class="nav-right">
                 <div class="user-pill">
-                    <div class="user-avatar-top" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
-                        <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
+                    <div class="user-avatar-top" style="<?php echo $admin_photo_style; ?>">
+                        <?php echo $admin_photo === '' ? e($admin_initial) : ''; ?>
                     </div>
-                    <span class="user-name"><?php echo e($admin['name']); ?></span>
+                    <span class="user-name"><?php echo e($current_admin['name'] ?? $admin['name'] ?? 'Admin'); ?></span>
                 </div>
                 <a href="../auth/logout.php" class="btn-danger-custom">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
@@ -376,7 +379,7 @@ function e($value) {
                 <div class="profile-header-card">
                     <div class="banner"></div>
                     <div class="profile-info-section">
-                        <div class="profile-avatar-large" style="<?php echo !empty($admin['profile_pic']) ? 'background-image: url(\'../uploads/'.e($admin['profile_pic']).'\');' : ''; ?>">
+                        <div class="profile-avatar-large" style="<?php echo $admin_photo_style; ?>">
                             <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
                         </div>
                         <div class="profile-details">

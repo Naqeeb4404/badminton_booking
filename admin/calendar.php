@@ -388,8 +388,8 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
 
             <div class="d-flex align-items-center gap-3">
                 <div class="user-pill">
-                    <div class="user-avatar"><?php echo strtoupper(substr($user['name'], 0, 1)); ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($user['name']); ?></div>
+                    <div class="user-avatar" style="<?php echo $admin_photo_style; ?>"><?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?></div>
+                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?></div>
                 </div>
                 <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar

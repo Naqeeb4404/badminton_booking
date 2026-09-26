@@ -104,8 +104,8 @@ $result=mysqli_query($conn,"SELECT p.*, b.booking_date,b.booking_time,b.status A
         </div>
         <div class="d-flex align-items-center gap-3">
             <div class="user-pill">
-                <div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['user']['name'] ?? 'A', 0, 1))); ?></div>
-                <div class="fw-bold fs-7 pe-2 text-dark"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div>
+                <div class="user-avatar" style="<?php echo $admin_photo_style; ?>"><?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?></div>
+                <div class="fw-bold fs-7 pe-2 text-dark"><?php echo htmlspecialchars($current_admin['name'] ?? $_SESSION['user']['name'] ?? 'Admin'); ?></div>
             </div>
             <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
