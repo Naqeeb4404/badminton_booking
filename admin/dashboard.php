@@ -396,11 +396,15 @@ $pendingBookings = (int)$pendingRow['total'];
         <!-- CONTENT BODY -->
         <main class="content-body">
             
-            <!-- Welcome Banner -->
-            <div class="welcome-card">
-                <h2 class="fw-bold mb-1">Selamat Datang Admin, <?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?> 👋</h2>
-                <p class="text-white-50 mb-0 fs-7">Statistik Jualan Harian & Status Tempahan Badminton Court</p>
-            </div>
+           <!-- Welcome Banner -->
+<div class="welcome-card">
+    <h2 class="fw-bold mb-1 text-white">
+        Selamat Datang, <?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?> 👋
+    </h2>
+    <p class="mb-0 fs-7 text-white">
+        Statistik Jualan Harian & Status Tempahan Badminton Court
+    </p>
+</div>
 
             <!-- KAD STATISTIK -->
             <div class="row g-4 mb-4">
