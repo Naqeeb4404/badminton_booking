@@ -401,7 +401,8 @@ $result = mysqli_query(
 
             font-size: 13px;
             
-            color: #000000 !important;
+            /* Tetapkan semua warna teks utama dalam jadual kepada biru terang */
+            color: #0066ff !important;
         }
 
         .payment-table tbody tr {
@@ -417,39 +418,32 @@ $result = mysqli_query(
 
         .payment-id {
             font-weight: 800;
-
-            color: #000000 !important;
+            color: #0066ff !important;
         }
 
         .customer-name {
             font-weight: 700;
-
-            color: #000000 !important;
+            color: #0066ff !important;
         }
 
         .customer-email {
             font-size: 11px;
-
-            color: #000000 !important;
+            color: #0066ff !important;
         }
 
         .booking-court {
             font-weight: 700;
-
-            color: #000000 !important;
+            color: #0066ff !important;
         }
 
         .booking-info {
             font-size: 11px;
-
-            color: #000000 !important;
+            color: #0066ff !important;
         }
 
         .amount {
             font-weight: 800;
-
-            color: #000000 !important;
-
+            color: #0066ff !important;
             white-space: nowrap;
         }
 
@@ -479,19 +473,16 @@ $result = mysqli_query(
 
         .status-approved {
             background: #dcfce7;
-
             color: #166534 !important;
         }
 
         .status-rejected {
             background: #fee2e2;
-
             color: #991b1b !important;
         }
 
         .status-pending {
             background: #fef3c7;
-
             color: #92400e !important;
         }
 
@@ -553,7 +544,7 @@ $result = mysqli_query(
             background: rgba(248, 250, 252, 0.9);
             border-top: 1px solid #e2e8f0;
             font-size: 13px;
-            color: #000000;
+            color: #0066ff;
         }
 
         .pagination-controls {
@@ -565,7 +556,7 @@ $result = mysqli_query(
         .page-btn {
             background: #ffffff;
             border: 1px solid #cbd5e1;
-            color: #000000;
+            color: #0066ff;
             padding: 6px 14px;
             font-size: 13px;
             font-weight: 600;
@@ -1068,7 +1059,7 @@ $result = mysqli_query(
 
                             <td>
 
-                                <span class="fw-semibold" style="color: #000000 !important;">
+                                <span class="fw-semibold" style="color: #0066ff !important;">
                                     <?= htmlspecialchars(
                                         $r['payment_method'] ?? '-'
                                     ) ?>
@@ -1251,7 +1242,7 @@ const tableInfo = document.getElementById('tableInfo');
 const noResults = document.getElementById('noResults');
 
 let currentPage = 1;
-const rowsPerPage = 10; // Paparkan 10 rekod setiap muka surat
+const rowsPerPage = 10;
 
 function updateTable() {
     const search = searchInput.value.toLowerCase().trim();
@@ -1262,7 +1253,6 @@ function updateTable() {
     const rows = document.querySelectorAll('#paymentTable tbody tr');
     let matchedRows = [];
 
-    // Tapis baris mengikut carian & pilihan filter
     rows.forEach(row => {
         const rowText = row.innerText.toLowerCase();
         const rowPayment = row.dataset.paymentStatus;
@@ -1276,7 +1266,7 @@ function updateTable() {
 
         if (matchSearch && matchPayment && matchBooking && matchMethod) {
             matchedRows.push(row);
-            row.style.display = 'none'; // Sembunyikan dulu sebelum paparkan mengikut pagination
+            row.style.display = 'none';
         } else {
             row.style.display = 'none';
         }
@@ -1295,12 +1285,10 @@ function updateTable() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // Paparkan hanya baris untuk muka surat semasa
     for (let i = startIndex; i < endIndex && i < totalMatched; i++) {
         matchedRows[i].style.display = '';
     }
 
-    // Kemaskini maklumat teks bawah
     if (totalMatched === 0) {
         tableInfo.innerText = "Showing 0 to 0 of 0 entries";
         noResults.style.display = 'block';
@@ -1309,19 +1297,16 @@ function updateTable() {
         noResults.style.display = 'none';
     }
 
-    // Kawalan butang Next / Previous
     prevBtn.disabled = currentPage === 1;
     nextBtn.disabled = currentPage >= totalPages;
 }
 
-// Event Listeners untuk Filter & Carian
 searchInput.addEventListener('input', () => { currentPage = 1; updateTable(); });
 topSearch.addEventListener('input', () => { searchInput.value = topSearch.value; currentPage = 1; updateTable(); });
 paymentStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
 bookingStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
 paymentMethod.addEventListener('change', () => { currentPage = 1; updateTable(); });
 
-// Butang Muka Surat Seterusnya & Sebelumnya
 prevBtn.addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
@@ -1334,7 +1319,6 @@ nextBtn.addEventListener('click', () => {
     updateTable();
 });
 
-// Reset Semua Filter
 resetButton.addEventListener('click', () => {
     searchInput.value = '';
     topSearch.value = '';
@@ -1345,7 +1329,6 @@ resetButton.addEventListener('click', () => {
     updateTable();
 });
 
-// Jalankan kali pertama semasa muat halaman
 document.addEventListener('DOMContentLoaded', () => {
     updateTable();
 });
