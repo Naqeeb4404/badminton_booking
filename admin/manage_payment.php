@@ -397,12 +397,13 @@ $result = mysqli_query(
 
             border-bottom:
                 1px solid
-                #f1f5f9;
+                #cbd5e1;
 
             font-size: 13px;
             
-            /* Tetapkan semua warna teks utama dalam jadual kepada biru terang */
-            color: #0066ff !important;
+            /* Background biru muda & tulisan hitam */
+            background-color: #e0f2fe !important;
+            color: #000000 !important;
         }
 
         .payment-table tbody tr {
@@ -411,39 +412,38 @@ $result = mysqli_query(
                 transform 0.2s ease;
         }
 
-        .payment-table tbody tr:hover {
-            background:
-                rgba(59, 130, 246, 0.035);
+        .payment-table tbody tr:hover td {
+            background-color: #bae6fd !important;
         }
 
         .payment-id {
             font-weight: 800;
-            color: #0066ff !important;
+            color: #000000 !important;
         }
 
         .customer-name {
             font-weight: 700;
-            color: #0066ff !important;
+            color: #000000 !important;
         }
 
         .customer-email {
             font-size: 11px;
-            color: #0066ff !important;
+            color: #334155 !important;
         }
 
         .booking-court {
             font-weight: 700;
-            color: #0066ff !important;
+            color: #000000 !important;
         }
 
         .booking-info {
             font-size: 11px;
-            color: #0066ff !important;
+            color: #334155 !important;
         }
 
         .amount {
             font-weight: 800;
-            color: #0066ff !important;
+            color: #000000 !important;
             white-space: nowrap;
         }
 
@@ -517,17 +517,17 @@ $result = mysqli_query(
 
             margin-top: 5px;
 
-            color: #2563eb !important;
+            color: #1d4ed8 !important;
 
             text-decoration: none;
 
             font-size: 11px;
 
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .manage-link:hover {
-            color: #1d4ed8 !important;
+            color: #1e40af !important;
 
             text-decoration: underline;
         }
@@ -544,7 +544,7 @@ $result = mysqli_query(
             background: rgba(248, 250, 252, 0.9);
             border-top: 1px solid #e2e8f0;
             font-size: 13px;
-            color: #0066ff;
+            color: #0f172a;
         }
 
         .pagination-controls {
@@ -556,7 +556,7 @@ $result = mysqli_query(
         .page-btn {
             background: #ffffff;
             border: 1px solid #cbd5e1;
-            color: #0066ff;
+            color: #0f172a;
             padding: 6px 14px;
             font-size: 13px;
             font-weight: 600;
@@ -1059,7 +1059,7 @@ $result = mysqli_query(
 
                             <td>
 
-                                <span class="fw-semibold" style="color: #0066ff !important;">
+                                <span class="fw-semibold" style="color: #000000 !important;">
                                     <?= htmlspecialchars(
                                         $r['payment_method'] ?? '-'
                                     ) ?>
@@ -1085,7 +1085,7 @@ $result = mysqli_query(
 
                                 <?php else: ?>
 
-                                    <span class="text-muted">
+                                    <span style="color: #64748b !important;">
                                         No Receipt
                                     </span>
 
