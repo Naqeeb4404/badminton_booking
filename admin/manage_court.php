@@ -1,4 +1,4 @@
-```php
+
 <?php
 session_start();
 include __DIR__ . '/../config/db.php';
@@ -1333,4 +1333,3 @@ Restore
 </body>
 
 </html>
-```
