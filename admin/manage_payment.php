@@ -845,23 +845,18 @@ $result = mysqli_query(
                         <option value="">
                             All Methods
                         </option>
-
                         <option value="MAE">
                             MAE
                         </option>
-
                         <option value="Touch N Go">
                             Touch N Go
                         </option>
-
                         <option value="Bank Islam">
                             Bank Islam
                         </option>
-
                         <option value="Card Payment">
                             Card Payment
                         </option>
-
                     </select>
 
                 </div>
