@@ -280,7 +280,8 @@ $result = mysqli_query(
 
             font-weight: 700;
 
-            color: #0f172a;
+            /* Ditukar kepada warna putih */
+            color: #ffffff;
         }
 
         .filter-label {
@@ -288,7 +289,8 @@ $result = mysqli_query(
 
             font-weight: 700;
 
-            color: #64748b;
+            /* Ditukar kepada warna putih */
+            color: #ffffff;
 
             margin-bottom: 7px;
         }
@@ -371,7 +373,8 @@ $result = mysqli_query(
             background:
                 rgba(248, 250, 252, 0.9);
 
-            color: #64748b;
+            /* Ditukar kepada warna hitam */
+            color: #000000;
 
             font-size: 11px;
 
@@ -400,6 +403,9 @@ $result = mysqli_query(
                 #f1f5f9;
 
             font-size: 13px;
+            
+            /* Tetapkan warna teks asas dalam jadual kepada hitam */
+            color: #000000;
         }
 
         .payment-table tbody tr {
@@ -416,37 +422,38 @@ $result = mysqli_query(
         .payment-id {
             font-weight: 800;
 
-            color: #2563eb;
+            color: #000000;
         }
 
         .customer-name {
             font-weight: 700;
 
-            color: #0f172a;
+            color: #000000;
         }
 
         .customer-email {
             font-size: 11px;
 
-            color: #64748b;
+            /* Ditukar kepada hitam pekat/hampir hitam untuk kebolehbacaan */
+            color: #1e293b;
         }
 
         .booking-court {
             font-weight: 700;
 
-            color: #334155;
+            color: #000000;
         }
 
         .booking-info {
             font-size: 11px;
 
-            color: #64748b;
+            color: #1e293b;
         }
 
         .amount {
             font-weight: 800;
 
-            color: #0f172a;
+            color: #000000;
 
             white-space: nowrap;
         }
@@ -1017,7 +1024,7 @@ $result = mysqli_query(
 
                             <td>
 
-                                <span class="fw-semibold">
+                                <span class="fw-semibold text-dark">
                                     <?= htmlspecialchars(
                                         $r['payment_method'] ?? '-'
                                     ) ?>
