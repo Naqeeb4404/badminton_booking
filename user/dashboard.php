@@ -14,7 +14,9 @@ if(isset($_POST['court'])) {
     $booking_date = $_POST['date'] ?? '';
     $booking_time = $_POST['time'] ?? '';
 
-    header("Location: ../booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
+    // Court/date/time are already chosen on this dashboard.
+    // Continue directly to booking creation instead of asking for the court again.
+    header("Location: create_booking.php?date=".urlencode($booking_date)."&time=".urlencode($booking_time)."&court_id=".urlencode($court_id));
     exit();
 }
 ?>
