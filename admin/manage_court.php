@@ -424,19 +424,19 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
                                 <input type="number" name="price" step="0.01" min="0" class="form-control bg-white" placeholder="20.00" required>
                             </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold fs-7 text-muted">Status Awal</label>
-                                <select name="status" class="form-select bg-white">
-                                    <option value="Available">Available</option>
-                                    <option value="Not Available">Not Available</option>
-                                </select>
-                            </div>
+                        <div class="col-md-3">
+    <label class="form-label fw-semibold fs-7 text-muted">Status Awal</label>
+    <select name="status" class="form-select bg-white">
+        <option value="Available">Available</option>
+        <option value="Unavailable">Unavailable</option>
+    </select>
+</div>
 
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button name="add" class="btn btn-minimal-dark w-100">
-                                    <i class="fa-solid fa-plus me-1"></i> Add Court
-                                </button>
-                            </div>
+<div class="col-md-3 d-flex align-items-end">
+    <button name="add" class="btn btn-minimal-dark w-100">
+        <i class="fa-solid fa-plus me-1"></i> Add Court
+    </button>
+</div>
                         </form>
                     </div>
                     <?php endif; ?>
