@@ -401,7 +401,6 @@ $result = mysqli_query(
 
             font-size: 13px;
             
-            /* Tetapkan semua warna teks dalam jadual kepada hitam */
             color: #000000 !important;
         }
 
@@ -543,6 +542,49 @@ $result = mysqli_query(
         }
 
         /* =========================
+           PAGINATION FOOTER
+        ========================= */
+
+        .pagination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(248, 250, 252, 0.9);
+            border-top: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #000000;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .page-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #000000;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* =========================
            NO RESULTS
         ========================= */
 
@@ -590,6 +632,12 @@ $result = mysqli_query(
 
             .filter-card {
                 padding: 15px;
+            }
+
+            .pagination-footer {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
             }
 
         }
@@ -1138,6 +1186,26 @@ $result = mysqli_query(
             </div>
 
 
+            <!-- PAGINATION FOOTER -->
+
+            <div class="pagination-footer">
+
+                <div id="tableInfo">
+                    Showing 0 to 0 of 0 entries
+                </div>
+
+                <div class="pagination-controls">
+                    <button type="button" id="prevPage" class="page-btn">
+                        <i class="fa-solid fa-chevron-left me-1"></i> Previous
+                    </button>
+                    <button type="button" id="nextPage" class="page-btn">
+                        Next <i class="fa-solid fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
+
+            </div>
+
+
             <!-- NO RESULTS -->
 
             <div
@@ -1165,180 +1233,122 @@ $result = mysqli_query(
 
 
 <!-- =========================
-     FILTER JAVASCRIPT
+     FILTER & PAGINATION JS
 ========================= -->
 
 <script>
 
-const searchInput =
-    document.getElementById('paymentSearch');
+const searchInput = document.getElementById('paymentSearch');
+const topSearch = document.getElementById('topSearch');
+const paymentStatus = document.getElementById('paymentStatusFilter');
+const bookingStatus = document.getElementById('bookingStatusFilter');
+const paymentMethod = document.getElementById('paymentMethodFilter');
+const resetButton = document.getElementById('resetFilters');
 
-const topSearch =
-    document.getElementById('topSearch');
+const prevBtn = document.getElementById('prevPage');
+const nextBtn = document.getElementById('nextPage');
+const tableInfo = document.getElementById('tableInfo');
+const noResults = document.getElementById('noResults');
 
-const paymentStatus =
-    document.getElementById('paymentStatusFilter');
+let currentPage = 1;
+const rowsPerPage = 10; // Paparkan 10 rekod setiap muka surat
 
-const bookingStatus =
-    document.getElementById('bookingStatusFilter');
+function updateTable() {
+    const search = searchInput.value.toLowerCase().trim();
+    const selectedPayment = paymentStatus.value;
+    const selectedBooking = bookingStatus.value;
+    const selectedMethod = paymentMethod.value;
 
-const paymentMethod =
-    document.getElementById('paymentMethodFilter');
+    const rows = document.querySelectorAll('#paymentTable tbody tr');
+    let matchedRows = [];
 
-const resetButton =
-    document.getElementById('resetFilters');
-
-
-function filterPayments() {
-
-    const search =
-        searchInput.value
-        .toLowerCase()
-        .trim();
-
-    const selectedPayment =
-        paymentStatus.value;
-
-    const selectedBooking =
-        bookingStatus.value;
-
-    const selectedMethod =
-        paymentMethod.value;
-
-
-    const rows =
-        document.querySelectorAll(
-            '#paymentTable tbody tr'
-        );
-
-
-    let visibleCount = 0;
-
-
+    // Tapis baris mengikut carian & pilihan filter
     rows.forEach(row => {
+        const rowText = row.innerText.toLowerCase();
+        const rowPayment = row.dataset.paymentStatus;
+        const rowBooking = row.dataset.bookingStatus;
+        const rowMethod = row.dataset.paymentMethod;
 
-        const rowText =
-            row.innerText.toLowerCase();
+        const matchSearch = search === '' || rowText.includes(search);
+        const matchPayment = selectedPayment === '' || rowPayment === selectedPayment;
+        const matchBooking = selectedBooking === '' || rowBooking === selectedBooking;
+        const matchMethod = selectedMethod === '' || rowMethod === selectedMethod;
 
-        const rowPayment =
-            row.dataset.paymentStatus;
-
-        const rowBooking =
-            row.dataset.bookingStatus;
-
-        const rowMethod =
-            row.dataset.paymentMethod;
-
-
-        const matchSearch =
-            search === '' ||
-            rowText.includes(search);
-
-
-        const matchPayment =
-            selectedPayment === '' ||
-            rowPayment === selectedPayment;
-
-
-        const matchBooking =
-            selectedBooking === '' ||
-            rowBooking === selectedBooking;
-
-
-        const matchMethod =
-            selectedMethod === '' ||
-            rowMethod === selectedMethod;
-
-
-        if (
-            matchSearch &&
-            matchPayment &&
-            matchBooking &&
-            matchMethod
-        ) {
-
-            row.style.display = '';
-
-            visibleCount++;
-
+        if (matchSearch && matchPayment && matchBooking && matchMethod) {
+            matchedRows.push(row);
+            row.style.display = 'none'; // Sembunyikan dulu sebelum paparkan mengikut pagination
         } else {
-
             row.style.display = 'none';
-
         }
-
     });
 
+    const totalMatched = matchedRows.length;
+    const totalPages = Math.ceil(totalMatched / rowsPerPage) || 1;
 
-    document.getElementById('noResults').style.display =
-        visibleCount === 0
-            ? 'block'
-            : 'none';
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
+    if (currentPage < 1) {
+        currentPage = 1;
+    }
 
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    // Paparkan hanya baris untuk muka surat semasa
+    for (let i = startIndex; i < endIndex && i < totalMatched; i++) {
+        matchedRows[i].style.display = '';
+    }
+
+    // Kemaskini maklumat teks bawah
+    if (totalMatched === 0) {
+        tableInfo.innerText = "Showing 0 to 0 of 0 entries";
+        noResults.style.display = 'block';
+    } else {
+        tableInfo.innerText = `Showing ${startIndex + 1} to ${Math.min(endIndex, totalMatched)} of ${totalMatched} entries`;
+        noResults.style.display = 'none';
+    }
+
+    // Kawalan butang Next / Previous
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage >= totalPages;
 }
 
+// Event Listeners untuk Filter & Carian
+searchInput.addEventListener('input', () => { currentPage = 1; updateTable(); });
+topSearch.addEventListener('input', () => { searchInput.value = topSearch.value; currentPage = 1; updateTable(); });
+paymentStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
+bookingStatus.addEventListener('change', () => { currentPage = 1; updateTable(); });
+paymentMethod.addEventListener('change', () => { currentPage = 1; updateTable(); });
 
-/* Search inside filter */
-
-searchInput.addEventListener(
-    'input',
-    filterPayments
-);
-
-
-/* Topbar search also filters */
-
-topSearch.addEventListener(
-    'input',
-    function () {
-
-        searchInput.value =
-            topSearch.value;
-
-        filterPayments();
-
+// Butang Muka Surat Seterusnya & Sebelumnya
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        updateTable();
     }
-);
+});
 
+nextBtn.addEventListener('click', () => {
+    currentPage++;
+    updateTable();
+});
 
-/* Dropdown filters */
+// Reset Semua Filter
+resetButton.addEventListener('click', () => {
+    searchInput.value = '';
+    topSearch.value = '';
+    paymentStatus.value = '';
+    bookingStatus.value = '';
+    paymentMethod.value = '';
+    currentPage = 1;
+    updateTable();
+});
 
-paymentStatus.addEventListener(
-    'change',
-    filterPayments
-);
-
-bookingStatus.addEventListener(
-    'change',
-    filterPayments
-);
-
-paymentMethod.addEventListener(
-    'change',
-    filterPayments
-);
-
-
-/* Reset */
-
-resetButton.addEventListener(
-    'click',
-    function () {
-
-        searchInput.value = '';
-
-        topSearch.value = '';
-
-        paymentStatus.value = '';
-
-        bookingStatus.value = '';
-
-        paymentMethod.value = '';
-
-        filterPayments();
-
-    }
-);
+// Jalankan kali pertama semasa muat halaman
+document.addEventListener('DOMContentLoaded', () => {
+    updateTable();
+});
 
 </script>
 
