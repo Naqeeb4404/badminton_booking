@@ -87,7 +87,10 @@ $result=mysqli_query($conn,"SELECT p.*, b.booking_date,b.booking_time,b.status A
         font-size: 0.85rem;
     }
 </style>
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css?v=20260926">
+
+    <!-- Stable shared admin shell -->
+    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
 <body class="admin-page">
 

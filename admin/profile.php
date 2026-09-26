@@ -335,7 +335,10 @@ function e($value) {
         .grid-2 { grid-template-columns: 1fr; }
     }
 </style>
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css?v=20260926">
+
+    <!-- Stable shared admin shell -->
+    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
 <body class="admin-page">
 

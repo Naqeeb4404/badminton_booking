@@ -85,7 +85,10 @@ $date_name = date("d M Y", strtotime($selected_date));
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Laporan Kewangan | Admin</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>.revenue-page .container-box{max-width:1200px;margin:0 auto;padding:0}.revenue-page .page-title{font-weight:700}.revenue-page .card{border:none;border-radius:16px;box-shadow:0 5px 20px rgba(0,0,0,.06)}.revenue-page .filter-card{padding:20px;margin-bottom:25px}.revenue-page .revenue-card{padding:25px;height:100%}.revenue-page .revenue-label{color:#6c757d;font-size:14px;font-weight:600;text-transform:uppercase}.revenue-page .revenue-amount{font-size:32px;font-weight:700;margin-top:8px;color:#1e293b}</style>
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css?v=20260926">
+
+    <!-- Stable shared admin shell -->
+    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head><body class="admin-page revenue-page">
 <?php include __DIR__ . '/sidebar.php'; ?><div class="main-content"><header class="topbar"><div class="search-form"><i class="fa-solid fa-search"></i><input type="text" class="form-control search-input" placeholder="Taip untuk cari..." autocomplete="off"></div><div class="d-flex align-items-center gap-3"><div class="user-pill"><div class="user-avatar"><?php echo htmlspecialchars(strtoupper(substr($_SESSION['user']['name'] ?? 'A',0,1))); ?></div><div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($_SESSION['user']['name'] ?? 'Admin'); ?></div></div><a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar</a></div></header><main class="content-body"><div class="container-box">
 

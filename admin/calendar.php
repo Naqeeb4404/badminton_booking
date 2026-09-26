@@ -365,7 +365,10 @@ $currentMonthName = isset($monthNames[$currentMonthKey]) ? $monthNames[$currentM
             .calendar-date { width: 22px; height: 22px; line-height: 22px; font-size: 0.75rem; }
         }
     </style>
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css?v=20260926">
+
+    <!-- Stable shared admin shell -->
+    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
 
 <body class="admin-page">

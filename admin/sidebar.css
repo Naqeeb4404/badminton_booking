@@ -237,3 +237,83 @@ body.admin-page .table-responsive { border-radius:12px; }
 
 /* Make sure old page-specific layout rules cannot re-introduce the old sidebar. */
 body.admin-page .sidebar-brand { display:none !important; }
+
+
+/* ===== FINAL ADMIN SHELL OVERRIDES =====
+   Keep every admin page visually stable while navigating between pages.
+   Database, PHP queries and page data are not affected. */
+html, body.admin-page { width:100%; height:100%; }
+body.admin-page { overflow:hidden !important; }
+body.admin-page .sidebar {
+    width:280px !important;
+    flex:0 0 280px !important;
+    transition:none !important;
+    transform:none !important;
+}
+body.admin-page .sidebar-menu {
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    scrollbar-gutter:stable;
+    scroll-behavior:smooth;
+}
+body.admin-page .sidebar-menu::-webkit-scrollbar { width:8px; }
+body.admin-page .sidebar-menu::-webkit-scrollbar-track { background:rgba(255,255,255,.045); }
+body.admin-page .sidebar-menu::-webkit-scrollbar-thumb { background:#64748b; border-radius:99px; border:2px solid #1c2434; }
+body.admin-page .sidebar-menu::-webkit-scrollbar-thumb:hover { background:#94a3b8; }
+body.admin-page .main-content {
+    margin-left:280px !important;
+    width:calc(100% - 280px) !important;
+    height:100vh !important;
+    max-height:100vh !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    transition:none !important;
+    scroll-behavior:smooth;
+}
+body.admin-page .topbar,
+body.admin-page .top-nav {
+    flex:0 0 80px !important;
+    height:80px !important;
+    min-height:80px !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:100 !important;
+    transition:none !important;
+}
+body.admin-page .content-body {
+    width:100% !important;
+    min-height:calc(100vh - 80px) !important;
+    padding:32px 36px 50px !important;
+}
+/* Give pages a centered desktop canvas like a proper admin dashboard. */
+body.admin-page .content-body > .container-box,
+body.admin-page .content-body > .container,
+body.admin-page .content-body > .container-fluid,
+body.admin-page .content-body > .row,
+body.admin-page .content-body > .card-custom,
+body.admin-page .content-body > .table-responsive {
+    width:100%;
+    max-width:1280px;
+    margin-left:auto !important;
+    margin-right:auto !important;
+}
+/* Report pages use a plain first div; keep that content centered without touching colors. */
+body.admin-page .content-body > .d-flex,
+body.admin-page .content-body > .page-header {
+    width:100%;
+    max-width:1280px;
+    margin-left:auto !important;
+    margin-right:auto !important;
+}
+body.admin-page .sidebar-profile-card { transition:none !important; }
+body.admin-page .sidebar-nav-link { transition:background .18s ease,color .18s ease,box-shadow .18s ease !important; }
+
+@media (max-width:900px) {
+    body.admin-page .sidebar { width:240px !important; flex-basis:240px !important; }
+    body.admin-page .main-content { margin-left:240px !important; width:calc(100% - 240px) !important; }
+}
+@media (max-width:680px) {
+    body.admin-page .sidebar { width:76px !important; flex-basis:76px !important; }
+    body.admin-page .main-content { margin-left:76px !important; width:calc(100% - 76px) !important; }
+    body.admin-page .content-body { padding:22px 14px 36px !important; }
+}

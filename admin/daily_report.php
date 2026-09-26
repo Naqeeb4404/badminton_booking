@@ -39,7 +39,10 @@ $courtUsageResult = $courtUsageQuery->get_result();
 <title>Laporan Harian - Admin</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="sidebar.css?v=20260926">
+
+    <!-- Stable shared admin shell -->
+    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
 <body class="admin-page">
 <?php include __DIR__ . '/sidebar.php'; ?>
