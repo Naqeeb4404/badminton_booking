@@ -99,46 +99,31 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
     <!-- Bootstrap 5 CSS & FontAwesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --sidebar-bg: #1c2434;
-            --sidebar-text: #dee4ee;
-            --sidebar-hover: #333a48;
-            --accent-lime: #ccff00;
-            --text-dark: #111111;
-            --body-bg: #f1f5f9;
+            --sidebar-bg: #1e293b;
+            --topbar-bg: #ffffff;
+            --body-bg: #f8fafc;
+            --card-border: #e2e8f0;
+            --table-header-bg: #1e293b;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--body-bg);
-            color: var(--text-dark);
+            color: #334155;
             min-height: 100vh;
             margin: 0;
             display: flex;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
+        /* Sidebar Styling ala Rujukan */
         .sidebar {
-            width: 280px;
+            width: 260px;
             background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
+            color: #94a3b8;
             position: fixed;
             top: 0;
             left: 0;
@@ -146,36 +131,25 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
             display: flex;
             flex-direction: column;
             z-index: 100;
-            transition: all 0.3s ease;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
         }
 
         .sidebar-brand {
-            padding: 25px 20px;
-            font-size: 1.25rem;
-            font-weight: 800;
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
             text-decoration: none;
         }
 
         .sidebar-menu {
-            padding: 20px 15px;
+            padding: 15px 10px;
             overflow-y: auto;
             flex-grow: 1;
-        }
-
-        .menu-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8a99ad;
-            margin-bottom: 10px;
-            padding-left: 10px;
-            font-weight: 700;
         }
 
         .sidebar-nav-link {
@@ -183,13 +157,18 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
             align-items: center;
             justify-content: space-between;
             padding: 12px 15px;
-            color: var(--sidebar-text);
+            color: #cbd5e1;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 6px;
             font-weight: 500;
             font-size: 0.9rem;
-            margin-bottom: 5px;
-            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            transition: background 0.2s;
+        }
+
+        .sidebar-nav-link:hover, .sidebar-nav-link.active {
+            background-color: #334155;
+            color: #fff;
         }
 
         .sidebar-nav-link-content {
@@ -198,19 +177,9 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
             gap: 12px;
         }
 
-        .sidebar-nav-link:hover, .sidebar-nav-link.active {
-            background-color: var(--sidebar-hover);
-            color: #fff;
-        }
-
-        .sidebar-nav-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
+        /* Main Content & Topbar */
         .main-content {
-            margin-left: 280px;
+            margin-left: 260px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -218,272 +187,260 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
         }
 
         .topbar {
-            height: 80px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
+            height: 70px;
+            background: var(--topbar-bg);
+            border-bottom: 1px solid var(--card-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
+            padding: 0 30px;
             position: sticky;
             top: 0;
             z-index: 99;
         }
 
-        .search-form {
-            position: relative;
-            width: 350px;
-        }
-
-        .search-input {
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 50px !important;
-            padding: 10px 20px 10px 45px !important;
-            font-size: 0.85rem !important;
-            width: 100% !important;
-            color: #1e293b !important;
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-        .search-form i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .user-pill {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f8fafc;
-            padding: 6px 16px 6px 6px;
-            border-radius: 50px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--sidebar-bg);
-            color: var(--accent-lime);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.9rem;
-        }
-
         .content-body {
-            padding: 40px;
+            padding: 30px;
             flex-grow: 1;
         }
 
-        .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
-            background: #ffffff;
-        }
-
-        .gray-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 24px;
-        }
-
-        .btn-minimal {
-            background-color: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-minimal:hover {
-            background-color: #e2e8f0;
-            border-color: #94a3b8;
+        /* Breadcrumb & Header Box */
+        .page-header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
             color: #0f172a;
         }
 
-        .btn-minimal-dark {
-            background-color: #334155;
-            border: 1px solid #334155;
-            color: #ffffff;
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
             font-size: 0.85rem;
-            font-weight: 600;
-            padding: 8px 16px;
+        }
+
+        /* Card & Panel Styling */
+        .card-custom {
+            background: #ffffff;
+            border: 1px solid var(--card-border);
             border-radius: 8px;
-            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
         }
 
-        .btn-minimal-dark:hover {
-            background-color: #1e293b;
-            color: #ffffff;
+        .card-custom-header {
+            background: #1e293b;
+            color: #fff;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            font-size: 0.95rem;
         }
 
-        .table td, .table th {
+        .card-custom-body {
+            padding: 20px;
+        }
+
+        /* Table Styling */
+        .table-custom {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        .table-custom th {
+            background-color: #1e293b !important;
+            color: #fff !important;
+            font-weight: 600;
+            text-align: center;
+            padding: 12px 10px;
+            border: none;
+        }
+
+        .table-custom td {
             vertical-align: middle;
-            padding: 14px 16px;
+            text-align: center;
+            padding: 12px 10px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
         }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .sidebar .sidebar-brand span, .sidebar .menu-label, .sidebar .sidebar-nav-link span, .sidebar .badge { display: none; }
-            .main-content { margin-left: 70px; }
-            .topbar { padding: 0 20px; }
-            .search-form { display: none; }
+        /* Action Buttons */
+        .btn-action-view { background-color: #0dcaf0; color: #fff; border: none; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; }
+        .btn-action-edit { background-color: #ffc107; color: #000; border: none; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; font-weight: 500; }
+        .btn-action-success { background-color: #198754; color: #fff; border: none; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; }
+        .btn-action-danger { background-color: #dc3545; color: #fff; border: none; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; }
+        .btn-action-dark { background-color: #6c757d; color: #fff; border: none; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; }
+        
+        .btn-action-view:hover, .btn-action-edit:hover, .btn-action-success:hover, .btn-action-danger:hover, .btn-action-dark:hover {
+            opacity: 0.85;
+            color: #fff;
         }
     </style>
-    <link rel="stylesheet" href="sidebar.css?v=20260926">
-
-    <!-- Stable shared admin shell -->
-    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
 
-<body class="admin-page">
+<body>
 
     <!-- SIDEBAR MENU -->
-    <?php include __DIR__ . '/sidebar.php'; ?>
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fa-solid fa-shuttlecock text-warning"></i>
+            <span>Badminton Panji</span>
+        </div>
+        <div class="sidebar-menu">
+            <div class="text-uppercase fs-7 text-muted fw-bold px-3 mb-2" style="font-size: 0.7rem;">Navigasi</div>
+            <a href="dashboard.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </div>
+            </a>
+            <a href="manage_court.php" class="sidebar-nav-link active">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Manage Court</span>
+                </div>
+            </a>
+            <a href="messages.php" class="sidebar-nav-link">
+                <div class="sidebar-nav-link-content">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Messages</span>
+                </div>
+                <?php if($total_messages > 0): ?>
+                    <span class="badge bg-danger rounded-pill"><?php echo $total_messages; ?></span>
+                <?php endif; ?>
+            </a>
+        </div>
+    </div>
 
     <!-- MAIN CONTENT CONTAINER -->
     <div class="main-content">
         
         <!-- TOPBAR -->
         <header class="topbar">
-            <div class="search-form">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" class="form-control search-input" placeholder="Type to search..." autocomplete="off">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-bars fs-5 text-secondary" style="cursor: pointer;"></i>
             </div>
 
             <div class="d-flex align-items-center gap-3">
-                <div class="user-pill">
-                    <div class="user-avatar" style="<?php echo $admin_photo_style; ?>"><?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?></div>
+                <div class="position-relative text-secondary fs-5" style="cursor: pointer;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                        <?php echo $total_messages; ?>
+                    </span>
                 </div>
-                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
-                </a>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle" data-bs-toggle="dropdown">
+                        <span class="fw-semibold fs-7">Admin, (<?php echo htmlspecialchars($user['name'] ?? 'SuperAdmin'); ?>)</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li><a class="dropdown-item" href="../auth/logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
             </div>
         </header>
 
         <!-- ISI KANDUNGAN UTAMA -->
         <div class="content-body">
             
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    
-                    <h2 class="fw-bold mb-1">🏸 Manage Badminton Court</h2>
-                    <p class="text-muted fs-7 mb-4">Tambah, padam, atau kemas kini status ketersediaan gelanggang sukan.</p>
-                    <hr class="text-muted opacity-25 mb-4">
+            <!-- Tajuk & Breadcrumb ala Rujukan -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="page-header-title">Manage Courts</h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="dashboard.php" class="text-decoration-none text-muted">Home</a></li>
+                        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Manage Court</li>
+                    </ol>
+                </nav>
+            </div>
 
+            <!-- KOTAK BORANG (TAMBAH / KEMASKINI) -->
+            <div class="card-custom">
+                <div class="card-custom-header">
+                    <i class="fa-solid fa-pen-to-square me-1"></i> 
+                    <?php echo $editCourt ? 'Edit Court ID: #' . (int)$editCourt['id'] : 'Add New Court'; ?>
+                </div>
+                <div class="card-custom-body">
                     <?php if ($editCourt): ?>
-                    <!-- KOTAK EDIT GELANGGANG -->
-                    <div class="gray-box mb-5">
-                        <h5 class="fw-bold mb-3 text-secondary fs-6"><i class="fa-solid fa-pen me-1"></i> Edit Court #<?php echo (int)$editCourt['id']; ?></h5>
+                        <!-- Borang Kemaskini -->
                         <form method="POST" class="row g-3">
                             <input type="hidden" name="id" value="<?php echo (int)$editCourt['id']; ?>">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold fs-7 text-muted">Nama Gelanggang</label>
-                                <input type="text" name="court_name" class="form-control bg-white" value="<?php echo htmlspecialchars($editCourt['court_name']); ?>" required>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold fs-7">Nama Gelanggang</label>
+                                <input type="text" name="court_name" class="form-control" value="<?php echo htmlspecialchars($editCourt['court_name']); ?>" required>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold fs-7 text-muted">Price (RM/hr)</label>
-                                <input type="number" name="price" step="0.01" min="0" class="form-control bg-white" value="<?php echo htmlspecialchars($editCourt['price']); ?>" required>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-7">Price (RM/hr)</label>
+                                <input type="number" name="price" step="0.01" min="0" class="form-control" value="<?php echo htmlspecialchars($editCourt['price']); ?>" required>
                             </div>
                             <div class="col-md-3 d-flex align-items-end gap-2">
-                                <button name="edit" value="1" class="btn btn-minimal-dark w-100">
-                                    <i class="fa-solid fa-check me-1"></i> Save
-                                </button>
-                                <a href="manage_court.php" class="btn btn-minimal">Cancel</a>
+                                <button name="edit" value="1" class="btn btn-dark w-100 fw-semibold">Update</button>
+                                <a href="manage_court.php" class="btn btn-secondary w-100 fw-semibold">Cancel</a>
                             </div>
                         </form>
-                    </div>
                     <?php else: ?>
-                    <!-- KOTAK KELABU LEMBUT UNTUK ADD COURT FORM -->
-                    <div class="gray-box mb-5">
-                        <h5 class="fw-bold mb-3 text-secondary fs-6"><i class="fa-solid fa-circle-plus me-1"></i> Tambah Gelanggang Baharu</h5>
+                        <!-- Borang Tambah -->
                         <form method="POST" class="row g-3">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold fs-7 text-muted">Nama Gelanggang</label>
-                                <input type="text" name="court_name" class="form-control bg-white" placeholder="Example: Court 5" required>
+                                <label class="form-label fw-semibold fs-7">Nama Gelanggang</label>
+                                <input type="text" name="court_name" class="form-control" placeholder="Contoh: Court 1" required>
                             </div>
-
-                            <div class="col-md-2">
-                                <label class="form-label fw-semibold fs-7 text-muted">Price (RM/hr)</label>
-                                <input type="number" name="price" step="0.01" min="0" class="form-control bg-white" placeholder="20.00" required>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7">Price (RM/hr)</label>
+                                <input type="number" name="price" step="0.01" min="0" class="form-control" placeholder="20.00" required>
                             </div>
-
-                        <div class="col-md-3">
-    <label class="form-label fw-semibold fs-7 text-muted">Status Awal</label>
-    <select name="status" class="form-select bg-white">
-        <option value="Available">Available</option>
-        <option value="Unavailable">Unavailable</option>
-    </select>
-</div>
-
-<div class="col-md-3 d-flex align-items-end">
-    <button name="add" class="btn btn-minimal-dark w-100">
-        <i class="fa-solid fa-plus me-1"></i> Add Court
-    </button>
-</div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7">Status Awal</label>
+                                <select name="status" class="form-select">
+                                    <option value="Available">Available</option>
+                                    <option value="Not Available">Not Available</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button name="add" class="btn btn-dark w-100 fw-semibold">
+                                    <i class="fa-solid fa-plus me-1"></i> Add
+                                </button>
+                            </div>
                         </form>
-                    </div>
                     <?php endif; ?>
+                </div>
+            </div>
 
-                    <h4 class="fw-bold mb-3"><i class="fa-solid fa-list-ul me-2 text-dark"></i> Court List</h4>
-
-                    <!-- TABLE KESELURUHAN -->
+            <!-- KOTAK SENARAI KESELURUHAN (TABLE) -->
+            <div class="card-custom">
+                <div class="card-custom-header d-flex justify-content-between align-items-center">
+                    <span><i class="fa-solid fa-table-list me-1"></i> Court List</span>
+                </div>
+                <div class="card-custom-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover text-center align-middle">
-                            <thead class="table-dark">
+                        <table class="table table-custom table-hover">
+                            <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Id</th>
                                     <th>Court Name</th>
                                     <th>Price (RM/hr)</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                                 <tr>
                                     <td class="fw-semibold text-muted"><?php echo (int)$row['id']; ?></td>
-                                    <td class="fw-bold">🏸 <?php echo htmlspecialchars($row['court_name']); ?></td>
+                                    <td class="fw-bold text-start ps-4">🏸 <?php echo htmlspecialchars($row['court_name']); ?></td>
                                     <td>RM <?php echo number_format((float)$row['price'], 2); ?></td>
                                     <td>
-                                        <?php
-                                        if ($row['status'] == "Available") {
-                                            echo "<span class='badge bg-success px-3 py-2'>Available</span>";
-                                        } else {
-                                            echo "<span class='badge bg-danger px-3 py-2'>Not Available</span>";
-                                        }
-                                        ?>
+                                        <?php if ($row['status'] == "Available") { ?>
+                                            <span class="badge bg-success px-2 py-1">Available</span>
+                                        <?php } else { ?>
+                                            <span class="badge bg-danger px-2 py-1">Not Available</span>
+                                        <?php } ?>
                                     </td>
                                     <td>
-                                        <div class="d-flex justify-content-center flex-wrap gap-1">
-                                            <a href="?edit_id=<?php echo (int)$row['id']; ?>" class="btn btn-minimal">
-                                                Edit
-                                            </a>
-                                            <a href="?status=Available&id=<?php echo (int)$row['id']; ?>" class="btn btn-minimal">
-                                                Available
-                                            </a>
-                                            <a href="?status=Not Available&id=<?php echo (int)$row['id']; ?>" class="btn btn-minimal">
-                                                Disable
-                                            </a>
-                                            <a href="?delete=<?php echo (int)$row['id']; ?>" class="btn btn-minimal text-danger" onclick="return confirm('Delete court?')">
-                                                Delete
-                                            </a>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <a href="?edit_id=<?php echo (int)$row['id']; ?>" class="btn btn-action-edit">Edit</a>
+                                            <a href="?status=Available&id=<?php echo (int)$row['id']; ?>" class="btn btn-action-success">Available</a>
+                                            <a href="?status=Not Available&id=<?php echo (int)$row['id']; ?>" class="btn btn-action-dark">Disable</a>
+                                            <a href="?delete=<?php echo (int)$row['id']; ?>" class="btn btn-action-danger" onclick="return confirm('Padam gelanggang ini?')">Delete</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -491,12 +448,13 @@ $result = mysqli_query($conn, "SELECT * FROM courts ORDER BY id DESC");
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
 
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
