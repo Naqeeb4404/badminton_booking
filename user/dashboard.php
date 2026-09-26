@@ -1,6 +1,4 @@
-
 <?php
-
 session_start();
 
 include __DIR__ . '/../config/db.php';
@@ -12,21 +10,6 @@ if (!isset($_SESSION['user'])) {
 
 $user_id = $_SESSION['user']['id'];
 
-/*
-|--------------------------------------------------------------------------
-| BOOK COURT
-|--------------------------------------------------------------------------
-| Semua pilihan dibuat sekali sahaja di dashboard:
-| 1. Date
-| 2. Duration
-| 3. Start Time
-| 4. Court
-|
-| Selepas tekan Book Court:
-| terus pergi ke booking.php dalam mode Confirm Booking.
-|--------------------------------------------------------------------------
-*/
-
 if (isset($_POST['court'])) {
 
     $court_id = $_POST['court'] ?? '';
@@ -34,7 +17,6 @@ if (isset($_POST['court'])) {
     $booking_time = $_POST['time'] ?? '';
     $duration = isset($_POST['duration']) ? (int) $_POST['duration'] : 1;
 
-    // Pastikan duration valid
     if ($duration < 1) {
         $duration = 1;
     }
@@ -43,17 +25,18 @@ if (isset($_POST['court'])) {
         $duration = 4;
     }
 
-    // Validation
     if (
         empty($court_id) ||
         empty($booking_date) ||
         empty($booking_time)
     ) {
-        header("Location: dashboard.php?error=" . urlencode("Please select date, duration, time and court."));
+        header(
+            "Location: dashboard.php?error=" .
+            urlencode("Please select date, duration, time and court.")
+        );
         exit();
     }
 
-    // Terus pergi ke Confirm Booking
     $url = "../booking.php"
         . "?date=" . urlencode($booking_date)
         . "&time=" . urlencode($booking_time)
@@ -64,10 +47,9 @@ if (isset($_POST['court'])) {
     header("Location: " . $url);
     exit();
 }
-
 ?>
-
 <!DOCTYPE html>
+
 <html lang="ms">
 
 <head>
