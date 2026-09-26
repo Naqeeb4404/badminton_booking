@@ -5,6 +5,11 @@ include __DIR__ . '/../config/db.php';
 $error = '';
 $success = '';
 
+/*
+|--------------------------------------------------------------------------
+| CHECK RESET SESSION
+|--------------------------------------------------------------------------
+*/
 if (!isset($_SESSION['reset_user_id'])) {
     header("Location: forgot_password.php");
     exit();
@@ -13,6 +18,11 @@ if (!isset($_SESSION['reset_user_id'])) {
 $userId = (int) $_SESSION['reset_user_id'];
 $userEmail = $_SESSION['reset_email'] ?? '';
 
+/*
+|--------------------------------------------------------------------------
+| RESET PASSWORD
+|--------------------------------------------------------------------------
+*/
 if (isset($_POST['reset_password'])) {
 
     $password = $_POST['password'] ?? '';
@@ -104,6 +114,10 @@ if (isset($_POST['reset_password'])) {
 
     <style>
 
+        /* =====================================================
+           RESET
+        ===================================================== */
+
         * {
             margin: 0;
             padding: 0;
@@ -111,27 +125,37 @@ if (isset($_POST['reset_password'])) {
             font-family: Arial, sans-serif;
         }
 
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
         body {
             background: #111;
 
             min-height: 100vh;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             padding: 20px;
         }
 
-        /* =================================
+
+        /* =====================================================
            MAIN CONTAINER
-        ================================= */
+        ===================================================== */
 
         .reset-container {
+
             width: 100%;
+
             max-width: 950px;
 
-            min-height: 500px;
+            height: 500px;
 
             display: flex;
 
@@ -145,58 +169,85 @@ if (isset($_POST['reset_password'])) {
                 0 10px 35px rgba(0, 0, 0, 0.45);
         }
 
-        /* =================================
-           LEFT
-        ================================= */
+
+        /* =====================================================
+           LEFT SIDE
+        ===================================================== */
 
         .left {
+
             width: 55%;
+
+            height: 500px;
 
             background: #eef2f3;
 
             padding: 45px 55px;
 
             display: flex;
+
             flex-direction: column;
 
             justify-content: center;
+
+            overflow-y: auto;
         }
 
-        /* =================================
-           RIGHT
-        ================================= */
+
+        /* =====================================================
+           RIGHT SIDE
+        ===================================================== */
 
         .right {
+
             width: 45%;
+
+            height: 500px;
 
             background: #000;
 
             position: relative;
 
             overflow: hidden;
+
+            flex-shrink: 0;
         }
 
-        .right img {
-            width: 100%;
-            height: 100%;
 
-            min-height: 500px;
+        /* =====================================================
+           RIGHT IMAGE
+        ===================================================== */
+
+        .right img {
+
+            width: 100%;
+
+            height: 500px;
 
             object-fit: cover;
+
+            object-position: center center;
 
             display: block;
         }
 
+
+        /* =====================================================
+           IMAGE OVERLAY
+        ===================================================== */
+
         .right-overlay {
+
             position: absolute;
 
             inset: 0;
 
-            background: linear-gradient(
-                to bottom,
-                rgba(0, 0, 0, 0.15),
-                rgba(0, 0, 0, 0.65)
-            );
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.10),
+                    rgba(0, 0, 0, 0.70)
+                );
 
             display: flex;
 
@@ -205,11 +256,15 @@ if (isset($_POST['reset_password'])) {
             padding: 35px;
         }
 
+
         .right-text {
+
             color: #fff;
         }
 
+
         .right-text h2 {
+
             font-size: 28px;
 
             font-weight: bold;
@@ -217,7 +272,9 @@ if (isset($_POST['reset_password'])) {
             margin-bottom: 8px;
         }
 
+
         .right-text p {
+
             font-size: 13px;
 
             opacity: 0.85;
@@ -227,15 +284,19 @@ if (isset($_POST['reset_password'])) {
             margin: 0;
         }
 
-        /* =================================
-           BACK
-        ================================= */
+
+        /* =====================================================
+           BACK BUTTON
+        ===================================================== */
 
         .back-top {
-            margin-bottom: 25px;
+
+            margin-bottom: 20px;
         }
 
+
         .back-top a {
+
             color: #555;
 
             text-decoration: none;
@@ -247,21 +308,28 @@ if (isset($_POST['reset_password'])) {
             transition: 0.2s;
         }
 
+
         .back-top a:hover {
+
             color: #000;
         }
 
+
         .back-top i {
+
             margin-right: 6px;
         }
 
-        /* =================================
-           ICON
-        ================================= */
+
+        /* =====================================================
+           ICON BOX
+        ===================================================== */
 
         .icon-box {
-            width: 58px;
-            height: 58px;
+
+            width: 55px;
+
+            height: 55px;
 
             background: #000;
 
@@ -272,44 +340,53 @@ if (isset($_POST['reset_password'])) {
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
-            font-size: 22px;
+            font-size: 21px;
 
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+
+            flex-shrink: 0;
         }
 
-        /* =================================
+
+        /* =====================================================
            TITLE
-        ================================= */
+        ===================================================== */
 
         h1 {
-            font-size: 42px;
+
+            font-size: 38px;
 
             font-weight: 800;
 
             color: #111;
 
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
+
         .description {
+
             color: #666;
 
             font-size: 14px;
 
-            line-height: 1.7;
+            line-height: 1.6;
 
             max-width: 430px;
 
-            margin-bottom: 25px;
+            margin-bottom: 18px;
         }
 
-        /* =================================
-           EMAIL
-        ================================= */
+
+        /* =====================================================
+           EMAIL DISPLAY
+        ===================================================== */
 
         .email-display {
+
             display: flex;
 
             align-items: center;
@@ -320,17 +397,20 @@ if (isset($_POST['reset_password'])) {
 
             border-radius: 8px;
 
-            padding: 12px 15px;
+            padding: 10px 14px;
 
-            margin-bottom: 22px;
+            margin-bottom: 18px;
 
             font-size: 13px;
 
             color: #555;
         }
 
+
         .email-icon {
+
             width: 34px;
+
             height: 34px;
 
             background: #111;
@@ -342,16 +422,21 @@ if (isset($_POST['reset_password'])) {
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             flex-shrink: 0;
         }
 
+
         .email-content {
+
             overflow: hidden;
         }
 
+
         .email-content small {
+
             display: block;
 
             color: #888;
@@ -359,21 +444,27 @@ if (isset($_POST['reset_password'])) {
             margin-bottom: 2px;
         }
 
+
         .email-content strong {
+
             color: #111;
 
             word-break: break-word;
         }
 
-        /* =================================
-           FORM
-        ================================= */
+
+        /* =====================================================
+           FORM GROUP
+        ===================================================== */
 
         .form-group {
-            margin-bottom: 20px;
+
+            margin-bottom: 16px;
         }
 
+
         .form-label {
+
             display: block;
 
             font-size: 13px;
@@ -382,14 +473,28 @@ if (isset($_POST['reset_password'])) {
 
             color: #222;
 
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
+
+
+        /* =====================================================
+           INPUT WRAPPER
+        ===================================================== */
 
         .input-wrapper {
+
             position: relative;
+
+            width: 100%;
         }
 
+
+        /* =====================================================
+           INPUT LEFT ICON
+        ===================================================== */
+
         .input-icon {
+
             position: absolute;
 
             left: 5px;
@@ -401,9 +506,17 @@ if (isset($_POST['reset_password'])) {
             color: #777;
 
             font-size: 14px;
+
+            z-index: 2;
         }
 
+
+        /* =====================================================
+           FORM CONTROL
+        ===================================================== */
+
         .form-control {
+
             width: 100%;
 
             border: none;
@@ -419,13 +532,19 @@ if (isset($_POST['reset_password'])) {
             font-size: 14px;
 
             color: #111;
+
+            outline: none;
         }
 
+
         .form-control::placeholder {
+
             color: #999;
         }
 
+
         .form-control:focus {
+
             box-shadow: none;
 
             background: transparent;
@@ -433,11 +552,13 @@ if (isset($_POST['reset_password'])) {
             border-bottom-color: #000;
         }
 
-        /* =================================
+
+        /* =====================================================
            PASSWORD TOGGLE
-        ================================= */
+        ===================================================== */
 
         .toggle-password {
+
             position: absolute;
 
             right: 5px;
@@ -455,29 +576,37 @@ if (isset($_POST['reset_password'])) {
             cursor: pointer;
 
             padding: 5px;
+
+            z-index: 3;
         }
 
+
         .toggle-password:hover {
+
             color: #000;
         }
 
-        /* =================================
+
+        /* =====================================================
            PASSWORD NOTE
-        ================================= */
+        ===================================================== */
 
         .password-note {
+
             font-size: 11px;
 
             color: #777;
 
-            margin-top: 7px;
+            margin-top: 5px;
         }
 
-        /* =================================
-           ERROR
-        ================================= */
+
+        /* =====================================================
+           ERROR BOX
+        ===================================================== */
 
         .error-box {
+
             display: flex;
 
             align-items: center;
@@ -490,23 +619,25 @@ if (isset($_POST['reset_password'])) {
 
             color: #b02a37;
 
-            padding: 11px 14px;
+            padding: 10px 14px;
 
             border-radius: 6px;
 
             font-size: 13px;
 
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        /* =================================
-           BUTTON
-        ================================= */
+
+        /* =====================================================
+           RESET BUTTON
+        ===================================================== */
 
         .btn-reset {
+
             width: 100%;
 
-            padding: 14px;
+            padding: 13px;
 
             background: #000;
 
@@ -521,33 +652,43 @@ if (isset($_POST['reset_password'])) {
             font-weight: bold;
 
             transition: 0.3s;
+
+            cursor: pointer;
         }
 
+
         .btn-reset:hover {
+
             background: #333;
 
             color: #fff;
         }
 
+
         .btn-reset i {
+
             margin-left: 7px;
         }
 
-        /* =================================
-           BACK LOGIN
-        ================================= */
+
+        /* =====================================================
+           BACK TO LOGIN
+        ===================================================== */
 
         .back-login {
+
             text-align: center;
 
-            margin-top: 22px;
+            margin-top: 16px;
 
             font-size: 13px;
 
             color: #666;
         }
 
+
         .back-login a {
+
             color: #000;
 
             font-weight: bold;
@@ -555,39 +696,53 @@ if (isset($_POST['reset_password'])) {
             text-decoration: none;
         }
 
+
         .back-login a:hover {
+
             text-decoration: underline;
         }
 
-        /* =================================
+
+        /* =====================================================
            LOGO
-        ================================= */
+        ===================================================== */
 
         .logo {
+
             text-align: center;
 
-            margin-top: 20px;
+            margin-top: 14px;
         }
 
+
         .logo img {
-            width: 48px;
-            height: 48px;
+
+            width: 42px;
+
+            height: 42px;
 
             object-fit: cover;
 
             border-radius: 50%;
         }
 
-        /* =================================
+
+        /* =====================================================
            SUCCESS
-        ================================= */
+        ===================================================== */
 
         .success-wrapper {
+
             text-align: center;
+
+            width: 100%;
         }
 
+
         .success-icon {
+
             width: 65px;
+
             height: 65px;
 
             background: #000;
@@ -599,32 +754,41 @@ if (isset($_POST['reset_password'])) {
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
-            margin: 0 auto 20px;
+            margin: 0 auto 18px;
 
             font-size: 24px;
         }
 
+
         .success-wrapper h2 {
+
             font-size: 30px;
 
             font-weight: 800;
 
             margin-bottom: 10px;
+
+            color: #111;
         }
 
+
         .success-wrapper p {
+
             color: #666;
 
             font-size: 14px;
 
             line-height: 1.6;
 
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
 
+
         .login-now {
+
             display: inline-block;
 
             background: #000;
@@ -642,79 +806,123 @@ if (isset($_POST['reset_password'])) {
             font-weight: bold;
         }
 
+
         .login-now:hover {
+
             background: #333;
 
             color: #fff;
         }
 
+
         .login-now i {
+
             margin-left: 7px;
         }
 
-        /* =================================
+
+        /* =====================================================
            MOBILE
-        ================================= */
+        ===================================================== */
 
         @media (max-width: 768px) {
 
             body {
+
                 padding: 15px;
+
+                align-items: center;
             }
 
+
             .reset-container {
+
                 max-width: 500px;
+
+                height: auto;
 
                 min-height: auto;
 
                 display: block;
             }
 
+
             .left {
+
                 width: 100%;
 
+                height: auto;
+
+                min-height: 500px;
+
                 padding: 35px 30px;
+
+                overflow-y: visible;
             }
 
+
             .right {
+
                 display: none;
             }
 
+
             h1 {
+
                 font-size: 34px;
             }
-
         }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ===================================================== */
 
         @media (max-width: 400px) {
 
             .left {
+
                 padding: 30px 22px;
             }
 
+
             h1 {
+
                 font-size: 29px;
             }
 
+
+            .icon-box {
+
+                width: 50px;
+
+                height: 50px;
+
+                font-size: 19px;
+            }
         }
 
     </style>
 
 </head>
 
+
 <body>
 
     <div class="reset-container">
 
-        <!-- =========================
+
+        <!-- =================================================
              LEFT SIDE
-        ========================= -->
+        ================================================= -->
 
         <div class="left">
 
+
             <?php if (!empty($success)): ?>
 
-                <!-- SUCCESS -->
+
+                <!-- SUCCESS MESSAGE -->
 
                 <div class="success-wrapper">
 
@@ -724,14 +932,19 @@ if (isset($_POST['reset_password'])) {
 
                     </div>
 
+
                     <h2>
                         Password Updated
                     </h2>
 
+
                     <p>
+
                         Your password has been changed successfully.
                         You can now login using your new password.
+
                     </p>
+
 
                     <a
                         href="login.php"
@@ -746,9 +959,13 @@ if (isset($_POST['reset_password'])) {
 
                 </div>
 
+
             <?php else: ?>
 
-                <!-- BACK -->
+
+                <!-- =================================================
+                     BACK
+                ================================================= -->
 
                 <div class="back-top">
 
@@ -762,7 +979,10 @@ if (isset($_POST['reset_password'])) {
 
                 </div>
 
-                <!-- ICON -->
+
+                <!-- =================================================
+                     ICON
+                ================================================= -->
 
                 <div class="icon-box">
 
@@ -770,18 +990,27 @@ if (isset($_POST['reset_password'])) {
 
                 </div>
 
-                <!-- TITLE -->
+
+                <!-- =================================================
+                     TITLE
+                ================================================= -->
 
                 <h1>
                     Reset Password
                 </h1>
 
+
                 <p class="description">
+
                     Create a new password for your
                     Badminton Kampung Panji account.
+
                 </p>
 
-                <!-- EMAIL -->
+
+                <!-- =================================================
+                     EMAIL
+                ================================================= -->
 
                 <?php if (!empty($userEmail)): ?>
 
@@ -793,11 +1022,13 @@ if (isset($_POST['reset_password'])) {
 
                         </div>
 
+
                         <div class="email-content">
 
                             <small>
                                 Resetting password for
                             </small>
+
 
                             <strong>
                                 <?= htmlspecialchars($userEmail) ?>
@@ -809,7 +1040,10 @@ if (isset($_POST['reset_password'])) {
 
                 <?php endif; ?>
 
-                <!-- ERROR -->
+
+                <!-- =================================================
+                     ERROR
+                ================================================= -->
 
                 <?php if (!empty($error)): ?>
 
@@ -818,30 +1052,41 @@ if (isset($_POST['reset_password'])) {
                         <i class="fa-solid fa-circle-exclamation"></i>
 
                         <span>
+
                             <?= htmlspecialchars($error) ?>
+
                         </span>
 
                     </div>
 
                 <?php endif; ?>
 
-                <!-- FORM -->
+
+                <!-- =================================================
+                     RESET FORM
+                ================================================= -->
 
                 <form method="POST">
+
 
                     <!-- NEW PASSWORD -->
 
                     <div class="form-group">
 
                         <label class="form-label">
+
                             New Password
+
                         </label>
 
+
                         <div class="input-wrapper">
+
 
                             <i
                                 class="fa-solid fa-lock input-icon"
                             ></i>
+
 
                             <input
                                 type="password"
@@ -853,10 +1098,12 @@ if (isset($_POST['reset_password'])) {
                                 required
                             >
 
+
                             <button
                                 type="button"
                                 class="toggle-password"
                                 onclick="togglePassword('password', this)"
+                                aria-label="Show password"
                             >
 
                                 <i class="fa-solid fa-eye"></i>
@@ -865,25 +1112,34 @@ if (isset($_POST['reset_password'])) {
 
                         </div>
 
+
                         <div class="password-note">
+
                             Password must be at least 6 characters.
+
                         </div>
 
                     </div>
+
 
                     <!-- CONFIRM PASSWORD -->
 
                     <div class="form-group">
 
                         <label class="form-label">
+
                             Confirm New Password
+
                         </label>
 
+
                         <div class="input-wrapper">
+
 
                             <i
                                 class="fa-solid fa-shield-halved input-icon"
                             ></i>
+
 
                             <input
                                 type="password"
@@ -895,10 +1151,12 @@ if (isset($_POST['reset_password'])) {
                                 required
                             >
 
+
                             <button
                                 type="button"
                                 class="toggle-password"
                                 onclick="togglePassword('confirm_password', this)"
+                                aria-label="Show password"
                             >
 
                                 <i class="fa-solid fa-eye"></i>
@@ -909,7 +1167,8 @@ if (isset($_POST['reset_password'])) {
 
                     </div>
 
-                    <!-- BUTTON -->
+
+                    <!-- SUBMIT -->
 
                     <button
                         type="submit"
@@ -923,21 +1182,30 @@ if (isset($_POST['reset_password'])) {
 
                     </button>
 
+
                 </form>
 
-                <!-- LOGIN -->
+
+                <!-- =================================================
+                     LOGIN LINK
+                ================================================= -->
 
                 <div class="back-login">
 
                     Remember your password?
 
                     <a href="login.php">
+
                         Login here
+
                     </a>
 
                 </div>
 
-                <!-- LOGO -->
+
+                <!-- =================================================
+                     LOGO
+                ================================================= -->
 
                 <div class="logo">
 
@@ -948,21 +1216,25 @@ if (isset($_POST['reset_password'])) {
 
                 </div>
 
+
             <?php endif; ?>
+
 
         </div>
 
 
-        <!-- =========================
+        <!-- =================================================
              RIGHT SIDE
-        ========================= -->
+        ================================================= -->
 
         <div class="right">
+
 
             <img
                 src="images/badminton.jpg"
                 alt="Badminton Kampung Panji"
             >
+
 
             <div class="right-overlay">
 
@@ -972,6 +1244,7 @@ if (isset($_POST['reset_password'])) {
                         Badminton Kampung Panji
                     </h2>
 
+
                     <p>
                         Your game. Your court. Your time.
                     </p>
@@ -980,10 +1253,16 @@ if (isset($_POST['reset_password'])) {
 
             </div>
 
+
         </div>
+
 
     </div>
 
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ===================================================== -->
 
     <script>
 
@@ -995,6 +1274,7 @@ if (isset($_POST['reset_password'])) {
             const icon =
                 button.querySelector('i');
 
+
             if (input.type === "password") {
 
                 input.type = "text";
@@ -1003,6 +1283,11 @@ if (isset($_POST['reset_password'])) {
 
                 icon.classList.add("fa-eye-slash");
 
+                button.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
             } else {
 
                 input.type = "password";
@@ -1010,6 +1295,11 @@ if (isset($_POST['reset_password'])) {
                 icon.classList.remove("fa-eye-slash");
 
                 icon.classList.add("fa-eye");
+
+                button.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
 
             }
 
