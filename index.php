@@ -7,10 +7,9 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Badminton Kampung Panji - Court Booking</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
@@ -51,21 +50,9 @@ include __DIR__ . '/config/db.php';
             height: 100vh;
             z-index: -1;
             background:
-                radial-gradient(
-                    circle at 20% 30%,
-                    rgba(99, 102, 241, 0.18) 0%,
-                    transparent 40%
-                ),
-                radial-gradient(
-                    circle at 80% 70%,
-                    rgba(168, 85, 247, 0.15) 0%,
-                    transparent 40%
-                ),
-                radial-gradient(
-                    circle at 50% 50%,
-                    rgba(15, 23, 42, 1) 0%,
-                    #090a0f 100%
-                );
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, #090a0f 100%);
             animation: bgPulse 12s ease-in-out infinite alternate;
             pointer-events: none;
         }
@@ -103,7 +90,7 @@ include __DIR__ . '/config/db.php';
             align-items: center;
             justify-content: space-between;
             padding: 10px 40px;
-            min-height: 72px;
+            min-height: 78px;
             border-bottom: 1px solid var(--credix-border);
             background: rgba(9, 10, 15, 0.90);
             backdrop-filter: blur(16px);
@@ -115,50 +102,53 @@ include __DIR__ . '/config/db.php';
 
         /* BRAND */
         .brand-container {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 11px;
+            gap: 12px;
             text-decoration: none;
             flex-shrink: 0;
         }
 
-        /* LOGO */
+        /* =========================
+           LOGO BADMINTON
+           ========================= */
         .brand-logo-icon {
-            width: 54px;
-            height: 54px;
+            width: 62px;
+            height: 62px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            padding: 0;
+            margin: 0;
 
+            /* TIADA KOTAK */
             background: transparent;
             border: none;
             border-radius: 0;
             box-shadow: none;
 
+            /* JANGAN CROP LOGO */
             overflow: visible;
-            padding: 0;
-            margin: 0;
         }
 
         .brand-logo-icon img {
-            width: 52px;
-            height: 52px;
+            width: 58px;
+            height: 58px;
+            max-width: 100%;
+            max-height: 100%;
 
             display: block;
 
+            /* KEKALKAN SELURUH LOGO */
             object-fit: contain;
             object-position: center;
 
             padding: 0;
             margin: 0;
-
             border: none;
 
-            /*
-             * Logo asal hitam.
-             * Navbar gelap, jadi tukar hitam kepada putih.
-             */
+            /* LOGO HITAM -> PUTIH */
             filter: brightness(0) invert(1);
         }
 
@@ -168,30 +158,33 @@ include __DIR__ . '/config/db.php';
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
+            min-width: 0;
         }
 
         .brand-text span {
             display: block;
+            color: #f8fafc;
+            font-size: 1rem;
             font-weight: 800;
-            font-size: 0.95rem;
             letter-spacing: 0.5px;
-            color: var(--text-main);
             line-height: 1;
             margin: 0;
+            padding: 0;
         }
 
         .brand-text small {
             display: block;
-            font-size: 0.65rem;
             color: #a855f7;
+            font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 1.5px;
-            text-transform: uppercase;
             line-height: 1;
             margin-top: 6px;
+            padding: 0;
+            text-transform: uppercase;
         }
 
-        /* NAV LINKS */
+        /* NAVIGATION */
         .nav-links {
             display: flex;
             gap: 24px;
@@ -211,7 +204,7 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
         }
 
-        /* BOOK NOW */
+        /* BOOK BUTTON */
         .btn-book-now {
             border: 1px solid var(--credix-border);
             color: var(--text-main);
@@ -246,14 +239,11 @@ include __DIR__ . '/config/db.php';
             border: 1px solid var(--credix-border);
             border-radius: 32px;
             padding: 60px 50px;
-
             box-shadow:
                 0 40px 80px rgba(0, 0, 0, 0.8),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
             position: relative;
             z-index: 2;
-
             transition: transform 0.2s ease-out;
         }
 
@@ -286,7 +276,7 @@ include __DIR__ . '/config/db.php';
             margin-bottom: 30px;
         }
 
-        /* BUTTON */
+        /* BUTTONS */
         .btn-primary-custom {
             background: var(--credix-accent);
             color: #fff;
@@ -412,7 +402,7 @@ include __DIR__ . '/config/db.php';
             color: var(--text-muted);
         }
 
-        /* RESPONSIVE */
+        /* TABLET */
         @media (max-width: 991px) {
             .master-hero-card {
                 padding: 40px 25px;
@@ -423,10 +413,11 @@ include __DIR__ . '/config/db.php';
             }
         }
 
+        /* MOBILE */
         @media (max-width: 768px) {
             .custom-navbar {
-                padding: 9px 18px;
-                min-height: 66px;
+                padding: 8px 18px;
+                min-height: 68px;
             }
 
             .top-announcement-bar {
@@ -434,32 +425,32 @@ include __DIR__ . '/config/db.php';
             }
 
             .brand-container {
-                gap: 8px;
+                gap: 9px;
             }
 
             .brand-logo-icon {
-                width: 48px;
-                height: 48px;
+                width: 50px;
+                height: 50px;
             }
 
             .brand-logo-icon img {
-                width: 46px;
-                height: 46px;
+                width: 47px;
+                height: 47px;
             }
 
             .brand-text span {
-                font-size: 0.85rem;
+                font-size: 0.88rem;
             }
 
             .brand-text small {
-                font-size: 0.56rem;
-                letter-spacing: 1px;
+                font-size: 0.58rem;
+                letter-spacing: 1.2px;
                 margin-top: 5px;
             }
 
             .btn-book-now {
-                padding: 7px 14px;
-                font-size: 0.74rem;
+                padding: 7px 15px;
+                font-size: 0.75rem;
             }
 
             .hero-title {
@@ -490,7 +481,6 @@ include __DIR__ . '/config/db.php';
 
 <!-- TOP BAR -->
 <div class="top-announcement-bar d-none d-md-flex">
-
     <div>
         CALL +60 11 6351 9188
         &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -503,13 +493,11 @@ include __DIR__ . '/config/db.php';
             Login / Register
         </a>
     </div>
-
 </div>
 
 <!-- NAVBAR -->
 <nav class="custom-navbar">
 
-    <!-- LOGO + NAME -->
     <a href="index.php" class="brand-container">
 
         <div class="brand-logo-icon">
@@ -526,40 +514,16 @@ include __DIR__ . '/config/db.php';
 
     </a>
 
-    <!-- NAV LINKS -->
     <div class="nav-links d-none d-lg-flex">
-
-        <a href="index.php" class="active">
-            Home
-        </a>
-
-        <a href="rates.php">
-            Rates
-        </a>
-
-        <a href="facility.php">
-            Facility
-        </a>
-
-        <a href="about.php">
-            About
-        </a>
-
-        <a href="faq.php">
-            FAQ
-        </a>
-
-        <a href="rules.php">
-            Rules
-        </a>
-
-        <a href="location.php">
-            Location
-        </a>
-
+        <a href="index.php" class="active">Home</a>
+        <a href="rates.php">Rates</a>
+        <a href="facility.php">Facility</a>
+        <a href="about.php">About</a>
+        <a href="faq.php">FAQ</a>
+        <a href="rules.php">Rules</a>
+        <a href="location.php">Location</a>
     </div>
 
-    <!-- BOOK NOW -->
     <?php if (isset($_SESSION['user'])): ?>
 
         <a href="booking.php" class="btn-book-now">
@@ -589,11 +553,9 @@ include __DIR__ . '/config/db.php';
                 <div class="col-lg-6">
 
                     <div class="badge-pill">
-
                         <span>
                             NEXT-GEN COURT BOOKING PLATFORM
                         </span>
-
                     </div>
 
                     <h1 class="hero-title">
@@ -646,7 +608,7 @@ include __DIR__ . '/config/db.php';
 
                 </div>
 
-                <!-- RIGHT -->
+                <!-- RIGHT / VIDEO -->
                 <div class="col-lg-5">
 
                     <div class="hero-video-wrapper">
@@ -679,7 +641,6 @@ include __DIR__ . '/config/db.php';
 
     <div class="footer-container">
 
-        <!-- BRAND -->
         <div class="footer-col">
 
             <a href="index.php"
@@ -695,15 +656,8 @@ include __DIR__ . '/config/db.php';
                 </div>
 
                 <div class="brand-text">
-
-                    <span>
-                        BADMINTON
-                    </span>
-
-                    <small>
-                        KAMPUNG PANJI
-                    </small>
-
+                    <span>BADMINTON</span>
+                    <small>KAMPUNG PANJI</small>
                 </div>
 
             </a>
@@ -713,24 +667,17 @@ include __DIR__ . '/config/db.php';
                 color: var(--text-muted);
                 margin-top: 10px;
             ">
-
                 Dewan Kampung Panji, Kampung Panji<br>
-
                 20050 Kuala Terengganu, Terengganu
-
             </p>
 
         </div>
 
-        <!-- LINKS -->
         <div class="footer-col">
 
-            <h6>
-                Pautan Pantas
-            </h6>
+            <h6>Pautan Pantas</h6>
 
             <ul>
-
                 <li>
                     <a href="rates.php">
                         Rates
@@ -748,20 +695,15 @@ include __DIR__ . '/config/db.php';
                         About
                     </a>
                 </li>
-
             </ul>
 
         </div>
 
-        <!-- SUPPORT -->
         <div class="footer-col">
 
-            <h6>
-                Sokongan
-            </h6>
+            <h6>Sokongan</h6>
 
             <ul>
-
                 <li>
                     <a href="faq.php">
                         FAQ
@@ -779,7 +721,6 @@ include __DIR__ . '/config/db.php';
                         Location
                     </a>
                 </li>
-
             </ul>
 
         </div>
@@ -810,10 +751,8 @@ include __DIR__ . '/config/db.php';
         const heroCard = document.getElementById("heroCard");
 
         if (window.innerWidth > 991 && heroCard) {
-
             heroCard.style.transform =
                 `translateY(${scrollPosition * 0.04}px)`;
-
         }
 
     });
