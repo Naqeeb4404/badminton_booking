@@ -85,7 +85,7 @@ include __DIR__ . '/config/db.php';
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 40px;
+            padding: 14px 40px;
             border-bottom: 1px solid var(--credix-border);
             background: rgba(9, 10, 15, 0.85);
             backdrop-filter: blur(16px);
@@ -94,29 +94,41 @@ include __DIR__ . '/config/db.php';
             z-index: 1000;
         }
 
+        /* BRAND */
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none;
         }
 
         /* LOGO BADMINTON */
         .brand-logo-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            overflow: hidden;
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
-            background: #11131c;
+            background: transparent;
+            overflow: visible;
         }
 
         .brand-logo-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            object-position: center;
             display: block;
+
+            /* Tukar logo hitam kepada putih */
+            filter: brightness(0) invert(1);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .brand-text span {
@@ -129,13 +141,17 @@ include __DIR__ . '/config/db.php';
         }
 
         .brand-text small {
+            display: block;
+            margin-top: 4px;
             font-size: 0.65rem;
             color: #a855f7;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
+            line-height: 1;
         }
 
+        /* NAV LINKS */
         .nav-links {
             display: flex;
             gap: 24px;
@@ -155,6 +171,7 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
         }
 
+        /* BOOK NOW */
         .btn-book-now {
             border: 1px solid var(--credix-border);
             color: var(--text-main);
@@ -364,11 +381,21 @@ include __DIR__ . '/config/db.php';
 
         @media (max-width: 768px) {
             .custom-navbar {
-                padding: 15px 20px;
+                padding: 12px 20px;
             }
 
             .top-announcement-bar {
                 padding: 10px 20px;
+            }
+
+            .brand-logo-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .brand-logo-icon img {
+                width: 45px;
+                height: 45px;
             }
 
             .hero-title {
