@@ -1153,67 +1153,116 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <script>
 
-/* DATE / DURATION / TIME - refresh court availability */
-function refreshAvailability() {
+/* DATE / DURATION / TIME - update without page reload or scrolling */
+let dashboardUpdating = false;
+
+async function refreshAvailability() {
+    if (dashboardUpdating) return;
+
     const form = document.getElementById('bookingForm');
     const courtPage = document.getElementById('courtPage');
     if (courtPage) courtPage.value = 1;
 
-    // Simpan kedudukan skrin supaya page tak melompat ke court section.
-    sessionStorage.setItem('dashboardScrollY', String(window.scrollY));
-    form.action = 'dashboard.php';
+    dashboardUpdating = true;
+    const fixedScrollY = window.scrollY;
 
-    // Bagi selected state sempat nampak sebelum refresh.
-    setTimeout(() => form.submit(), 90);
-}
+    try {
+        const formData = new FormData(form);
+        const response = await fetch('dashboard.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-// Selepas refresh, kembali tepat ke kedudukan pengguna tadi.
-window.addEventListener('DOMContentLoaded', function () {
-    const savedY = sessionStorage.getItem('dashboardScrollY');
-    if (savedY !== null) {
-        sessionStorage.removeItem('dashboardScrollY');
-        requestAnimationFrame(() => window.scrollTo(0, parseInt(savedY, 10) || 0));
+        if (!response.ok) throw new Error('Unable to update availability.');
+
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const freshForm = doc.getElementById('bookingForm');
+
+        if (!freshForm) throw new Error('Booking form not found.');
+
+        // Replace only the form content. Browser page itself never reloads.
+        form.innerHTML = freshForm.innerHTML;
+
+        // Keep viewport at exactly the same position.
+        window.scrollTo({ top: fixedScrollY, left: 0, behavior: 'instant' });
+    } catch (error) {
+        console.error(error);
+        alert('Could not refresh court availability. Please try again.');
+    } finally {
+        dashboardUpdating = false;
     }
-});
+}
 
 function updateDateCard(element) {
     document.querySelectorAll('.date-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
     const radio = element.querySelector('input[type="radio"]');
-    if (radio) { radio.checked = true; refreshAvailability(); }
+    if (radio) {
+        radio.checked = true;
+        refreshAvailability();
+    }
 }
 
 function updateDurationCard(element) {
     document.querySelectorAll('.duration-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
     const radio = element.querySelector('input[type="radio"]');
-    if (radio) { radio.checked = true; refreshAvailability(); }
+    if (radio) {
+        radio.checked = true;
+        refreshAvailability();
+    }
 }
 
 function updateStartTimeCard(element) {
+    if (element.classList.contains('unavailable')) return;
     document.querySelectorAll('.start-time-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
     const radio = element.querySelector('input[type="radio"]');
-    if (radio) { radio.checked = true; refreshAvailability(); }
+    if (radio) {
+        radio.checked = true;
+        refreshAvailability();
+    }
 }
 
-/* COURT BACK / NEXT */
-function changeCourtPage(page) {
+/* COURT BACK / NEXT - AJAX too, so page stays still */
+async function changeCourtPage(page) {
+    if (page < 1 || dashboardUpdating) return;
 
-    if (page < 1) {
-        return;
-    }
-
-    const courtPage =
-        document.getElementById(
-            'courtPage'
-        );
-
+    const courtPage = document.getElementById('courtPage');
+    if (!courtPage) return;
     courtPage.value = page;
 
-    const form = document.getElementById('bookingForm');
-    form.action = 'dashboard.php#courtSection';
-    form.submit();
+    dashboardUpdating = true;
+    const fixedScrollY = window.scrollY;
+
+    try {
+        const form = document.getElementById('bookingForm');
+        const formData = new FormData(form);
+        const response = await fetch('dashboard.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        if (!response.ok) throw new Error('Unable to change court page.');
+
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const freshForm = doc.getElementById('bookingForm');
+        if (!freshForm) throw new Error('Booking form not found.');
+
+        form.innerHTML = freshForm.innerHTML;
+        window.scrollTo({ top: fixedScrollY, left: 0, behavior: 'instant' });
+    } catch (error) {
+        console.error(error);
+        alert('Could not change court page. Please try again.');
+    } finally {
+        dashboardUpdating = false;
+    }
 }
 
 </script>
