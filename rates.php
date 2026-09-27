@@ -420,11 +420,7 @@ include __DIR__ . '/config/db.php';
                         <td>Badminton court, per court per hour (Day)</td>
                         <td>RM 10.00</td>
                     </tr>
-                    
-                    <tr>
-                        <td>Badminton court, per court per hour (Night)</td>
-                        <td>RM 15.00</td>
-                    </tr>
+
                 </tbody>
             </table>
         </div>
