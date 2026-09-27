@@ -393,8 +393,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 

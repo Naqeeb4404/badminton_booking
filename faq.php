@@ -437,12 +437,12 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-bolt"></i>
                     </div>
                     <div class="brand-text">
-                        <span>SPORTS CENTER</span>
-                        <small>Badminton • Labuan F.T</small>
+                        <span>BADMINTON</span>
+                        <small>Kampung Panji</small>
                     </div>
                 </a>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
-                    Sungai Bangat Warehouse<br>near Savemore Superstore
+                    Dewan Kampung Panji, Kampung Panji<br>20050 Kuala Terengganu, Terengganu
                 </p>
             </div>
             <div class="footer-col">
