@@ -2,6 +2,9 @@
 session_start();
 include __DIR__ . '/../config/db.php';
 
+// Waktu tempatan Malaysia untuk semakan slot yang sudah lepas.
+date_default_timezone_set('Asia/Kuala_Lumpur');
+
 if (!isset($_SESSION['user'])) {
     header("Location: ../auth/login.php");
     exit();
@@ -30,6 +33,9 @@ if ($selected_duration < 1) $selected_duration = 1;
 if ($selected_duration > 4) $selected_duration = 4;
 if ($court_page < 1) $court_page = 1;
 
+// Slot yang masa mula sudah lepas pada hari ini tidak boleh ditempah.
+$selected_slot_is_past = strtotime($selected_date . ' ' . substr($selected_time, 0, 5)) <= time();
+
 /* BOOK COURT */
 if (isset($_POST['court'])) {
     $court_id = $_POST['court'] ?? '';
@@ -48,6 +54,16 @@ if (isset($_POST['court'])) {
         header(
             "Location: dashboard.php?error=" .
             urlencode("Please select date, duration, time and court.")
+        );
+        exit();
+    }
+
+    // Jangan benarkan booking slot yang sudah lepas untuk hari semasa.
+    if (strtotime($booking_date . ' ' . substr($booking_time, 0, 5)) <= time()) {
+        header(
+            "Location: dashboard.php?date=" . urlencode($booking_date) .
+            "&duration=" . urlencode($duration) .
+            "&error=" . urlencode("Selected time has already passed.")
         );
         exit();
     }
@@ -826,16 +842,21 @@ foreach ($times as $t) {
         ? 'checked'
         : '';
 
-    $t_active =
-        ($time_value === $selected_time)
-        ? 'active'
-        : '';
+    $slot_timestamp = strtotime($selected_date . ' ' . $t);
+    $time_is_past = ($slot_timestamp <= time());
+
+    // Slot lama tidak boleh kekal selected.
+    if ($time_is_past) {
+        $t_checked = '';
+        $t_active = '';
+    }
 
 ?>
 
 <label
-    class="time-slot-btn start-time-card <?php echo $t_active; ?>"
-    onclick="updateStartTimeCard(this)"
+    class="time-slot-btn start-time-card <?php echo $t_active; ?><?php echo $time_is_past ? ' unavailable' : ''; ?>"
+    <?php if (!$time_is_past): ?>onclick="updateStartTimeCard(this)"<?php endif; ?>
+    <?php echo $time_is_past ? 'style="opacity:.45;cursor:not-allowed;"' : ''; ?>
 >
 
     <input
@@ -843,10 +864,14 @@ foreach ($times as $t) {
         name="time"
         value="<?php echo $time_value; ?>"
         <?php echo $t_checked; ?>
+        <?php echo $time_is_past ? 'disabled' : ''; ?>
         required
     >
 
     <?php echo $t; ?>
+    <?php if ($time_is_past): ?>
+        <small style="display:block;font-size:10px;">Passed</small>
+    <?php endif; ?>
 
 </label>
 
@@ -916,6 +941,7 @@ foreach ($times as $t) {
 while ($row = mysqli_fetch_assoc($result)) {
 
     $is_available =
+        !$selected_slot_is_past &&
         ($row['status'] === 'Available') &&
         ((int)$row['date_blocked'] === 0) &&
         ((int)$row['slot_booked'] === 0);
