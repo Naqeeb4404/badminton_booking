@@ -28,6 +28,10 @@ include __DIR__ . '/config/db.php';
             --text-muted: #94a3b8;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--credix-bg);
@@ -85,10 +89,12 @@ include __DIR__ . '/config/db.php';
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 40px;
+            padding: 10px 40px;
+            min-height: 82px;
             border-bottom: 1px solid var(--credix-border);
-            background: rgba(9, 10, 15, 0.85);
+            background: rgba(9, 10, 15, 0.90);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -96,62 +102,76 @@ include __DIR__ . '/config/db.php';
 
         /* BRAND */
         .brand-container {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
+            flex-shrink: 0;
         }
 
-        /* LOGO BADMINTON */
+        /* LOGO */
         .brand-logo-icon {
-            width: 58px;
-            height: 58px;
+            width: 62px;
+            height: 62px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
             overflow: visible;
+            padding: 0;
+            margin: 0;
         }
 
         .brand-logo-icon img {
-            width: 52px;
-            height: 52px;
+            width: 58px;
+            height: 58px;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
             object-fit: contain;
             object-position: center;
-            display: block;
-
-            /* Tukar logo hitam kepada putih */
-            filter: brightness(0) invert(1);
+            margin: 0;
+            padding: 0;
+            border: 0;
         }
 
+        /* BRAND TEXT */
         .brand-text {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: flex-start;
+            min-width: 0;
         }
 
         .brand-text span {
             display: block;
+            color: #f8fafc;
+            font-size: 1rem;
             font-weight: 800;
-            font-size: 0.95rem;
             letter-spacing: 0.5px;
-            color: var(--text-main);
-            line-height: 1.1;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
         }
 
         .brand-text small {
             display: block;
-            margin-top: 4px;
-            font-size: 0.65rem;
             color: #a855f7;
+            font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 1.5px;
-            text-transform: uppercase;
             line-height: 1;
+            margin-top: 6px;
+            padding: 0;
+            text-transform: uppercase;
         }
 
-        /* NAV LINKS */
+        /* NAVIGATION */
         .nav-links {
             display: flex;
             gap: 24px;
@@ -171,7 +191,7 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
         }
 
-        /* BOOK NOW */
+        /* BOOK BUTTON */
         .btn-book-now {
             border: 1px solid var(--credix-border);
             color: var(--text-main);
@@ -182,6 +202,7 @@ include __DIR__ . '/config/db.php';
             background: rgba(255, 255, 255, 0.03);
             text-decoration: none;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
         }
 
         .btn-book-now:hover {
@@ -242,7 +263,7 @@ include __DIR__ . '/config/db.php';
             margin-bottom: 30px;
         }
 
-        /* BUTTON */
+        /* BUTTONS */
         .btn-primary-custom {
             background: var(--credix-accent);
             color: #fff;
@@ -368,7 +389,7 @@ include __DIR__ . '/config/db.php';
             color: var(--text-muted);
         }
 
-        /* RESPONSIVE */
+        /* TABLET */
         @media (max-width: 991px) {
             .master-hero-card {
                 padding: 40px 25px;
@@ -379,23 +400,44 @@ include __DIR__ . '/config/db.php';
             }
         }
 
+        /* MOBILE */
         @media (max-width: 768px) {
             .custom-navbar {
-                padding: 12px 20px;
+                padding: 10px 18px;
+                min-height: 70px;
             }
 
             .top-announcement-bar {
                 padding: 10px 20px;
             }
 
+            .brand-container {
+                gap: 9px;
+            }
+
             .brand-logo-icon {
-                width: 50px;
-                height: 50px;
+                width: 52px;
+                height: 52px;
             }
 
             .brand-logo-icon img {
-                width: 45px;
-                height: 45px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .brand-text span {
+                font-size: 0.88rem;
+            }
+
+            .brand-text small {
+                font-size: 0.58rem;
+                letter-spacing: 1.2px;
+                margin-top: 5px;
+            }
+
+            .btn-book-now {
+                padding: 7px 15px;
+                font-size: 0.75rem;
             }
 
             .hero-title {
@@ -422,150 +464,148 @@ include __DIR__ . '/config/db.php';
 
 <body>
 
-    <div class="animated-bg-layer"></div>
+<div class="animated-bg-layer"></div>
 
-    <!-- TOP BAR -->
-    <div class="top-announcement-bar d-none d-md-flex">
-        <div>
-            CALL +60 11 6351 9188
-            &nbsp;&nbsp;|&nbsp;&nbsp;
-            Dewan Kampung Panji, Kuala Terengganu
-        </div>
-
-        <div>
-            <a href="auth/login.php"
-               class="text-decoration-none text-light fw-bold">
-                Login / Register
-            </a>
-        </div>
+<!-- TOP BAR -->
+<div class="top-announcement-bar d-none d-md-flex">
+    <div>
+        CALL +60 11 6351 9188
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        Dewan Kampung Panji, Kuala Terengganu
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="custom-navbar">
-
-        <a href="index.php" class="brand-container">
-
-            <div class="brand-logo-icon">
-                <img src="logo-badminton.png"
-                     alt="Badminton Kampung Panji">
-            </div>
-
-            <div class="brand-text">
-                <span>BADMINTON</span>
-                <small>Kampung Panji</small>
-            </div>
-
+    <div>
+        <a href="auth/login.php"
+           class="text-decoration-none text-light fw-bold">
+            Login / Register
         </a>
+    </div>
+</div>
 
-        <div class="nav-links d-none d-lg-flex">
-            <a href="index.php" class="active">Home</a>
-            <a href="rates.php">Rates</a>
-            <a href="facility.php">Facility</a>
-            <a href="about.php">About</a>
-            <a href="faq.php">FAQ</a>
-            <a href="rules.php">Rules</a>
-            <a href="location.php">Location</a>
+<!-- NAVBAR -->
+<nav class="custom-navbar">
+
+    <a href="index.php" class="brand-container">
+
+        <div class="brand-logo-icon">
+            <img src="logo-badminton.png"
+                 alt="Badminton Kampung Panji">
         </div>
 
-        <?php if (isset($_SESSION['user'])): ?>
+        <div class="brand-text">
+            <span>BADMINTON</span>
+            <small>KAMPUNG PANJI</small>
+        </div>
 
-            <a href="booking.php" class="btn-book-now">
-                Book Now
-            </a>
+    </a>
 
-        <?php else: ?>
+    <div class="nav-links d-none d-lg-flex">
+        <a href="index.php" class="active">Home</a>
+        <a href="rates.php">Rates</a>
+        <a href="facility.php">Facility</a>
+        <a href="about.php">About</a>
+        <a href="faq.php">FAQ</a>
+        <a href="rules.php">Rules</a>
+        <a href="location.php">Location</a>
+    </div>
 
-            <a href="auth/login.php" class="btn-book-now">
-                Book Now
-            </a>
+    <?php if (isset($_SESSION['user'])): ?>
 
-        <?php endif; ?>
+        <a href="booking.php" class="btn-book-now">
+            Book Now
+        </a>
 
-    </nav>
+    <?php else: ?>
 
-    <!-- HERO -->
-    <section class="hero-section">
+        <a href="auth/login.php" class="btn-book-now">
+            Book Now
+        </a>
 
-        <div class="container">
+    <?php endif; ?>
 
-            <div class="master-hero-card" id="heroCard">
+</nav>
 
-                <div class="row align-items-center g-4 justify-content-between">
+<!-- HERO -->
+<section class="hero-section">
 
-                    <!-- LEFT -->
-                    <div class="col-lg-6">
+    <div class="container">
 
-                        <div class="badge-pill">
-                            <span>
-                                NEXT-GEN COURT BOOKING PLATFORM
-                            </span>
-                        </div>
+        <div class="master-hero-card" id="heroCard">
 
-                        <h1 class="hero-title">
-                            Book a court.<br>
-                            Bring your game.
-                        </h1>
+            <div class="row align-items-center g-4 justify-content-between">
 
-                        <p class="hero-desc">
-                            Sistem tempahan digital berprestasi tinggi.
-                            Semak ketersediaan gelanggang secara real-time
-                            dengan reka bentuk antara muka yang pantas dan lancar.
-                        </p>
+                <!-- LEFT -->
+                <div class="col-lg-6">
 
-                        <div class="d-flex flex-wrap gap-3">
+                    <div class="badge-pill">
+                        <span>
+                            NEXT-GEN COURT BOOKING PLATFORM
+                        </span>
+                    </div>
 
-                            <?php if (isset($_SESSION['user'])): ?>
+                    <h1 class="hero-title">
+                        Book a court.<br>
+                        Bring your game.
+                    </h1>
 
-                                <a href="booking.php"
-                                   class="btn btn-primary-custom">
+                    <p class="hero-desc">
+                        Sistem tempahan digital berprestasi tinggi.
+                        Semak ketersediaan gelanggang secara real-time
+                        dengan reka bentuk antara muka yang pantas dan lancar.
+                    </p>
 
-                                    Check availability
+                    <div class="d-flex flex-wrap gap-3">
 
-                                    <i class="fa-solid fa-arrow-right ms-2"></i>
+                        <?php if (isset($_SESSION['user'])): ?>
 
-                                </a>
+                            <a href="booking.php"
+                               class="btn btn-primary-custom">
 
-                            <?php else: ?>
+                                Check availability
 
-                                <a href="auth/login.php"
-                                   class="btn btn-primary-custom">
-
-                                    Check availability
-
-                                    <i class="fa-solid fa-arrow-right ms-2"></i>
-
-                                </a>
-
-                            <?php endif; ?>
-
-                            <a href="tel:+601163519188"
-                               class="btn btn-secondary-custom">
-
-                                <i class="fa-solid fa-phone me-2"></i>
-
-                                Call Centre
+                                <i class="fa-solid fa-arrow-right ms-2"></i>
 
                             </a>
 
-                        </div>
+                        <?php else: ?>
+
+                            <a href="auth/login.php"
+                               class="btn btn-primary-custom">
+
+                                Check availability
+
+                                <i class="fa-solid fa-arrow-right ms-2"></i>
+
+                            </a>
+
+                        <?php endif; ?>
+
+                        <a href="tel:+601163519188"
+                           class="btn btn-secondary-custom">
+
+                            <i class="fa-solid fa-phone me-2"></i>
+
+                            Call Centre
+
+                        </a>
 
                     </div>
 
-                    <!-- RIGHT / VIDEO -->
-                    <div class="col-lg-5">
+                </div>
 
-                        <div class="hero-video-wrapper">
+                <!-- RIGHT / VIDEO -->
+                <div class="col-lg-5">
 
-                            <video autoplay muted loop playsinline>
+                    <div class="hero-video-wrapper">
 
-                                <source src="videoiklan.mp4"
-                                        type="video/mp4">
+                        <video autoplay muted loop playsinline>
 
-                                Pelayar anda tidak menyokong paparan video.
+                            <source src="videoiklan.mp4"
+                                    type="video/mp4">
 
-                            </video>
+                            Pelayar anda tidak menyokong paparan video.
 
-                        </div>
+                        </video>
 
                     </div>
 
@@ -575,115 +615,117 @@ include __DIR__ . '/config/db.php';
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="site-footer">
+</section>
 
-        <div class="footer-container">
+<!-- FOOTER -->
+<footer class="site-footer">
 
-            <div class="footer-col">
+    <div class="footer-container">
 
-                <a href="index.php"
-                   class="brand-container mb-3 d-inline-flex">
+        <div class="footer-col">
 
-                    <div class="brand-logo-icon">
+            <a href="index.php"
+               class="brand-container mb-3 d-inline-flex">
 
-                        <img src="logo-badminton.png"
-                             alt="Badminton Kampung Panji">
+                <div class="brand-logo-icon">
 
-                    </div>
+                    <img src="logo-badminton.png"
+                         alt="Badminton Kampung Panji">
 
-                    <div class="brand-text">
-                        <span>BADMINTON</span>
-                        <small>Kampung Panji</small>
-                    </div>
+                </div>
 
-                </a>
+                <div class="brand-text">
+                    <span>BADMINTON</span>
+                    <small>KAMPUNG PANJI</small>
+                </div>
 
-                <p style="
-                    font-size: 0.85rem;
-                    color: var(--text-muted);
-                    margin-top: 10px;
-                ">
-                    Dewan Kampung Panji, Kampung Panji<br>
-                    20050 Kuala Terengganu, Terengganu
-                </p>
+            </a>
 
-            </div>
-
-            <div class="footer-col">
-
-                <h6>Pautan Pantas</h6>
-
-                <ul>
-                    <li>
-                        <a href="rates.php">Rates</a>
-                    </li>
-
-                    <li>
-                        <a href="facility.php">Facility</a>
-                    </li>
-
-                    <li>
-                        <a href="about.php">About</a>
-                    </li>
-                </ul>
-
-            </div>
-
-            <div class="footer-col">
-
-                <h6>Sokongan</h6>
-
-                <ul>
-                    <li>
-                        <a href="faq.php">FAQ</a>
-                    </li>
-
-                    <li>
-                        <a href="rules.php">Rules</a>
-                    </li>
-
-                    <li>
-                        <a href="location.php">Location</a>
-                    </li>
-                </ul>
-
-            </div>
+            <p style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                margin-top: 10px;
+            ">
+                Dewan Kampung Panji, Kampung Panji<br>
+                20050 Kuala Terengganu, Terengganu
+            </p>
 
         </div>
 
-        <div class="footer-bottom">
+        <div class="footer-col">
 
-            <div>
-                &copy; Badminton Kampung Panji • Badminton Court Booking
-            </div>
+            <h6>Pautan Pantas</h6>
 
-            <div>
-                Badminton Court Booking System
-            </div>
+            <ul>
+                <li>
+                    <a href="rates.php">Rates</a>
+                </li>
+
+                <li>
+                    <a href="facility.php">Facility</a>
+                </li>
+
+                <li>
+                    <a href="about.php">About</a>
+                </li>
+            </ul>
 
         </div>
 
-    </footer>
+        <div class="footer-col">
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            <h6>Sokongan</h6>
 
-    <script>
-        document.addEventListener("scroll", function () {
+            <ul>
+                <li>
+                    <a href="faq.php">FAQ</a>
+                </li>
 
-            const scrollPosition = window.pageYOffset;
-            const heroCard = document.getElementById("heroCard");
+                <li>
+                    <a href="rules.php">Rules</a>
+                </li>
 
-            if (window.innerWidth > 991 && heroCard) {
-                heroCard.style.transform =
-                    `translateY(${scrollPosition * 0.04}px)`;
-            }
+                <li>
+                    <a href="location.php">Location</a>
+                </li>
+            </ul>
 
-        });
-    </script>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <div>
+            &copy; Badminton Kampung Panji • Badminton Court Booking
+        </div>
+
+        <div>
+            Badminton Court Booking System
+        </div>
+
+    </div>
+
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("scroll", function () {
+
+        const scrollPosition = window.pageYOffset;
+        const heroCard = document.getElementById("heroCard");
+
+        if (window.innerWidth > 991 && heroCard) {
+            heroCard.style.transform =
+                `translateY(${scrollPosition * 0.04}px)`;
+        }
+
+    });
+</script>
 
 </body>
 </html>
