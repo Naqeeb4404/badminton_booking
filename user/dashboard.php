@@ -11,9 +11,9 @@ $user_id = $_SESSION['user']['id'];
 
 /* PILIHAN USER */
 $selected_date = $_POST['date'] ?? $_GET['date'] ?? date('Y-m-d');
-$selected_duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 1;
-$selected_time = $_POST['time'] ?? '18:00:00';
-$court_page = isset($_POST['court_page']) ? (int)$_POST['court_page'] : 1;
+$selected_duration = isset($_POST['duration']) ? (int)$_POST['duration'] : (isset($_GET['duration']) ? (int)$_GET['duration'] : 1);
+$selected_time = $_POST['time'] ?? $_GET['time'] ?? '18:00:00';
+$court_page = isset($_POST['court_page']) ? (int)$_POST['court_page'] : (isset($_GET['court_page']) ? (int)$_GET['court_page'] : 1);
 
 /* VALIDATE DATE */
 $date_object = DateTime::createFromFormat('Y-m-d', $selected_date);
@@ -86,11 +86,26 @@ $offset = ($court_page - 1) * $limit;
 
 /* COURT + STATUS IKUT TARIKH */
 /* DISABLED & DELETED TAK DIPAPARKAN */
+$selected_start = $selected_date . ' ' . substr($selected_time, 0, 5) . ':00';
+$selected_end = date('Y-m-d H:i:s', strtotime($selected_start . " +{$selected_duration} hours"));
+
 $court_sql = "
     SELECT
         c.*,
         CASE WHEN cu.id IS NULL THEN 0 ELSE 1 END AS date_blocked,
-        cu.reason AS unavailable_reason
+        cu.reason AS unavailable_reason,
+        CASE WHEN EXISTS (
+            SELECT 1
+            FROM bookings b
+            WHERE b.court_id = c.id
+              AND b.booking_date = ?
+              AND b.status IN ('Pending', 'Approved')
+              AND TIMESTAMP(b.booking_date, b.booking_time) < ?
+              AND DATE_ADD(
+                    TIMESTAMP(b.booking_date, b.booking_time),
+                    INTERVAL COALESCE(b.duration, 1) HOUR
+                  ) > ?
+        ) THEN 1 ELSE 0 END AS slot_booked
     FROM courts c
     LEFT JOIN court_unavailability cu
         ON cu.court_id = c.id
@@ -104,7 +119,10 @@ $court_stmt = mysqli_prepare($conn, $court_sql);
 
 mysqli_stmt_bind_param(
     $court_stmt,
-    "sii",
+    "ssssii",
+    $selected_date,
+    $selected_end,
+    $selected_start,
     $selected_date,
     $limit,
     $offset
@@ -862,7 +880,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     $is_available =
         ($row['status'] === 'Available') &&
-        ((int)$row['date_blocked'] === 0);
+        ((int)$row['date_blocked'] === 0) &&
+        ((int)$row['slot_booked'] === 0);
 
     $row_class =
         $is_available
@@ -1049,74 +1068,33 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <script>
 
-/* DATE */
+/* DATE / DURATION / TIME - refresh court availability */
+function refreshAvailability() {
+    const form = document.getElementById('bookingForm');
+    const courtPage = document.getElementById('courtPage');
+    if (courtPage) courtPage.value = 1;
+    form.submit();
+}
+
 function updateDateCard(element) {
-
-    document
-        .querySelectorAll('.date-card')
-        .forEach(function(card) {
-            card.classList.remove('active');
-        });
-
+    document.querySelectorAll('.date-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
-
-    const radio =
-        element.querySelector(
-            'input[type="radio"]'
-        );
-
-    if (radio) {
-
-        radio.checked = true;
-
-        window.location.href =
-            'dashboard.php?date=' +
-            encodeURIComponent(
-                radio.value
-            );
-    }
+    const radio = element.querySelector('input[type="radio"]');
+    if (radio) { radio.checked = true; refreshAvailability(); }
 }
 
-/* DURATION */
 function updateDurationCard(element) {
-
-    document
-        .querySelectorAll('.duration-card')
-        .forEach(function(card) {
-            card.classList.remove('active');
-        });
-
+    document.querySelectorAll('.duration-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
-
-    const radio =
-        element.querySelector(
-            'input[type="radio"]'
-        );
-
-    if (radio) {
-        radio.checked = true;
-    }
+    const radio = element.querySelector('input[type="radio"]');
+    if (radio) { radio.checked = true; refreshAvailability(); }
 }
 
-/* START TIME */
 function updateStartTimeCard(element) {
-
-    document
-        .querySelectorAll('.start-time-card')
-        .forEach(function(card) {
-            card.classList.remove('active');
-        });
-
+    document.querySelectorAll('.start-time-card').forEach(card => card.classList.remove('active'));
     element.classList.add('active');
-
-    const radio =
-        element.querySelector(
-            'input[type="radio"]'
-        );
-
-    if (radio) {
-        radio.checked = true;
-    }
+    const radio = element.querySelector('input[type="radio"]');
+    if (radio) { radio.checked = true; refreshAvailability(); }
 }
 
 /* COURT BACK / NEXT */

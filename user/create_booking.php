@@ -14,6 +14,9 @@ $user_id = (int)$_SESSION['user']['id'];
 $date = $_POST['date'] ?? $_GET['date'] ?? '';
 $time = $_POST['time'] ?? $_GET['time'] ?? '';
 $court_id = (int)($_POST['court_id'] ?? $_GET['court_id'] ?? 0);
+$duration = (int)($_POST['duration'] ?? $_GET['duration'] ?? 1);
+if ($duration < 1) $duration = 1;
+if ($duration > 4) $duration = 4;
 
 if(!$date || !$time || !$court_id || $date < date('Y-m-d')){
     header("Location: dashboard.php?court_id=".urlencode($court_id)."&error=".urlencode('Maklumat booking tidak lengkap.'));
@@ -39,10 +42,11 @@ try {
         exit();
     }
 
-    // Lock any existing conflicting rows for this exact court/date/time so a
-    // concurrent request has to wait for this transaction to finish first.
-    $stmt = $conn->prepare("SELECT id FROM bookings WHERE court_id=? AND booking_date=? AND booking_time=? AND status IN ('Pending','Approved') LIMIT 1 FOR UPDATE");
-    $stmt->bind_param("iss", $court_id, $date, $time);
+    // Check overlapping active bookings for the whole selected duration.
+    $selected_start = $date . ' ' . substr($time, 0, 5) . ':00';
+    $selected_end = date('Y-m-d H:i:s', strtotime($selected_start . " +{$duration} hours"));
+    $stmt = $conn->prepare("SELECT id FROM bookings WHERE court_id=? AND booking_date=? AND status IN ('Pending','Approved') AND TIMESTAMP(booking_date, booking_time) < ? AND DATE_ADD(TIMESTAMP(booking_date, booking_time), INTERVAL COALESCE(duration,1) HOUR) > ? LIMIT 1 FOR UPDATE");
+    $stmt->bind_param("isss", $court_id, $date, $selected_end, $selected_start);
     $stmt->execute();
     $exists = $stmt->get_result()->fetch_assoc();
     $stmt->close();
@@ -53,8 +57,8 @@ try {
         exit();
     }
 
-    $stmt = $conn->prepare("INSERT INTO bookings (user_id,court_id,booking_date,booking_time,status) VALUES (?,?,?,?, 'Pending')");
-    $stmt->bind_param("iiss", $user_id, $court_id, $date, $time);
+    $stmt = $conn->prepare("INSERT INTO bookings (user_id,court_id,booking_date,booking_time,duration,status) VALUES (?,?,?,?,?, 'Pending')");
+    $stmt->bind_param("iissi", $user_id, $court_id, $date, $time, $duration);
     $stmt->execute();
     $booking_id = $conn->insert_id;
     $stmt->close();

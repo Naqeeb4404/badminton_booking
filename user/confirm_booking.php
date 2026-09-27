@@ -35,18 +35,23 @@ if (!$start || $start <= time()) {
     exit();
 }
 
-// Check every hour in the selected duration to prevent overlapping bookings.
-$conflict = false;
-for ($i = 0; $i < $duration; $i++) {
-    $slot = date('H:i:s', $start + ($i * 3600));
-    $check = mysqli_prepare($conn, "SELECT id FROM bookings WHERE court_id = ? AND booking_date = ? AND booking_time = ? AND status IN ('Pending','Approved') LIMIT 1");
-    mysqli_stmt_bind_param($check, 'iss', $courtId, $date, $slot);
-    mysqli_stmt_execute($check);
-    $res = mysqli_stmt_get_result($check);
-    if (mysqli_fetch_assoc($res)) $conflict = true;
-    mysqli_stmt_close($check);
-    if ($conflict) break;
-}
+// Check real time overlap, including bookings longer than 1 hour.
+$selectedStart = date('Y-m-d H:i:s', $start);
+$selectedEnd = date('Y-m-d H:i:s', $end);
+$check = mysqli_prepare($conn, "
+    SELECT id
+    FROM bookings
+    WHERE court_id = ?
+      AND booking_date = ?
+      AND status IN ('Pending','Approved')
+      AND TIMESTAMP(booking_date, booking_time) < ?
+      AND DATE_ADD(TIMESTAMP(booking_date, booking_time), INTERVAL COALESCE(duration,1) HOUR) > ?
+    LIMIT 1
+");
+mysqli_stmt_bind_param($check, 'isss', $courtId, $date, $selectedEnd, $selectedStart);
+mysqli_stmt_execute($check);
+$conflict = (bool) mysqli_fetch_assoc(mysqli_stmt_get_result($check));
+mysqli_stmt_close($check);
 
 if ($conflict) {
     header('Location: dashboard.php?error=' . urlencode('This court/time is already booked. Please choose another slot.'));
