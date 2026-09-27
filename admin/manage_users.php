@@ -9,6 +9,43 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 
 $user = $_SESSION['user'];
 
+// Delete user safely. User with booking history is not deleted so booking/payment records stay intact.
+$deleteMessage = '';
+$deleteType = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
+    $deleteId = (int)($_POST['user_id'] ?? 0);
+    if ($deleteId > 0) {
+        $check = $conn->prepare("SELECT u.id, COUNT(b.id) AS booking_count FROM users u LEFT JOIN bookings b ON b.user_id = u.id WHERE u.id = ? AND u.role <> 'admin' GROUP BY u.id LIMIT 1");
+        if ($check) {
+            $check->bind_param('i', $deleteId);
+            $check->execute();
+            $target = $check->get_result()->fetch_assoc();
+            $check->close();
+            if (!$target) {
+                $deleteMessage = 'User tidak dijumpai.';
+                $deleteType = 'danger';
+            } elseif ((int)$target['booking_count'] > 0) {
+                $deleteMessage = 'User tidak boleh dipadam kerana mempunyai sejarah booking.';
+                $deleteType = 'warning';
+            } else {
+                $del = $conn->prepare("DELETE FROM users WHERE id = ? AND role <> 'admin'");
+                if ($del) {
+                    $del->bind_param('i', $deleteId);
+                    $del->execute();
+                    if ($del->affected_rows > 0) {
+                        $deleteMessage = 'User berjaya dipadam.';
+                        $deleteType = 'success';
+                    } else {
+                        $deleteMessage = 'User gagal dipadam.';
+                        $deleteType = 'danger';
+                    }
+                    $del->close();
+                }
+            }
+        }
+    }
+}
+
 // Search + pagination
 $search = trim($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
@@ -120,7 +157,7 @@ if ($viewId > 0) {
 .panel .pagination-wrap{border-top-color:#263a5b!important}
 .panel .page-info{color:#91a4c4!important}
 .panel .detail-box{background:#0d1728!important;border-color:#263a5b!important;color:#e5edf9!important}
-.panel .detail-label{color:#8fa6ca!important}.user-table{width:100%;border-collapse:collapse}.user-table th{padding:13px 12px;font-size:.72rem;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap}.user-table td{padding:15px 12px;border-bottom:1px solid #f1f5f9;font-size:.84rem;vertical-align:middle}.user-table tr:last-child td{border-bottom:0}.avatar-mini{width:38px;height:38px;border-radius:12px;background:rgba(59,130,246,.12);color:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:800}.role-chip{display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(59,130,246,.12);color:#3b82f6;font-size:.7rem;font-weight:800}.booking-chip{display:inline-flex;min-width:32px;height:28px;padding:0 8px;align-items:center;justify-content:center;border-radius:999px;background:#f1f5f9;font-weight:800}.btn-view{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.35);font-weight:700;border-radius:9px;padding:7px 12px;text-decoration:none;display:inline-block}.btn-view:hover{background:#3b82f6;color:#fff}.pagination-wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid #e2e8f0}.page-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid rgba(59,130,246,.35);background:rgba(59,130,246,.10);color:#3b82f6;font-weight:800;text-decoration:none;font-size:.82rem}.page-btn:hover{background:#3b82f6;color:#fff}.page-btn.disabled{opacity:.4;pointer-events:none}.page-info{font-size:.8rem;color:#64748b;font-weight:700}.detail-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px}.detail-label{font-size:.7rem;text-transform:uppercase;color:#64748b;font-weight:800}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:800}.approved{background:#dcfce7;color:#166534}.pending{background:#fef3c7;color:#92400e}.rejected{background:#fee2e2;color:#991b1b}.empty-state{text-align:center;padding:40px;color:#94a3b8}@media(max-width:768px){.main-content{margin-left:70px}.topbar{padding:0 20px}.topbar .search-form{display:none}.content-body{padding:20px}}
+.panel .detail-label{color:#8fa6ca!important}.user-table{width:100%;border-collapse:collapse}.user-table th{padding:13px 12px;font-size:.72rem;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap}.user-table td{padding:15px 12px;border-bottom:1px solid #f1f5f9;font-size:.84rem;vertical-align:middle}.user-table tr:last-child td{border-bottom:0}.avatar-mini{width:38px;height:38px;border-radius:12px;background:rgba(59,130,246,.12);color:#3b82f6;display:flex;align-items:center;justify-content:center;font-weight:800}.role-chip{display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(59,130,246,.12);color:#3b82f6;font-size:.7rem;font-weight:800}.booking-chip{display:inline-flex;min-width:32px;height:28px;padding:0 8px;align-items:center;justify-content:center;border-radius:999px;background:#f1f5f9;font-weight:800}.btn-view{background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.35);font-weight:700;border-radius:9px;padding:7px 12px;text-decoration:none;display:inline-block}.btn-view:hover{background:#3b82f6;color:#fff}.action-buttons{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.delete-form{margin:0}.btn-delete{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.35);font-weight:700;border-radius:9px;padding:7px 12px;display:inline-flex;align-items:center;gap:5px}.btn-delete:hover{background:#dc2626;color:#fff;border-color:#dc2626}.pagination-wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid #e2e8f0}.page-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid rgba(59,130,246,.35);background:rgba(59,130,246,.10);color:#3b82f6;font-weight:800;text-decoration:none;font-size:.82rem}.page-btn:hover{background:#3b82f6;color:#fff}.page-btn.disabled{opacity:.4;pointer-events:none}.page-info{font-size:.8rem;color:#64748b;font-weight:700}.detail-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px}.detail-label{font-size:.7rem;text-transform:uppercase;color:#64748b;font-weight:800}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:800}.approved{background:#dcfce7;color:#000000!important}.pending{background:#fef3c7;color:#000000!important}.rejected{background:#fee2e2;color:#000000!important}.empty-state{text-align:center;padding:40px;color:#94a3b8}@media(max-width:768px){.main-content{margin-left:70px}.topbar{padding:0 20px}.topbar .search-form{display:none}.content-body{padding:20px}}
 </style>
 </head>
 <body class="admin-page">
@@ -145,6 +182,13 @@ if ($viewId > 0) {
         <div><h2 class="page-title">Manage Users</h2><div class="page-subtitle">Lihat pengguna berdaftar dan sejarah tempahan mereka.</div></div>
         <?php if ($search !== ''): ?><a href="manage_users.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-xmark me-1"></i> Reset Search</a><?php endif; ?>
     </div>
+
+    <?php if ($deleteMessage !== ''): ?>
+    <div class="alert alert-<?= htmlspecialchars($deleteType) ?> alert-dismissible fade show rounded-4 fw-semibold" role="alert">
+        <?= htmlspecialchars($deleteMessage) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <?php endif; ?>
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-md-4"><div class="stat-card d-flex align-items-center justify-content-between"><div><div class="text-muted small fw-bold text-uppercase">Total Users</div><h3 class="fw-bold mb-0 mt-1"><?= $totalUsers ?></h3></div><div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div></div></div>
@@ -177,7 +221,13 @@ if ($viewId > 0) {
             <tr>
                 <td><div class="d-flex align-items-center gap-2"><div class="avatar-mini"><?= htmlspecialchars(strtoupper(substr($u['name'] ?: 'U',0,1))) ?></div><div><strong><?= htmlspecialchars($u['name']) ?></strong><div class="small text-muted">ID #<?= (int)$u['id'] ?></div></div></div></td>
                 <td><?= htmlspecialchars($u['email']) ?></td><td><?= htmlspecialchars($u['phone'] ?: '-') ?></td><td><span class="role-chip"><?= htmlspecialchars(ucfirst($u['role'])) ?></span></td><td><span class="booking-chip"><?= (int)$u['booking_count'] ?></span></td>
-                <td><a class="btn-view" href="?view=<?= (int)$u['id'] ?>&page=<?= $page ?><?= $search !== '' ? '&search='.urlencode($search) : '' ?>"><i class="fa-regular fa-eye me-1"></i> View</a></td>
+                <td><div class="action-buttons">
+                    <a class="btn-view" href="?view=<?= (int)$u['id'] ?>&page=<?= $page ?><?= $search !== '' ? '&search='.urlencode($search) : '' ?>"><i class="fa-regular fa-eye me-1"></i> View</a>
+                    <form method="post" class="delete-form" onsubmit="return confirm('Delete user ini? User yang mempunyai booking tidak akan dipadam.');">
+                        <input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
+                        <button type="submit" name="delete_user" class="btn-delete"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </form>
+                </div></td>
             </tr>
         <?php endforeach; else: ?><tr><td colspan="6" class="empty-state"><i class="fa-solid fa-user-slash fs-3 d-block mb-2"></i>Tiada pengguna dijumpai.</td></tr><?php endif; ?>
         </tbody></table></div>
@@ -190,5 +240,6 @@ if ($viewId > 0) {
     </div>
 </main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
