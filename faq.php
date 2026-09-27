@@ -54,7 +54,8 @@ include __DIR__ . '/config/db.php';
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 40px;
+            padding: 9px 40px;
+            min-height: 70px;
             border-bottom: 1px solid var(--credix-border);
             background: rgba(9, 10, 15, 0.85);
             backdrop-filter: blur(16px);
@@ -71,17 +72,32 @@ include __DIR__ . '/config/db.php';
         }
 
         .brand-logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            border-radius: 12px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-weight: 800;
-            font-size: 1.1rem;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .brand-logo-icon img {
+            width: 46px;
+            height: 46px;
+            display: block;
+            object-fit: contain;
+            object-position: center;
+            background: transparent;
+            border-radius: 9px;
+            border: none;
+            margin: 0;
+            padding: 0;
+            filter: none;
         }
 
         .brand-text span {
@@ -290,6 +306,20 @@ include __DIR__ . '/config/db.php';
         }
 
         @media (max-width: 768px) {
+            .brand-logo-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 9px;
+            }
+
+            .brand-logo-icon img {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                object-fit: contain;
+                filter: none;
+            }
+
             .footer-container {
                 grid-template-columns: 1fr;
                 gap: 25px;
@@ -323,7 +353,7 @@ include __DIR__ . '/config/db.php';
     <nav class="custom-navbar">
         <a href="index.php" class="brand-container">
             <div class="brand-logo-icon">
-                <i class="fa-solid fa-bolt"></i>
+                <img src="logo-badminton.png" alt="Badminton Kampung Panji">
             </div>
             <div class="brand-text">
                 <span>BADMINTON</span>
@@ -434,8 +464,8 @@ include __DIR__ . '/config/db.php';
             <div class="footer-col">
                 <a href="index.php" class="brand-container mb-3 d-inline-flex">
                     <div class="brand-logo-icon">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div>
+                <img src="logo-badminton.png" alt="Badminton Kampung Panji">
+            </div>
                     <div class="brand-text">
                         <span>BADMINTON</span>
                         <small>Kampung Panji</small>
