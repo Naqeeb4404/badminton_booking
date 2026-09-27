@@ -409,6 +409,11 @@ body {
 .date-card:hover {
     border-color: rgba(99, 102, 241, 0.4);
     color: var(--text-main);
+    transform: translateY(-2px);
+}
+
+.date-card:active {
+    transform: scale(0.96);
 }
 
 .date-card.active {
@@ -448,6 +453,11 @@ body {
 .time-slot-btn:hover {
     border-color: rgba(99, 102, 241, 0.4);
     color: var(--text-main);
+    transform: translateY(-2px);
+}
+
+.time-slot-btn:active {
+    transform: scale(0.95);
 }
 
 .time-slot-btn.active {
@@ -842,6 +852,11 @@ foreach ($times as $t) {
         ? 'checked'
         : '';
 
+    $t_active =
+        ($time_value === $selected_time)
+        ? 'active'
+        : '';
+
     $slot_timestamp = strtotime($selected_date . ' ' . $t);
     $time_is_past = ($slot_timestamp <= time());
 
@@ -1143,9 +1158,23 @@ function refreshAvailability() {
     const form = document.getElementById('bookingForm');
     const courtPage = document.getElementById('courtPage');
     if (courtPage) courtPage.value = 1;
-    form.action = 'dashboard.php#courtSection';
-    form.submit();
+
+    // Simpan kedudukan skrin supaya page tak melompat ke court section.
+    sessionStorage.setItem('dashboardScrollY', String(window.scrollY));
+    form.action = 'dashboard.php';
+
+    // Bagi selected state sempat nampak sebelum refresh.
+    setTimeout(() => form.submit(), 90);
 }
+
+// Selepas refresh, kembali tepat ke kedudukan pengguna tadi.
+window.addEventListener('DOMContentLoaded', function () {
+    const savedY = sessionStorage.getItem('dashboardScrollY');
+    if (savedY !== null) {
+        sessionStorage.removeItem('dashboardScrollY');
+        requestAnimationFrame(() => window.scrollTo(0, parseInt(savedY, 10) || 0));
+    }
+});
 
 function updateDateCard(element) {
     document.querySelectorAll('.date-card').forEach(card => card.classList.remove('active'));
