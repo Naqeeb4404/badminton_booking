@@ -522,6 +522,78 @@ include __DIR__ . '/config/db.php';
                 gap: 10px;
             }
         }
+    
+        /* TRANSPARENT / GLASS DOCK NAVIGATION */
+        .custom-navbar{
+            position:sticky;
+            top:0;
+            z-index:1000;
+        }
+
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:4px !important;
+            padding:6px;
+            border:1px solid rgba(255,255,255,.10);
+            border-radius:999px;
+            background:rgba(255,255,255,.055);
+            -webkit-backdrop-filter:blur(18px) saturate(150%);
+            backdrop-filter:blur(18px) saturate(150%);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.08),
+                0 10px 30px rgba(0,0,0,.20);
+        }
+
+        .nav-links a{
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:36px;
+            padding:8px 15px;
+            border:1px solid transparent;
+            border-radius:999px;
+            color:#94a3b8;
+            text-decoration:none;
+            font-size:.84rem;
+            font-weight:700;
+            line-height:1;
+            transition:
+                color .22s ease,
+                background .22s ease,
+                border-color .22s ease,
+                box-shadow .22s ease,
+                transform .22s ease;
+        }
+
+        .nav-links a:hover{
+            color:#fff;
+            background:rgba(255,255,255,.07);
+            border-color:rgba(255,255,255,.08);
+            box-shadow:0 0 18px rgba(99,102,241,.16);
+            transform:translateY(-1px);
+        }
+
+        .nav-links a.active{
+            color:#fff;
+            background:linear-gradient(
+                135deg,
+                rgba(99,102,241,.24),
+                rgba(168,85,247,.18)
+            );
+            border-color:rgba(129,140,248,.34);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.10),
+                0 0 20px rgba(99,102,241,.22);
+        }
+
+        @media (max-width:991.98px){
+            .nav-links{
+                display:none !important;
+            }
+        }
+
     </style>
 </head>
 
@@ -539,21 +611,7 @@ include __DIR__ . '/config/db.php';
     </div>
 
     <div>
-        <?php if (isset($_SESSION['user'])): ?>
-
-            <a href="user/dashboard.php"
-               class="text-decoration-none text-light fw-bold">
-                Dashboard
-            </a>
-
-        <?php else: ?>
-
-            <a href="auth/login.php"
-               class="text-decoration-none text-light fw-bold">
-                Login / Register
-            </a>
-
-        <?php endif; ?>
+        <a href="auth/login.php" class="btn-book-now">Book Now</a>
     </div>
 
 </div>
@@ -592,19 +650,7 @@ include __DIR__ . '/config/db.php';
     </div>
 
     <!-- BOOK NOW -->
-    <?php if (isset($_SESSION['user'])): ?>
-
-        <a href="booking.php" class="btn-book-now">
-            Book Now
-        </a>
-
-    <?php else: ?>
-
-        <a href="auth/login.php" class="btn-book-now">
-            Book Now
-        </a>
-
-    <?php endif; ?>
+    <a href="auth/login.php" class="btn-book-now">Book Now</a>
 
 </nav>
 
@@ -639,29 +685,7 @@ include __DIR__ . '/config/db.php';
 
                     <div class="d-flex flex-wrap gap-3">
 
-                        <?php if (isset($_SESSION['user'])): ?>
-
-                            <a href="booking.php"
-                               class="btn btn-primary-custom">
-
-                                Check availability
-
-                                <i class="fa-solid fa-arrow-right ms-2"></i>
-
-                            </a>
-
-                        <?php else: ?>
-
-                            <a href="auth/login.php"
-                               class="btn btn-primary-custom">
-
-                                Check availability
-
-                                <i class="fa-solid fa-arrow-right ms-2"></i>
-
-                            </a>
-
-                        <?php endif; ?>
+                        <a href="auth/login.php" class="btn-book-now">Book Now</a>
 
                         <a href="tel:+601163519188"
                            class="btn btn-secondary-custom">
