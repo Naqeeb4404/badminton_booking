@@ -19,7 +19,8 @@ $stmt = $conn->prepare("
     SELECT
         bookings.*,
         courts.court_name,
-        10.00 AS price,
+        courts.price AS price_per_hour,
+        (courts.price * COALESCE(bookings.duration, 1)) AS price,
         payments.status AS payment_status,
         payments.receipt AS payment_receipt
     FROM bookings
