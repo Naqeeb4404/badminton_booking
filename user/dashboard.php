@@ -92,8 +92,36 @@ $selected_end = date('Y-m-d H:i:s', strtotime($selected_start . " +{$selected_du
 $court_sql = "
     SELECT
         c.*,
-        CASE WHEN cu.id IS NULL THEN 0 ELSE 1 END AS date_blocked,
-        cu.reason AS unavailable_reason,
+        CASE WHEN EXISTS (
+            SELECT 1
+            FROM court_unavailability cu
+            WHERE cu.court_id = c.id
+              AND cu.unavailable_date = ?
+              AND (
+                    cu.start_time IS NULL
+                    OR cu.end_time IS NULL
+                    OR (
+                        TIMESTAMP(cu.unavailable_date, cu.start_time) < ?
+                        AND TIMESTAMP(cu.unavailable_date, cu.end_time) > ?
+                    )
+              )
+        ) THEN 1 ELSE 0 END AS date_blocked,
+        (
+            SELECT cu.reason
+            FROM court_unavailability cu
+            WHERE cu.court_id = c.id
+              AND cu.unavailable_date = ?
+              AND (
+                    cu.start_time IS NULL
+                    OR cu.end_time IS NULL
+                    OR (
+                        TIMESTAMP(cu.unavailable_date, cu.start_time) < ?
+                        AND TIMESTAMP(cu.unavailable_date, cu.end_time) > ?
+                    )
+              )
+            ORDER BY cu.id DESC
+            LIMIT 1
+        ) AS unavailable_reason,
         CASE WHEN EXISTS (
             SELECT 1
             FROM bookings b
@@ -107,9 +135,6 @@ $court_sql = "
                   ) > ?
         ) THEN 1 ELSE 0 END AS slot_booked
     FROM courts c
-    LEFT JOIN court_unavailability cu
-        ON cu.court_id = c.id
-        AND cu.unavailable_date = ?
     WHERE c.status NOT IN ('Disabled', 'Deleted')
     ORDER BY c.id ASC
     LIMIT ? OFFSET ?
@@ -119,11 +144,16 @@ $court_stmt = mysqli_prepare($conn, $court_sql);
 
 mysqli_stmt_bind_param(
     $court_stmt,
-    "ssssii",
+    "sssssssssii",
     $selected_date,
     $selected_end,
     $selected_start,
     $selected_date,
+    $selected_end,
+    $selected_start,
+    $selected_date,
+    $selected_end,
+    $selected_start,
     $limit,
     $offset
 );
