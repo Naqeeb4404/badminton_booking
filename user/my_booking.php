@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 include __DIR__ . '/../config/db.php';
@@ -12,22 +11,22 @@ if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != "user"){
 $user_id = (int)$_SESSION['user']['id'];
 
 
-// =========================================================
-// GET BOOKING DATA
-// =========================================================
+/* =========================================================
+   GET BOOKING DATA
+========================================================= */
 
 $stmt = $conn->prepare("
-SELECT
-    bookings.*,
-    courts.court_name,
-    10.00 AS price,
-    payments.status AS payment_status,
-    payments.receipt AS payment_receipt
-FROM bookings
-JOIN courts ON bookings.court_id = courts.id
-LEFT JOIN payments ON payments.booking_id = bookings.id
-WHERE bookings.user_id = ?
-ORDER BY bookings.id DESC
+    SELECT
+        bookings.*,
+        courts.court_name,
+        10.00 AS price,
+        payments.status AS payment_status,
+        payments.receipt AS payment_receipt
+    FROM bookings
+    JOIN courts ON bookings.court_id = courts.id
+    LEFT JOIN payments ON payments.booking_id = bookings.id
+    WHERE bookings.user_id = ?
+    ORDER BY bookings.id DESC
 ");
 
 $stmt->bind_param("i", $user_id);
@@ -39,9 +38,9 @@ $bookingRows = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
 
-// =========================================================
-// LOYALTY REWARD
-// =========================================================
+/* =========================================================
+   LOYALTY REWARD
+========================================================= */
 
 $countStmt = $conn->prepare("
     SELECT COUNT(*) as total
@@ -58,18 +57,16 @@ $count_data = $countStmt->get_result()->fetch_assoc();
 $countStmt->close();
 
 $approved_count = (int)($count_data['total'] ?? 0);
-
 $progress_count = $approved_count % 10;
-
 $has_voucher = ($approved_count > 0 && $progress_count == 0);
 
 
-// =========================================================
-// GET USER NOTIFICATIONS
-// =========================================================
+/* =========================================================
+   GET USER NOTIFICATIONS
+========================================================= */
 
 $notificationStmt = $conn->prepare("
-    SELECT 
+    SELECT
         id,
         title,
         message,
@@ -85,15 +82,14 @@ $notificationStmt->bind_param("i", $user_id);
 $notificationStmt->execute();
 
 $notificationResult = $notificationStmt->get_result();
-
 $notifications = $notificationResult->fetch_all(MYSQLI_ASSOC);
 
 $notificationStmt->close();
 
 
-// =========================================================
-// COUNT UNREAD NOTIFICATIONS
-// =========================================================
+/* =========================================================
+   COUNT UNREAD NOTIFICATIONS
+========================================================= */
 
 $unreadStmt = $conn->prepare("
     SELECT COUNT(*) AS total
@@ -110,7 +106,6 @@ $unreadData = $unreadStmt->get_result()->fetch_assoc();
 $unreadCount = (int)($unreadData['total'] ?? 0);
 
 $unreadStmt->close();
-
 ?>
 
 <!DOCTYPE html>
@@ -118,30 +113,29 @@ $unreadStmt->close();
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Booking - Badminton Kampung Panji</title>
+<title>My Booking - Badminton Kampung Panji</title>
 
-    <!-- Bootstrap -->
-    <link 
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
-        rel="stylesheet"
-    >
+<!-- Bootstrap -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
 
-    <!-- Font Awesome -->
-    <link 
-        rel="stylesheet" 
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+>
 
-    <!-- Google Font -->
-    <link 
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" 
-        rel="stylesheet"
-    >
-
+<!-- Google Font -->
+<link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+>
 
 <style>
 
@@ -228,16 +222,12 @@ body {
     border-radius: 50%;
     background: #ffffff;
     color: #111111;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     text-decoration: none;
     font-size: 18px;
-
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-
     transition: 0.2s ease;
 }
 
@@ -255,24 +245,17 @@ body {
     position: absolute;
     top: -4px;
     right: -4px;
-
     min-width: 20px;
     height: 20px;
-
     padding: 0 5px;
-
     border-radius: 50px;
-
     background: #dc3545;
     color: #ffffff;
-
     font-size: 11px;
     font-weight: 800;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border: 2px solid #ffffff;
 }
 
@@ -284,16 +267,11 @@ body {
 .btn-black {
     background-color: var(--card-dark);
     color: #fff;
-
     border-radius: 50px;
-
     padding: 10px 24px;
-
     font-weight: 700;
     font-size: 0.9rem;
-
     text-decoration: none;
-
     transition: all 0.3s ease;
 }
 
@@ -316,32 +294,21 @@ body {
     );
 
     border-radius: 24px;
-
     padding: 30px;
-
     color: #ffffff;
-
     margin-bottom: 35px;
-
     position: relative;
-
     overflow: hidden;
-
     box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 .reward-card::after {
     content: "🏸";
-
     position: absolute;
-
     right: -20px;
     bottom: -30px;
-
     font-size: 10rem;
-
     opacity: 0.06;
-
     pointer-events: none;
 }
 
@@ -353,19 +320,12 @@ body {
 .voucher-badge {
     background-color: #ccff00;
     color: #000;
-
     font-weight: 800;
-
     padding: 6px 16px;
-
     border-radius: 50px;
-
     font-size: 0.75rem;
-
     text-transform: uppercase;
-
     display: inline-block;
-
     margin-bottom: 12px;
 }
 
@@ -376,11 +336,8 @@ body {
 
 .progress-custom {
     height: 10px;
-
     background-color: rgba(255,255,255,0.15);
-
     border-radius: 10px;
-
     overflow: hidden;
 }
 
@@ -401,11 +358,8 @@ body {
 
 .section-title {
     font-size: 1.5rem;
-
     font-weight: 800;
-
     color: #000;
-
     margin-bottom: 20px;
 }
 
@@ -416,47 +370,32 @@ body {
 
 .table-card {
     background: #ffffff;
-
     border-radius: 20px;
-
     padding: 10px;
-
     box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .custom-table {
     margin-bottom: 0;
-
     vertical-align: middle;
 }
 
 .custom-table thead th {
     background-color: transparent;
-
     color: #777;
-
     font-size: 0.8rem;
-
     text-transform: uppercase;
-
     letter-spacing: 0.5px;
-
     border-bottom: 2px solid #f0f0f0;
-
     padding: 15px;
 }
 
 .custom-table tbody td {
     padding: 18px 15px;
-
     font-weight: 600;
-
     font-size: 0.95rem;
-
     color: #222;
-
     border-bottom: 1px solid #f6f6f6;
 }
 
@@ -471,15 +410,10 @@ body {
 
 .badge-status {
     padding: 8px 16px;
-
     border-radius: 50px;
-
     font-size: 0.8rem;
-
     font-weight: 700;
-
     display: inline-block;
-
     margin-bottom: 5px;
 }
 
@@ -509,27 +443,18 @@ body {
 
 .notification-card {
     background: #ffffff;
-
     border-radius: 20px;
-
     padding: 0;
-
     border: 1px solid rgba(0,0,0,0.05);
-
     box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-
     overflow: hidden;
 }
 
 .notification-item {
     display: flex;
-
     align-items: flex-start;
-
     gap: 15px;
-
     padding: 18px 20px;
-
     border-bottom: 1px solid #eeeeee;
 }
 
@@ -540,18 +465,13 @@ body {
 .notification-icon {
     width: 42px;
     height: 42px;
-
     min-width: 42px;
-
     border-radius: 50%;
-
     background: #111111;
     color: #ffffff;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-size: 16px;
 }
 
@@ -561,27 +481,20 @@ body {
 
 .notification-title {
     font-size: 0.95rem;
-
     font-weight: 800;
-
     color: #111111;
-
     margin-bottom: 4px;
 }
 
 .notification-message {
     font-size: 0.85rem;
-
     color: #555555;
-
     margin-bottom: 5px;
-
     line-height: 1.5;
 }
 
 .notification-time {
     font-size: 0.72rem;
-
     color: #999999;
 }
 
@@ -589,11 +502,46 @@ body {
     background: #fffdf2;
 }
 
+
+/* =========================================================
+   DELETE NOTIFICATION BUTTON
+========================================================= */
+
+.notification-delete {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(220, 53, 69, 0.10);
+    color: #dc3545;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.notification-delete:hover {
+    background: #dc3545;
+    color: #ffffff;
+    transform: scale(1.08);
+}
+
+.notification-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
 .notification-empty {
     padding: 35px 20px;
-
     text-align: center;
-
     color: #888888;
 }
 
@@ -610,7 +558,6 @@ body {
 
     .app-container {
         padding: 15px 15px 35px 15px;
-
         border-radius: 22px;
     }
 
@@ -636,6 +583,11 @@ body {
         padding: 15px;
     }
 
+    .notification-delete {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
 }
 
 </style>
@@ -648,149 +600,290 @@ body {
 <div class="app-container">
 
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+<!-- =====================================================
+     HEADER
+====================================================== -->
 
-    <nav class="custom-navbar">
+<nav class="custom-navbar">
 
-        <a href="#" class="brand-logo">
-            Badminton Kampung Panji
-        </a>
+    <a href="#" class="brand-logo">
+        Badminton Kampung Panji
+    </a>
 
+    <div class="nav-right">
 
-        <div class="nav-right">
+        <!-- Notification Bell -->
 
-            <!-- Notification Bell -->
+        <a href="#notifications" class="notification-btn">
 
-            <a href="#notifications" class="notification-btn">
-
-                <i class="fa-solid fa-bell"></i>
-
-                <?php if ($unreadCount > 0): ?>
-
-                    <span class="notification-count">
-                        <?= $unreadCount ?>
-                    </span>
-
-                <?php endif; ?>
-
-            </a>
-
-
-            <!-- Dashboard -->
-
-            <a href="dashboard.php" class="btn-black">
-                <i class="fa-solid fa-house me-1"></i>
-                Dashboard
-            </a>
-
-        </div>
-
-    </nav>
-
-
-    <!-- =====================================================
-         NOTIFICATIONS
-    ====================================================== -->
-
-    <div id="notifications" class="notification-section">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <h3 class="section-title mb-0">
-                <i class="fa-solid fa-bell me-2"></i>
-                Notifications
-            </h3>
+            <i class="fa-solid fa-bell"></i>
 
             <?php if ($unreadCount > 0): ?>
 
-                <span class="badge bg-danger rounded-pill px-3 py-2">
-                    <?= $unreadCount ?> Unread
+                <span class="notification-count">
+                    <?= $unreadCount ?>
                 </span>
 
             <?php endif; ?>
 
-        </div>
+        </a>
 
 
-        <div class="notification-card">
+        <!-- Dashboard -->
 
-            <?php if(count($notifications) > 0): ?>
+        <a href="dashboard.php" class="btn-black">
 
-                <?php foreach($notifications as $notification): ?>
+            <i class="fa-solid fa-house me-1"></i>
+            Dashboard
 
-                  <div 
-    class="notification-item <?php echo ($notification['status'] === 'Unread') ? 'notification-unread' : ''; ?>"
-    data-notification-id="<?php echo (int)$notification['id']; ?>"
-    onclick="markNotificationRead(this)"
-    style="cursor: pointer;"
->
+        </a>
 
-                        <div class="notification-icon">
+    </div>
 
-                            <?php if($notification['status'] === 'Unread'): ?>
+</nav>
 
-                                <i class="fa-solid fa-bell"></i>
 
-                            <?php else: ?>
+<!-- =====================================================
+     NOTIFICATIONS
+====================================================== -->
 
-                                <i class="fa-solid fa-check"></i>
+<div id="notifications" class="notification-section">
 
-                            <?php endif; ?>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3 class="section-title mb-0">
+
+            <i class="fa-solid fa-bell me-2"></i>
+            Notifications
+
+        </h3>
+
+        <?php if ($unreadCount > 0): ?>
+
+            <span
+                id="unreadTextBadge"
+                class="badge bg-danger rounded-pill px-3 py-2"
+            >
+                <?= $unreadCount ?> Unread
+            </span>
+
+        <?php endif; ?>
+
+    </div>
+
+
+    <div class="notification-card">
+
+        <?php if(count($notifications) > 0): ?>
+
+            <?php foreach($notifications as $notification): ?>
+
+                <div
+                    class="notification-item <?php echo ($notification['status'] === 'Unread') ? 'notification-unread' : ''; ?>"
+                    data-notification-id="<?php echo (int)$notification['id']; ?>"
+                    onclick="markNotificationRead(this)"
+                    style="cursor:pointer;"
+                >
+
+                    <div class="notification-icon">
+
+                        <?php if($notification['status'] === 'Unread'): ?>
+
+                            <i class="fa-solid fa-bell"></i>
+
+                        <?php else: ?>
+
+                            <i class="fa-solid fa-check"></i>
+
+                        <?php endif; ?>
+
+                    </div>
+
+
+                    <div class="notification-content">
+
+                        <div class="notification-title">
+
+                            <?php
+                            echo htmlspecialchars(
+                                $notification['title']
+                            );
+                            ?>
 
                         </div>
 
 
-                        <div class="notification-content">
+                        <div class="notification-message">
 
-                            <div class="notification-title">
+                            <?php
+                            echo htmlspecialchars(
+                                $notification['message']
+                            );
+                            ?>
 
-                                <?php echo htmlspecialchars($notification['title']); ?>
-
-                            </div>
-
-
-                            <div class="notification-message">
-
-                                <?php echo htmlspecialchars($notification['message']); ?>
-
-                            </div>
+                        </div>
 
 
-                            <div class="notification-time">
+                        <div class="notification-time">
 
-                                <i class="fa-regular fa-clock me-1"></i>
+                            <i class="fa-regular fa-clock me-1"></i>
 
-                                <?php 
-                                    echo htmlspecialchars(
-                                        date(
-                                            'd M Y, h:i A',
-                                            strtotime($notification['created_at'])
-                                        )
-                                    ); 
-                                ?>
+                            <?php
 
-                            </div>
+                            echo htmlspecialchars(
+                                date(
+                                    'd M Y, h:i A',
+                                    strtotime(
+                                        $notification['created_at']
+                                    )
+                                )
+                            );
+
+                            ?>
 
                         </div>
 
                     </div>
 
-                <?php endforeach; ?>
+
+                    <!-- DELETE NOTIFICATION -->
+
+                    <button
+                        type="button"
+                        class="notification-delete"
+                        onclick="deleteNotification(event, this)"
+                        title="Delete Notification"
+                    >
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </div>
+
+            <?php endforeach; ?>
+
+        <?php else: ?>
+
+            <div class="notification-empty">
+
+                <i class="fa-regular fa-bell-slash fa-2x mb-3"></i>
+
+                <div class="fw-bold">
+                    No notifications yet
+                </div>
+
+                <div class="small mt-1">
+                    Your booking updates will appear here.
+                </div>
+
+            </div>
+
+        <?php endif; ?>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REWARD CARD
+====================================================== -->
+
+<div class="reward-card">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-8">
+
+            <span class="voucher-badge">
+
+                <i class="fa-solid fa-gift me-1"></i>
+
+                Loyalty Reward Program
+
+            </span>
+
+
+            <?php if($has_voucher): ?>
+
+                <h2 class="fw-bold mb-2 text-warning">
+
+                    🎉 Congratulations! You Get 50% Voucher!
+
+                </h2>
+
+
+                <p class="text-white-50 mb-3">
+
+                    You have completed
+
+                    <strong>
+                        <?php echo $approved_count; ?>
+                        approved bookings
+                    </strong>.
+
+                    Use the promo code below for your next booking:
+
+                </p>
+
+
+                <div
+                    class="d-inline-block bg-white text-dark px-3 py-2 rounded-3 fw-bold fs-5 border border-warning"
+                >
+
+                    PROMO:
+
+                    <span class="text-success">
+                        SMASH50
+                    </span>
+
+                </div>
+
 
             <?php else: ?>
 
-                <div class="notification-empty">
+                <h3 class="fw-bold mb-1">
 
-                    <i class="fa-regular fa-bell-slash fa-2x mb-3"></i>
+                    Play 10 Times, Get 50% Voucher!
 
-                    <div class="fw-bold">
-                        No notifications yet
-                    </div>
+                </h3>
 
-                    <div class="small mt-1">
-                        Your booking updates will appear here.
+
+                <p class="text-white-50 small mb-3">
+
+                    Complete 10 approved bookings to unlock a 50% discount offer.
+
+                </p>
+
+
+                <!-- Progress -->
+
+                <div
+                    class="d-flex justify-content-between align-items-center mb-1 small fw-bold"
+                >
+
+                    <span>
+                        Booking Progress
+                    </span>
+
+                    <span class="text-warning">
+
+                        <?php echo $progress_count; ?>
+                        / 10 Bookings
+
+                    </span>
+
+                </div>
+
+
+                <div class="progress progress-custom">
+
+                    <div
+                        class="progress-bar progress-bar-custom"
+                        role="progressbar"
+                        style="width: <?php echo ($progress_count / 10) * 100; ?>%;"
+                    >
                     </div>
 
                 </div>
@@ -801,453 +894,388 @@ body {
 
     </div>
 
-
-    <!-- =====================================================
-         REWARD CARD
-    ====================================================== -->
-
-    <div class="reward-card">
-
-        <div class="row align-items-center">
-
-            <div class="col-md-8">
-
-                <span class="voucher-badge">
-
-                    <i class="fa-solid fa-gift me-1"></i>
-
-                    Loyalty Reward Program
-
-                </span>
+</div>
 
 
-                <?php if($has_voucher): ?>
+<!-- =====================================================
+     MY BOOKINGS
+====================================================== -->
 
-                    <h2 class="fw-bold mb-2 text-warning">
+<div class="d-flex justify-content-between align-items-center mb-3">
 
-                        🎉 Congratulations! You Get 50% Voucher!
+    <h3 class="section-title mb-0">
 
-                    </h2>
+        📅 My Bookings
 
-
-                    <p class="text-white-50 mb-3">
-
-                        You have completed 
-                        <strong><?php echo $approved_count; ?> approved bookings</strong>.
-
-                        Use the promo code below for your next booking:
-
-                    </p>
+    </h3>
 
 
-                    <div class="d-inline-block bg-white text-dark px-3 py-2 rounded-3 fw-bold fs-5 border border-warning">
+    <span class="badge bg-secondary rounded-pill px-3 py-2">
 
-                        PROMO:
+        Total:
+        <?php echo count($bookingRows); ?>
 
-                        <span class="text-success">
-                            SMASH50
-                        </span>
+    </span>
 
-                    </div>
-
-
-                <?php else: ?>
-
-                    <h3 class="fw-bold mb-1">
-
-                        Play 10 Times, Get 50% Voucher!
-
-                    </h3>
+</div>
 
 
-                    <p class="text-white-50 small mb-3">
+<!-- PAYMENT SUCCESS MESSAGE -->
 
-                        Complete 10 approved bookings to unlock a 50% discount offer.
+<?php if(isset($_GET['submitted'])): ?>
 
-                    </p>
+    <div class="alert alert-success mb-3">
 
+        <i class="fa-solid fa-circle-check me-1"></i>
 
-                    <!-- Progress -->
-
-                    <div class="d-flex justify-content-between align-items-center mb-1 small fw-bold">
-
-                        <span>
-                            Booking Progress
-                        </span>
-
-                        <span class="text-warning">
-
-                            <?php echo $progress_count; ?> / 10 Bookings
-
-                        </span>
-
-                    </div>
-
-
-                    <div class="progress progress-custom">
-
-                        <div 
-                            class="progress-bar progress-bar-custom"
-                            role="progressbar"
-                            style="width: <?php echo ($progress_count / 10) * 100; ?>%;"
-                        >
-                        </div>
-
-                    </div>
-
-                <?php endif; ?>
-
-            </div>
-
-        </div>
+        Payment receipt submitted.
+        Payment Pending.
+        Your Booking is now Booking Pending while the admin reviews it.
 
     </div>
 
-
-    <!-- =====================================================
-         MY BOOKINGS
-    ====================================================== -->
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-
-        <h3 class="section-title mb-0">
-
-            📅 My Bookings
-
-        </h3>
+<?php endif; ?>
 
 
-        <span class="badge bg-secondary rounded-pill px-3 py-2">
+<!-- ERROR MESSAGE -->
 
-            Total:
-            <?php echo count($bookingRows); ?>
+<?php if(isset($_GET['error'])): ?>
 
-        </span>
+    <div class="alert alert-danger mb-3">
+
+        <?php echo htmlspecialchars($_GET['error']); ?>
 
     </div>
 
+<?php endif; ?>
 
-    <!-- PAYMENT SUCCESS MESSAGE -->
 
-    <?php if(isset($_GET['submitted'])): ?>
+<!-- =====================================================
+     BOOKING TABLE
+====================================================== -->
 
-        <div class="alert alert-success mb-3">
+<div class="table-card">
 
-            <i class="fa-solid fa-circle-check me-1"></i>
+    <div class="table-responsive">
 
-            Payment receipt submitted.
-            Payment Pending.
-            Your Booking is now Booking Pending while the admin reviews it.
+        <table class="table custom-table text-center align-middle">
 
-        </div>
+            <thead>
 
-    <?php endif; ?>
+                <tr>
 
+                    <th>
+                        ID
+                    </th>
 
-    <!-- ERROR MESSAGE -->
+                    <th class="text-start">
+                        Court Name
+                    </th>
 
-    <?php if(isset($_GET['error'])): ?>
+                    <th>
+                        Date
+                    </th>
 
-        <div class="alert alert-danger mb-3">
+                    <th>
+                        Time
+                    </th>
 
-            <?php echo htmlspecialchars($_GET['error']); ?>
+                    <th>
+                        Price
+                    </th>
 
-        </div>
+                    <th>
+                        Payment
+                    </th>
 
-    <?php endif; ?>
+                    <th>
+                        Status
+                    </th>
 
+                </tr>
 
-    <!-- =====================================================
-         BOOKING TABLE
-    ====================================================== -->
+            </thead>
 
-    <div class="table-card">
 
-        <div class="table-responsive">
+            <tbody>
 
-            <table class="table custom-table text-center align-middle">
+            <?php
 
-                <thead>
+            if(count($bookingRows) > 0){
 
-                    <tr>
+                foreach($bookingRows as $row){
 
-                        <th>ID</th>
 
-                        <th class="text-start">
-                            Court Name
-                        </th>
+                    /* =========================================
+                       PAYMENT STATUS
+                    ========================================= */
 
-                        <th>
-                            Date
-                        </th>
+                    if($row['payment_status'] === 'Approved'){
 
-                        <th>
-                            Time
-                        </th>
+                        $paymentBadge = "
+                            <span class='badge-status badge-approved'>
+                                <i class='fa-solid fa-check me-1'></i>
+                                Payment Approved
+                            </span>
+                        ";
 
-                        <th>
-                            Price
-                        </th>
+                    }elseif($row['payment_status'] === 'Rejected'){
 
-                        <th>
-                            Payment
-                        </th>
+                        $paymentBadge = "
+                            <span class='badge-status badge-rejected'>
+                                <i class='fa-solid fa-xmark me-1'></i>
+                                Payment Rejected
+                            </span>
+                        ";
 
-                        <th>
-                            Status
-                        </th>
+                    }else{
 
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                <?php
-
-                if(count($bookingRows) > 0){
-
-                    foreach($bookingRows as $row){
-
-                        // =================================================
-                        // PAYMENT STATUS
-                        // =================================================
-
-                        if($row['payment_status'] === 'Approved'){
-
-                            $paymentBadge = "
-                                <span class='badge-status badge-approved'>
-                                    <i class='fa-solid fa-check me-1'></i>
-                                    Payment Approved
-                                </span>
-                            ";
-
-                        }elseif($row['payment_status'] === 'Rejected'){
-
-                            $paymentBadge = "
-                                <span class='badge-status badge-rejected'>
-                                    <i class='fa-solid fa-xmark me-1'></i>
-                                    Payment Rejected
-                                </span>
-                            ";
-
-                        }else{
-
-                            $paymentBadge = "
-                                <span class='badge-status badge-pending'>
-                                    <i class='fa-solid fa-credit-card me-1'></i>
-                                    Payment Pending
-                                </span>
-                            ";
-
-                        }
-
-
-                        // =================================================
-                        // BOOKING STATUS
-                        // =================================================
-
-                        if($row['status'] === 'Approved'){
-
-                            $bookingBadge = "
-                                <span class='badge-status badge-approved'>
-                                    <i class='fa-solid fa-check me-1'></i>
-                                    Booking Approved
-                                </span>
-                            ";
-
-                        }elseif($row['status'] === 'Rejected'){
-
-                            $bookingBadge = "
-                                <span class='badge-status badge-rejected'>
-                                    <i class='fa-solid fa-xmark me-1'></i>
-                                    Booking Rejected
-                                </span>
-                            ";
-
-                        }else{
-
-                            $bookingBadge = "
-                                <span class='badge-status badge-pending'>
-                                    <i class='fa-solid fa-hourglass-half me-1'></i>
-                                    Booking Pending
-                                </span>
-                            ";
-
-                        }
-
-                ?>
-
-                    <tr id="booking-<?php echo (int)$row['id']; ?>">
-
-                        <!-- ID -->
-
-                        <td class="text-muted">
-
-                            #<?php echo (int)$row['id']; ?>
-
-                        </td>
-
-
-                        <!-- COURT -->
-
-                        <td class="text-start fw-bold">
-
-                            <i class="fa-solid fa-circle-dot text-success me-2 fs-6"></i>
-
-                            <?php echo htmlspecialchars($row['court_name']); ?>
-
-                        </td>
-
-
-                        <!-- DATE -->
-
-                        <td>
-
-                            <i class="fa-regular fa-calendar me-1 text-muted"></i>
-
-                            <?php echo htmlspecialchars($row['booking_date']); ?>
-
-                        </td>
-
-
-                        <!-- TIME -->
-
-                        <td>
-
-                            <i class="fa-regular fa-clock me-1 text-muted"></i>
-
-                            <?php echo htmlspecialchars(substr($row['booking_time'], 0, 5)); ?>
-
-                        </td>
-
-
-                        <!-- PRICE -->
-
-                        <td>
-
-                            RM <?php echo number_format((float)$row['price'], 2); ?>
-
-                        </td>
-
-
-                        <!-- PAYMENT -->
-
-                        <td>
-
-                            <?php if($row['payment_receipt']): ?>
-
-                                <a 
-                                    href="uploads/receipt/<?php echo rawurlencode($row['payment_receipt']); ?>"
-                                    target="_blank"
-                                    class="btn btn-sm btn-outline-dark"
-                                >
-                                    <i class="fa-solid fa-receipt me-1"></i>
-                                    View Receipt
-                                </a>
-
-
-                            <?php elseif($row['status'] === 'Pending'): ?>
-
-                                <a 
-                                    href="payment.php?booking_id=<?php echo (int)$row['id']; ?>"
-                                    class="btn btn-sm btn-outline-dark"
-                                >
-                                    <i class="fa-solid fa-credit-card me-1"></i>
-                                    Proceed to Payment
-                                </a>
-
-
-                            <?php elseif($row['status'] === 'Approved'): ?>
-
-                                <a 
-                                    href="?booking_id=<?php echo (int)$row['id']; ?>#booking-<?php echo (int)$row['id']; ?>"
-                                    class="btn btn-sm btn-outline-dark"
-                                >
-                                    <i class="fa-solid fa-eye me-1"></i>
-                                    View Booking Details
-                                </a>
-
-
-                            <?php else: ?>
-
-                                &mdash;
-
-                            <?php endif; ?>
-
-                        </td>
-
-
-                        <!-- STATUS -->
-
-                        <td>
-
-                            <?php echo $paymentBadge; ?>
-
-                            <br>
-
-                            <?php echo $bookingBadge; ?>
-
-
-                            <?php if(
-                                $row['status'] === 'Rejected' &&
-                                !empty($row['rejection_reason'])
-                            ): ?>
-
-                                <div class="small text-muted mt-1">
-
-                                    Reason:
-
-                                    <?php echo htmlspecialchars($row['rejection_reason']); ?>
-
-                                </div>
-
-                            <?php endif; ?>
-
-                        </td>
-
-                    </tr>
-
-
-                <?php
-
+                        $paymentBadge = "
+                            <span class='badge-status badge-pending'>
+                                <i class='fa-solid fa-credit-card me-1'></i>
+                                Payment Pending
+                            </span>
+                        ";
                     }
 
-                }else{
 
-                    echo "
+                    /* =========================================
+                       BOOKING STATUS
+                    ========================================= */
 
-                    <tr>
+                    if($row['status'] === 'Approved'){
 
-                        <td 
-                            colspan='7'
-                            class='py-5 text-muted fw-normal'
-                        >
+                        $bookingBadge = "
+                            <span class='badge-status badge-approved'>
+                                <i class='fa-solid fa-check me-1'></i>
+                                Booking Approved
+                            </span>
+                        ";
 
-                            <i 
-                                class='fa-solid fa-folder-open display-6 d-block mb-2 opacity-50'
-                            ></i>
+                    }elseif($row['status'] === 'Rejected'){
 
-                            No booking records yet.
+                        $bookingBadge = "
+                            <span class='badge-status badge-rejected'>
+                                <i class='fa-solid fa-xmark me-1'></i>
+                                Booking Rejected
+                            </span>
+                        ";
 
-                        </td>
+                    }else{
 
-                    </tr>
+                        $bookingBadge = "
+                            <span class='badge-status badge-pending'>
+                                <i class='fa-solid fa-hourglass-half me-1'></i>
+                                Booking Pending
+                            </span>
+                        ";
+                    }
 
-                    ";
+            ?>
+
+                <tr id="booking-<?php echo (int)$row['id']; ?>">
+
+                    <!-- ID -->
+
+                    <td class="text-muted">
+
+                        #<?php echo (int)$row['id']; ?>
+
+                    </td>
+
+
+                    <!-- COURT -->
+
+                    <td class="text-start fw-bold">
+
+                        <i class="fa-solid fa-circle-dot text-success me-2 fs-6"></i>
+
+                        <?php
+                        echo htmlspecialchars(
+                            $row['court_name']
+                        );
+                        ?>
+
+                    </td>
+
+
+                    <!-- DATE -->
+
+                    <td>
+
+                        <i class="fa-regular fa-calendar me-1 text-muted"></i>
+
+                        <?php
+                        echo htmlspecialchars(
+                            $row['booking_date']
+                        );
+                        ?>
+
+                    </td>
+
+
+                    <!-- TIME -->
+
+                    <td>
+
+                        <i class="fa-regular fa-clock me-1 text-muted"></i>
+
+                        <?php
+                        echo htmlspecialchars(
+                            substr(
+                                $row['booking_time'],
+                                0,
+                                5
+                            )
+                        );
+                        ?>
+
+                    </td>
+
+
+                    <!-- PRICE -->
+
+                    <td>
+
+                        RM
+                        <?php
+                        echo number_format(
+                            (float)$row['price'],
+                            2
+                        );
+                        ?>
+
+                    </td>
+
+
+                    <!-- PAYMENT -->
+
+                    <td>
+
+                        <?php if($row['payment_receipt']): ?>
+
+                            <a
+                                href="uploads/receipt/<?php echo rawurlencode($row['payment_receipt']); ?>"
+                                target="_blank"
+                                class="btn btn-sm btn-outline-dark"
+                            >
+
+                                <i class="fa-solid fa-receipt me-1"></i>
+
+                                View Receipt
+
+                            </a>
+
+
+                        <?php elseif($row['status'] === 'Pending'): ?>
+
+                            <a
+                                href="payment.php?booking_id=<?php echo (int)$row['id']; ?>"
+                                class="btn btn-sm btn-outline-dark"
+                            >
+
+                                <i class="fa-solid fa-credit-card me-1"></i>
+
+                                Proceed to Payment
+
+                            </a>
+
+
+                        <?php elseif($row['status'] === 'Approved'): ?>
+
+                            <a
+                                href="?booking_id=<?php echo (int)$row['id']; ?>#booking-<?php echo (int)$row['id']; ?>"
+                                class="btn btn-sm btn-outline-dark"
+                            >
+
+                                <i class="fa-solid fa-eye me-1"></i>
+
+                                View Booking Details
+
+                            </a>
+
+
+                        <?php else: ?>
+
+                            &mdash;
+
+                        <?php endif; ?>
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        <?php echo $paymentBadge; ?>
+
+                        <br>
+
+                        <?php echo $bookingBadge; ?>
+
+
+                        <?php if(
+                            $row['status'] === 'Rejected' &&
+                            !empty($row['rejection_reason'])
+                        ): ?>
+
+                            <div class="small text-muted mt-1">
+
+                                Reason:
+
+                                <?php
+                                echo htmlspecialchars(
+                                    $row['rejection_reason']
+                                );
+                                ?>
+
+                            </div>
+
+                        <?php endif; ?>
+
+                    </td>
+
+                </tr>
+
+
+            <?php
 
                 }
 
-                ?>
+            }else{
 
-                </tbody>
+                echo "
 
-            </table>
+                <tr>
 
-        </div>
+                    <td
+                        colspan='7'
+                        class='py-5 text-muted fw-normal'
+                    >
+
+                        <i
+                            class='fa-solid fa-folder-open display-6 d-block mb-2 opacity-50'
+                        ></i>
+
+                        No booking records yet.
+
+                    </td>
+
+                </tr>
+
+                ";
+            }
+
+            ?>
+
+            </tbody>
+
+        </table>
 
     </div>
+
+</div>
 
 
 </div>
@@ -1255,13 +1283,21 @@ body {
 
 <!-- Bootstrap JS -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
 
 <script>
 
+/* =========================================================
+   MARK NOTIFICATION AS READ
+========================================================= */
+
 function markNotificationRead(element) {
 
-    const notificationId = element.dataset.notificationId;
+    const notificationId =
+        element.dataset.notificationId;
 
     if (!notificationId) {
         return;
@@ -1273,71 +1309,313 @@ function markNotificationRead(element) {
     }
 
     fetch('mark_notification_read.php', {
+
         method: 'POST',
+
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type':
+                'application/x-www-form-urlencoded'
         },
-        body: 'notification_id=' + encodeURIComponent(notificationId)
+
+        body:
+            'notification_id=' +
+            encodeURIComponent(notificationId)
+
     })
+
     .then(response => response.json())
+
     .then(data => {
 
         if (data.success) {
 
             // Remove unread background
-            element.classList.remove('notification-unread');
+            element.classList.remove(
+                'notification-unread'
+            );
 
             // Change icon
-            const icon = element.querySelector('.notification-icon i');
+            const icon =
+                element.querySelector(
+                    '.notification-icon i'
+                );
 
             if (icon) {
-                icon.className = 'fa-solid fa-check';
+                icon.className =
+                    'fa-solid fa-check';
             }
 
             // Update notification count
-            const countBadge = document.querySelector('.notification-count');
+            const countBadge =
+                document.querySelector(
+                    '.notification-count'
+                );
 
             if (countBadge) {
 
-                let currentCount = parseInt(countBadge.textContent.trim()) || 0;
+                let currentCount =
+                    parseInt(
+                        countBadge.textContent.trim()
+                    ) || 0;
 
                 currentCount--;
 
                 if (currentCount <= 0) {
+
                     countBadge.remove();
+
                 } else {
-                    countBadge.textContent = currentCount;
+
+                    countBadge.textContent =
+                        currentCount;
                 }
             }
 
-            // Update "X Unread" badge
-            const unreadBadge = document.querySelector(
-                '#notifications .badge.bg-danger'
-            );
+            // Update X Unread badge
+            const unreadBadge =
+                document.querySelector(
+                    '#notifications .badge.bg-danger'
+                );
 
             if (unreadBadge) {
 
-                let currentUnread = parseInt(
-                    unreadBadge.textContent.trim()
-                ) || 0;
+                let currentUnread =
+                    parseInt(
+                        unreadBadge.textContent.trim()
+                    ) || 0;
 
                 currentUnread--;
 
                 if (currentUnread <= 0) {
+
                     unreadBadge.remove();
+
                 } else {
-                    unreadBadge.textContent = currentUnread + ' Unread';
+
+                    unreadBadge.textContent =
+                        currentUnread +
+                        ' Unread';
+                }
+            }
+        }
+    })
+
+    .catch(error => {
+
+        console.error(
+            'Notification error:',
+            error
+        );
+
+    });
+}
+
+
+/* =========================================================
+   DELETE NOTIFICATION
+========================================================= */
+
+function deleteNotification(event, button) {
+
+    // Jangan trigger mark as read
+    event.stopPropagation();
+
+    const notificationItem =
+        button.closest('.notification-item');
+
+    if (!notificationItem) {
+        return;
+    }
+
+    const notificationId =
+        notificationItem.dataset.notificationId;
+
+    if (!notificationId) {
+        return;
+    }
+
+
+    /* CONFIRM DELETE */
+
+    const confirmDelete =
+        confirm(
+            'Are you sure you want to delete this notification?'
+        );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+
+    /* CHECK SAMA ADA MASIH UNREAD */
+
+    const wasUnread =
+        notificationItem.classList.contains(
+            'notification-unread'
+        );
+
+
+    /* DISABLE BUTTON */
+
+    button.disabled = true;
+
+
+    /* SEND DELETE REQUEST */
+
+    fetch('delete_notification.php', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type':
+                'application/x-www-form-urlencoded'
+        },
+
+        body:
+            'notification_id=' +
+            encodeURIComponent(notificationId)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (!data.success) {
+
+            button.disabled = false;
+
+            alert(
+                data.message ||
+                'Failed to delete notification.'
+            );
+
+            return;
+        }
+
+
+        /* REMOVE NOTIFICATION */
+
+        notificationItem.remove();
+
+
+        /* =========================================
+           UPDATE UNREAD NUMBER
+        ========================================= */
+
+        if (wasUnread) {
+
+            const countBadge =
+                document.querySelector(
+                    '.notification-count'
+                );
+
+            if (countBadge) {
+
+                let currentCount =
+                    parseInt(
+                        countBadge.textContent.trim()
+                    ) || 0;
+
+                currentCount--;
+
+                if (currentCount <= 0) {
+
+                    countBadge.remove();
+
+                } else {
+
+                    countBadge.textContent =
+                        currentCount;
+                }
+            }
+
+
+            const unreadBadge =
+                document.querySelector(
+                    '#notifications .badge.bg-danger'
+                );
+
+            if (unreadBadge) {
+
+                let currentUnread =
+                    parseInt(
+                        unreadBadge.textContent.trim()
+                    ) || 0;
+
+                currentUnread--;
+
+                if (currentUnread <= 0) {
+
+                    unreadBadge.remove();
+
+                } else {
+
+                    unreadBadge.textContent =
+                        currentUnread +
+                        ' Unread';
                 }
             }
         }
 
+
+        /* =========================================
+           CHECK JIKA SEMUA NOTIFICATION DAH DELETE
+        ========================================= */
+
+        const remainingNotifications =
+            document.querySelectorAll(
+                '.notification-item'
+            );
+
+        if (remainingNotifications.length === 0) {
+
+            const notificationCard =
+                document.querySelector(
+                    '.notification-card'
+                );
+
+            if (notificationCard) {
+
+                notificationCard.innerHTML = `
+
+                    <div class="notification-empty">
+
+                        <i class="fa-regular fa-bell-slash fa-2x mb-3"></i>
+
+                        <div class="fw-bold">
+                            No notifications yet
+                        </div>
+
+                        <div class="small mt-1">
+                            Your booking updates will appear here.
+                        </div>
+
+                    </div>
+
+                `;
+            }
+        }
+
     })
+
     .catch(error => {
-        console.error('Notification error:', error);
+
+        console.error(
+            'Delete notification error:',
+            error
+        );
+
+        button.disabled = false;
+
+        alert(
+            'Failed to delete notification.'
+        );
+
     });
 }
 
 </script>
-</body>
 
+</body>
 </html>
