@@ -190,13 +190,18 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 .notif-item{border-left:3px solid #818cf8;background:rgba(255,255,255,.035);border:1px solid var(--border);border-left:3px solid #818cf8;backdrop-filter:blur(5px);border-radius:13px;padding:14px;margin-bottom:10px;transition:.2s}.notif-item:hover{transform:translateX(3px);background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.2)}
 @media(max-width:800px){.custom-navbar{height:70px;padding:8px 15px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text{display:none}.nav-btn span{display:none}.nav-btn{width:40px;padding:0;justify-content:center}.nav-actions{gap:5px}.page-content{width:min(100% - 20px,1120px);padding-top:23px}.profile-card-header{padding:21px}.profile-avatar{width:58px;height:58px;border-radius:16px}.card-with-bg{padding:20px 16px}.nav-pills-custom .nav-link{padding:9px 11px}}
 
-/* CENTER MENU - same layout as Dashboard */
-.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:34px;white-space:nowrap}
-.nav-center a{position:relative;color:#94a3b8;text-decoration:none;font-size:.84rem;font-weight:700;transition:color .22s ease,transform .22s ease}
-.nav-center a:hover{color:#fff;transform:translateY(-1px)}
-.nav-center a.active{color:#f8fafc}
-.nav-center a.active:after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:2px;border-radius:20px;background:linear-gradient(90deg,#6366f1,#a855f7);transform:translateX(-50%);box-shadow:0 0 10px rgba(168,85,247,.45)}
-@media(max-width:900px){.nav-center{gap:18px}.nav-center a{font-size:.72rem}}
+
+/* ===== CONSISTENT GLASS CENTER NAV ===== */
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;margin:0;white-space:nowrap}
+.nav-center a{position:relative;height:40px;padding:0 17px;display:flex;align-items:center;justify-content:center;color:#cbd5e1;text-decoration:none;font-size:.76rem;font-weight:800;letter-spacing:.1px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.09);border-radius:13px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 4px 15px rgba(0,0,0,.10);overflow:hidden;transition:transform .22s ease,background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease}
+.nav-center a::before{content:"";position:absolute;top:-100%;left:-60%;width:45%;height:300%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);transform:rotate(25deg);transition:left .45s ease;pointer-events:none}
+.nav-center a::after{content:"";position:absolute;left:50%;bottom:4px;width:0;height:2px;transform:translateX(-50%);border-radius:50px;background:linear-gradient(90deg,#6366f1,#a855f7);box-shadow:0 0 8px rgba(168,85,247,.7);transition:width .22s ease}
+.nav-center a:hover{color:#fff;background:linear-gradient(135deg,rgba(99,102,241,.13),rgba(168,85,247,.07));border-color:rgba(129,140,248,.35);transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 22px rgba(0,0,0,.22),0 0 20px rgba(99,102,241,.10)}
+.nav-center a:hover::before{left:130%}.nav-center a:hover::after{width:35%}
+.nav-center a:active{transform:translateY(0) scale(.94);color:#fff;background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(168,85,247,.14));border-color:rgba(129,140,248,.55);box-shadow:inset 0 3px 8px rgba(0,0,0,.30),0 0 15px rgba(99,102,241,.20);transition-duration:.08s}
+.nav-center a.active{color:#fff;background:linear-gradient(135deg,rgba(99,102,241,.17),rgba(168,85,247,.10));border-color:rgba(129,140,248,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 18px rgba(99,102,241,.12)}
+.nav-center a.active::after{width:35%}
+@media(max-width:900px){.nav-center{gap:7px}.nav-center a{height:38px;padding:0 12px;font-size:.69rem}}
 @media(max-width:720px){.nav-center{display:none}}
 
 </style>
@@ -214,7 +219,12 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
         <div class="brand-logo-icon"><img src="../logo-badminton.png" alt="Badminton Kampung Panji"></div>
         <div class="brand-text"><strong>BADMINTON</strong><span>KAMPUNG PANJI</span></div>
     </a>
-    <div class="nav-center"><a href="feedback_report.php" class="">Feedback</a><a href="message.php" class="">Message</a><a href="my_booking.php" class="">My Booking</a><a href="profile.php" class="active">Profile</a></div>
+    <div class="nav-center">
+    <a href="feedback_report.php">Feedback</a>
+    <a href="message.php">Message</a>
+    <a href="my_booking.php">My Booking</a>
+    <a href="profile.php" class="active">Profile</a>
+</div>
 <div class="nav-actions">
 <a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
 <a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
