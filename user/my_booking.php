@@ -1,446 +1,164 @@
 <?php
 
-
-
 session_start();
-
-
-
-
-
-
 
 include __DIR__ . '/../config/db.php';
 
-
-
-
-
-
-
 if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != "user"){
-
-
 
     header("Location: ../auth/login.php");
 
-
-
     exit();
-
-
 
 }
 
-
-
-
-
-
-
 $user_id = (int)$_SESSION['user']['id'];
 
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
-
-
 
    GET BOOKING DATA
 
-
-
 \\========================================================= */
-
-
-
-
-
-
 
 $stmt = $conn->prepare("
 
-
-
     SELECT
-
-
 
         bookings.*,
 
-
-
         courts.court_name,
-
-
 
         courts.price AS price_per_hour,
 
-
-
         (courts.price * COALESCE(bookings.duration, 1)) AS price,
-
-
 
         payments.status AS payment_status,
 
-
-
         payments.receipt AS payment_receipt
 
-
-
     FROM bookings
-
-
 
     JOIN courts ON bookings.court_id = courts.id
 
-
-
     LEFT JOIN payments ON payments.booking_id = bookings.id
-
-
 
     WHERE bookings.user_id = ?
 
-
-
     ORDER BY bookings.id DESC
 
-
-
 ");
-
-
-
-
-
-
 
 $stmt->bind_param("i", $user_id);
 
-
-
 $stmt->execute();
-
-
-
-
-
-
 
 $result = $stmt->get_result();
 
-
-
 $bookingRows = $result->fetch_all(MYSQLI_ASSOC);
-
-
-
-
-
-
 
 $stmt->close();
 
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
-
-
 
    LOYALTY REWARD
 
-
-
 \\========================================================= */
-
-
-
-
-
-
 
 $countStmt = $conn->prepare("
 
-
-
     SELECT COUNT(*) as total
-
-
 
     FROM bookings
 
-
-
     WHERE user_id = ?
-
-
 
     AND status = 'Approved'
 
-
-
 ");
-
-
-
-
-
-
 
 $countStmt->bind_param("i", $user_id);
 
-
-
 $countStmt->execute();
-
-
-
-
-
-
 
 $count_data = $countStmt->get_result()->fetch_assoc();
 
-
-
-
-
-
-
 $countStmt->close();
-
-
-
-
-
-
 
 $approved_count = (int)($count_data['total'] ?? 0);
 
-
-
 $progress_count = $approved_count % 10;
-
-
 
 $has_voucher = ($approved_count > 0 && $progress_count == 0);
 
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
-
-
 
    GET USER NOTIFICATIONS
 
-
-
 \\========================================================= */
-
-
-
-
-
-
 
 $notificationStmt = $conn->prepare("
 
-
-
     SELECT
-
-
 
         id,
 
-
-
         title,
-
-
 
         message,
 
-
-
         status,
-
-
 
         created_at
 
-
-
     FROM notifications
 
-
-
     WHERE user_id = ?
-
-
 
     ORDER BY id DESC
 
-
-
     LIMIT 10
 
-
-
 ");
-
-
-
-
-
-
 
 $notificationStmt->bind_param("i", $user_id);
 
-
-
 $notificationStmt->execute();
-
-
-
-
-
-
 
 $notificationResult = $notificationStmt->get_result();
 
-
-
 $notifications = $notificationResult->fetch_all(MYSQLI_ASSOC);
-
-
-
-
-
-
 
 $notificationStmt->close();
 
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
-
-
 
    COUNT UNREAD NOTIFICATIONS
 
-
-
 \\========================================================= */
-
-
-
-
-
-
 
 $unreadStmt = $conn->prepare("
 
-
-
     SELECT COUNT(*) AS total
-
-
 
     FROM notifications
 
-
-
     WHERE user_id = ?
-
-
 
     AND status = 'Unread'
 
-
-
 ");
-
-
-
-
-
-
 
 $unreadStmt->bind_param("i", $user_id);
 
-
-
 $unreadStmt->execute();
-
-
-
-
-
-
 
 $unreadData = $unreadStmt->get_result()->fetch_assoc();
 
-
-
-
-
-
-
 $unreadCount = (int)($unreadData['total'] ?? 0);
-
-
-
-
-
-
 
 $unreadStmt->close();
 
-
-
 ?>
-
-
-
-
-
-
 
 <!DOCTYPE html>
 
@@ -472,7 +190,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
 .orb{position:fixed;border-radius:50%;filter:blur(120px);opacity:.13;pointer-events:none;z-index:-2}.orb.one{width:320px;height:320px;background:#6366f1;left:-130px;top:170px}.orb.two{width:360px;height:360px;background:#a855f7;right:-160px;bottom:40px}
 
-.nav{height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.82);backdrop-filter:blur(18px);position:sticky;top:0;z-index:20}
+.nav{position:relative;height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.82);backdrop-filter:blur(18px);position:sticky;top:0;z-index:20}
 
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo{width:53px;height:53px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center}.brand-logo img{width:51px;height:51px;object-fit:contain;border-radius:9px}.brand-text{display:flex;flex-direction:column}.brand-text strong{font-size:.95rem;color:#fff;line-height:1.05}.brand-text span{font-size:.62rem;color:#a855f7;font-weight:800;letter-spacing:1.5px;margin-top:5px}
 
@@ -508,6 +226,15 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
 @media(max-width:480px){.section-head{align-items:flex-start}.notice-actions{flex-direction:column;align-items:flex-end}.booking-info{grid-template-columns:1fr}.hero:after{display:none}}
 
+/* CENTER MENU - same layout as Dashboard */
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:34px;white-space:nowrap}
+.nav-center a{position:relative;color:#94a3b8;text-decoration:none;font-size:.84rem;font-weight:700;transition:color .22s ease,transform .22s ease}
+.nav-center a:hover{color:#fff;transform:translateY(-1px)}
+.nav-center a.active{color:#f8fafc}
+.nav-center a.active:after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:2px;border-radius:20px;background:linear-gradient(90deg,#6366f1,#a855f7);transform:translateX(-50%);box-shadow:0 0 10px rgba(168,85,247,.45)}
+@media(max-width:900px){.nav-center{gap:18px}.nav-center a{font-size:.72rem}}
+@media(max-width:720px){.nav-center{display:none}}
+
 </style>
 
 </head>
@@ -515,8 +242,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 <body>
 
 <div class="orb one"></div><div class="orb two"></div>
-
-
 
 <nav class="nav">
 
@@ -528,35 +253,13 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
     </a>
 
-    <div class="nav-actions">
-        <a href="feedback_report.php" class="nav-btn">
-            <i class="fa-solid fa-star"></i><span>Feedback</span>
-        </a>
-
-        <a href="my_booking.php" class="nav-btn active">
-            <i class="fa-solid fa-calendar-check"></i><span>My Booking</span>
-        </a>
-
-        <a href="#notifications" class="nav-btn bell" title="Notifications">
-            <i class="fa-solid fa-bell"></i>
-            <span class="nav-notification-text">Notification</span>
-            <?php if($unreadCount > 0): ?>
-                <span class="notification-count"><?= $unreadCount ?></span>
-            <?php endif; ?>
-        </a>
-
-        <a href="dashboard.php" class="nav-btn">
-            <i class="fa-solid fa-house"></i><span>Dashboard</span>
-        </a>
-
-        <a href="../auth/logout.php" class="nav-btn logout">
-            <i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span>
-        </a>
-    </div>
+    <div class="nav-center"><a href="feedback_report.php" class="">Feedback</a><a href="message.php" class="">Message</a><a href="my_booking.php" class="active">My Booking</a><a href="profile.php" class="">Profile</a></div>
+<div class="nav-actions">
+<a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+<a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
+</div>
 
 </nav>
-
-
 
 <main class="wrapper">
 
@@ -580,8 +283,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
     </section>
 
-
-
     <section id="notifications" class="section">
 
         <div class="section-head">
@@ -601,8 +302,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
             </div>
 
         </div>
-
-
 
         <div class="notifications notification-card">
 
@@ -640,8 +339,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
     </section>
 
-
-
     <section class="reward">
 
         <span class="reward-badge"><i class="fa-solid fa-gift"></i> Loyalty Reward</span>
@@ -666,8 +363,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
     </section>
 
-
-
     <section class="section">
 
         <div class="section-head">
@@ -677,8 +372,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
             <span class="count-pill"><?= count($bookingRows) ?> Bookings</span>
 
         </div>
-
-
 
         <?php if(isset($_GET['submitted'])): ?>
 
@@ -691,8 +384,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
             <div class="flash error"><i class="fa-solid fa-circle-exclamation"></i> <?= htmlspecialchars($_GET['error']) ?></div>
 
         <?php endif; ?>
-
-
 
         <div class="booking-grid">
 
@@ -748,8 +439,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
                     </div>
 
-
-
                     <div class="booking-info">
 
                         <div class="info-box"><small>Date</small><strong><?= htmlspecialchars(date('d M Y',strtotime($row['booking_date']))) ?></strong></div>
@@ -760,8 +449,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
                     </div>
 
-
-
                     <div class="status-row">
 
                         <span class="status <?= $paymentClass ?>"><i class="fa-solid <?= $paymentIcon ?>"></i><?= $paymentText ?></span>
@@ -770,15 +457,11 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
                     </div>
 
-
-
                     <?php if($row['status']==='Rejected' && !empty($row['rejection_reason'])): ?>
 
                         <div class="reason"><strong>Reason:</strong> <?= htmlspecialchars($row['rejection_reason']) ?></div>
 
                     <?php endif; ?>
-
-
 
                     <div class="card-action">
 
@@ -814,8 +497,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
         </div>
 
-
-
         <?php if(count($bookingRows) > 0): ?>
 
         <div class="pagination-wrap" id="bookingPagination">
@@ -841,8 +522,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
     </section>
 
 </main>
-
-
 
 <script>
 
@@ -871,8 +550,6 @@ function updateUnreadCount(){
     }
 
 }
-
-
 
 function markNotificationRead(element){
 
@@ -911,8 +588,6 @@ function markNotificationRead(element){
     .catch(err=>console.error('Notification error:',err));
 
 }
-
-
 
 function deleteNotification(event,button){
 
@@ -956,8 +631,6 @@ function deleteNotification(event,button){
 
 }
 
-
-
 function showEmptyNotificationsIfNeeded(){
 
     const card=document.querySelector('.notification-card');
@@ -972,8 +645,6 @@ function showEmptyNotificationsIfNeeded(){
 
 }
 
-
-
 async function deleteAllNotifications(){
 
     const items=[...document.querySelectorAll('.notification-item')];
@@ -983,8 +654,6 @@ async function deleteAllNotifications(){
     const button=document.querySelector('.delete-all');
 
     if(button) button.disabled=true;
-
-
 
     let failed=0;
 
@@ -1014,8 +683,6 @@ async function deleteAllNotifications(){
 
     }
 
-
-
     updateUnreadCount();
 
     showEmptyNotificationsIfNeeded();
@@ -1030,13 +697,9 @@ async function deleteAllNotifications(){
 
 }
 
-
-
 const BOOKING_PER_PAGE = 6;
 
 let currentBookingPage = 1;
-
-
 
 function renderBookingPage(){
 
@@ -1052,21 +715,15 @@ function renderBookingPage(){
 
     }
 
-
-
     const totalPages=Math.max(1,Math.ceil(cards.length/BOOKING_PER_PAGE));
 
     if(currentBookingPage>totalPages) currentBookingPage=totalPages;
 
     if(currentBookingPage<1) currentBookingPage=1;
 
-
-
     const start=(currentBookingPage-1)*BOOKING_PER_PAGE;
 
     const end=start+BOOKING_PER_PAGE;
-
-
 
     cards.forEach((card,index)=>{
 
@@ -1074,15 +731,11 @@ function renderBookingPage(){
 
     });
 
-
-
     const info=document.getElementById('bookingPageInfo');
 
     const prev=document.getElementById('prevBookingBtn');
 
     const next=document.getElementById('nextBookingBtn');
-
-
 
     if(info) info.textContent='Page '+currentBookingPage+' / '+totalPages;
 
@@ -1092,8 +745,6 @@ function renderBookingPage(){
 
 }
 
-
-
 function changeBookingPage(direction){
 
     const cards=document.querySelectorAll('.booking-grid .booking-card');
@@ -1102,17 +753,11 @@ function changeBookingPage(direction){
 
     const target=currentBookingPage+direction;
 
-
-
     if(target<1 || target>totalPages) return;
-
-
 
     currentBookingPage=target;
 
     renderBookingPage();
-
-
 
     const bookingSection=document.querySelector('.booking-grid');
 
@@ -1124,11 +769,7 @@ function changeBookingPage(direction){
 
 }
 
-
-
 document.addEventListener('DOMContentLoaded',renderBookingPage);
-
-
 
 </script>
 

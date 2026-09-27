@@ -2,11 +2,7 @@
 
 session_start();
 
-
-
 include __DIR__ . '/../config/db.php';
-
-
 
 date_default_timezone_set(
 
@@ -14,11 +10,7 @@ date_default_timezone_set(
 
 );
 
-
-
 if (!isset($_SESSION['user'])) {
-
-
 
     header(
 
@@ -26,51 +18,33 @@ if (!isset($_SESSION['user'])) {
 
     );
 
-
-
     exit();
 
 }
 
-
-
 $user = $_SESSION['user'];
-
-
 
 $user_id =
 
     (int)($user['id'] ?? 0);
 
-
-
 $name =
 
     trim($user['name'] ?? '');
-
-
 
 $email =
 
     trim($user['email'] ?? '');
 
-
-
 $success = '';
 
 $error = '';
-
-
-
-
 
 /* =====================================================
 
    SEND MESSAGE
 
 \===================================================== */
-
-
 
 if (
 
@@ -79,8 +53,6 @@ if (
     === 'POST'
 
 ) {
-
-
 
     $email =
 
@@ -92,8 +64,6 @@ if (
 
         );
 
-
-
     $message =
 
         trim(
@@ -103,10 +73,6 @@ if (
             ?? ''
 
         );
-
-
-
-
 
     if (
 
@@ -118,13 +84,9 @@ if (
 
     ) {
 
-
-
         $error =
 
             'Please complete all fields.';
-
-
 
     } elseif (
 
@@ -138,17 +100,11 @@ if (
 
     ) {
 
-
-
         $error =
 
             'Please enter a valid email address.';
 
-
-
     } else {
-
-
 
         $stmt =
 
@@ -200,13 +156,7 @@ if (
 
             );
 
-
-
-
-
         if ($stmt) {
-
-
 
             $stmt->bind_param(
 
@@ -222,31 +172,19 @@ if (
 
             );
 
-
-
-
-
             if (
 
                 $stmt->execute()
 
             ) {
 
-
-
                 $success =
 
                     'Your message has been sent to the admin.';
 
-
-
                 $_POST['message'] = '';
 
-
-
             } else {
-
-
 
                 $error =
 
@@ -254,17 +192,9 @@ if (
 
             }
 
-
-
-
-
             $stmt->close();
 
-
-
         } else {
-
-
 
             $error =
 
@@ -276,17 +206,11 @@ if (
 
 }
 
-
-
-
-
 /* =====================================================
 
    GET USER MESSAGES
 
 \===================================================== */
-
-
 
 $stmt =
 
@@ -318,8 +242,6 @@ $stmt =
 
     );
 
-
-
 $stmt->bind_param(
 
     'i',
@@ -328,27 +250,17 @@ $stmt->bind_param(
 
 );
 
-
-
 $stmt->execute();
-
-
 
 $messages =
 
     $stmt->get_result();
-
-
-
-
 
 /* =====================================================
 
    MARK ADMIN REPLY AS READ
 
 \===================================================== */
-
-
 
 $stmtRead =
 
@@ -372,11 +284,7 @@ $stmtRead =
 
     );
 
-
-
 if ($stmtRead) {
-
-
 
     $stmtRead->bind_param(
 
@@ -386,21 +294,13 @@ if ($stmtRead) {
 
     );
 
-
-
     $stmtRead->execute();
-
-
 
     $stmtRead->close();
 
 }
 
-
-
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -416,7 +316,7 @@ if ($stmtRead) {
 body{margin:0;min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:#090a0f;color:var(--text);overflow-x:hidden}
 body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(circle at 8% 8%,rgba(99,102,241,.22),transparent 31%),radial-gradient(circle at 92% 75%,rgba(168,85,247,.16),transparent 31%),linear-gradient(180deg,#090a0f,#0d0e16 55%,#090a0f)}
 .orb{position:fixed;border-radius:50%;filter:blur(130px);opacity:.13;z-index:-2;pointer-events:none}.orb.one{width:350px;height:350px;background:#6366f1;left:-160px;top:170px}.orb.two{width:390px;height:390px;background:#a855f7;right:-180px;bottom:-70px}
-.navbar{height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.84);backdrop-filter:blur(18px);position:sticky;top:0;z-index:20}
+.navbar{position:relative;position:relative;height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.84);backdrop-filter:blur(18px);position:sticky;top:0;z-index:20}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo{width:53px;height:53px;display:flex;align-items:center;justify-content:center;border-radius:10px;overflow:hidden}.brand-logo img{width:51px;height:51px;object-fit:contain;border-radius:9px}.brand-text{display:flex;flex-direction:column}.brand-text strong{font-size:.95rem;color:#fff;line-height:1.05}.brand-text span{font-size:.62rem;color:#a855f7;font-weight:800;letter-spacing:1.5px;margin-top:5px}
 .nav-actions{display:flex;align-items:center;gap:8px}.nav-btn{height:40px;padding:0 14px;border:1px solid var(--border);border-radius:50px;background:rgba(255,255,255,.035);color:#dbe3ef;text-decoration:none;display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;transition:.2s}.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}.logout{border-color:rgba(251,113,133,.2);color:#fda4af;background:rgba(251,113,133,.06)}
 .wrapper{width:min(1120px,calc(100% - 30px));margin:0 auto;padding:35px 0 65px}
@@ -606,6 +506,61 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
     }
 }
 
+/* ===== CENTER NAVIGATION LIKE DASHBOARD ===== */
+.nav-center{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:34px;
+    white-space:nowrap;
+}
+.nav-center a{
+    position:relative;
+    color:#94a3b8;
+    text-decoration:none;
+    font-size:.84rem;
+    font-weight:700;
+    transition:color .22s ease,transform .22s ease;
+}
+.nav-center a:hover{
+    color:#fff;
+    transform:translateY(-1px);
+}
+.nav-center a.active{
+    color:#f8fafc;
+}
+.nav-center a.active:after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-12px;
+    width:20px;
+    height:2px;
+    border-radius:20px;
+    background:linear-gradient(90deg,#6366f1,#a855f7);
+    transform:translateX(-50%);
+    box-shadow:0 0 10px rgba(168,85,247,.45);
+}
+@media(max-width:900px){
+    .nav-center{gap:18px}
+    .nav-center a{font-size:.72rem}
+}
+@media(max-width:720px){
+    .nav-center{display:none}
+}
+
+/* CENTER MENU - same layout as Dashboard */
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:34px;white-space:nowrap}
+.nav-center a{position:relative;color:#94a3b8;text-decoration:none;font-size:.84rem;font-weight:700;transition:color .22s ease,transform .22s ease}
+.nav-center a:hover{color:#fff;transform:translateY(-1px)}
+.nav-center a.active{color:#f8fafc}
+.nav-center a.active:after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:2px;border-radius:20px;background:linear-gradient(90deg,#6366f1,#a855f7);transform:translateX(-50%);box-shadow:0 0 10px rgba(168,85,247,.45)}
+@media(max-width:900px){.nav-center{gap:18px}.nav-center a{font-size:.72rem}}
+@media(max-width:720px){.nav-center{display:none}}
+
 </style>
 </head>
 <body>
@@ -616,12 +571,17 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
         <div class="brand-logo"><img src="../logo-badminton.png" alt="Badminton Kampung Panji"></div>
         <div class="brand-text"><strong>BADMINTON</strong><span>KAMPUNG PANJI</span></div>
     </a>
-    <div class="nav-actions">
-        <a href="feedback_report.php" class="nav-btn"><i class="fa-solid fa-star"></i><span>Feedback</span></a>
-        <a href="my_booking.php" class="nav-btn"><i class="fa-solid fa-calendar-check"></i><span>My Booking</span></a>
-        <a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
-        <a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
+    <div class="nav-center">
+        <a href="feedback_report.php" class="">Feedback</a>
+        <a href="message.php" class="active">Message</a>
+        <a href="my_booking.php" class="">My Booking</a>
+        <a href="profile.php" class="">Profile</a>
     </div>
+    <div class="nav-center"><a href="feedback_report.php" class="">Feedback</a><a href="message.php" class="active">Message</a><a href="my_booking.php" class="">My Booking</a><a href="profile.php" class="">Profile</a></div>
+<div class="nav-actions">
+<a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+<a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
+</div>
 </nav>
 
 <main class="wrapper">

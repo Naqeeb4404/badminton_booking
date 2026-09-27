@@ -4,8 +4,6 @@ session_start();
 
 include __DIR__ . '/../config/db.php';
 
-
-
 // Semakan Akses Sesi
 
 if (!isset($_SESSION['user'])) {
@@ -16,15 +14,11 @@ if (!isset($_SESSION['user'])) {
 
 }
 
-
-
 $user_id = $_SESSION['user']['id'];
 
 $message = "";
 
 $msg_type = "success";
-
-
 
 // 1. KEMASKINI PROFIL
 
@@ -35,8 +29,6 @@ if (isset($_POST['update_profile'])) {
     $email = trim($_POST['email']);
 
     $phone = trim($_POST['phone']);
-
-
 
     $stmt = mysqli_prepare($conn, "UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?");
 
@@ -72,8 +64,6 @@ if (isset($_POST['update_profile'])) {
 
 }
 
-
-
 // 2. HANTAR FEEDBACK / RATING
 
 if (isset($_POST['submit_feedback'])) {
@@ -81,8 +71,6 @@ if (isset($_POST['submit_feedback'])) {
     $rating  = (int)$_POST['rating'];
 
     $comment = trim($_POST['comment']);
-
-
 
     $stmt = mysqli_prepare($conn, "INSERT INTO feedback (user_id, rating, comment, created_at) VALUES (?, ?, ?, NOW())");
 
@@ -110,8 +98,6 @@ if (isset($_POST['submit_feedback'])) {
 
 }
 
-
-
 // 3. NYAHAKTIFKAN AKAUN (DEACTIVATE PROFILE)
 
 if (isset($_POST['deactivate_account'])) {
@@ -128,8 +114,6 @@ if (isset($_POST['deactivate_account'])) {
 
     }
 
-
-
     session_destroy();
 
     header("Location: ../auth/login.php?account=deactivated");
@@ -138,31 +122,25 @@ if (isset($_POST['deactivate_account'])) {
 
 }
 
-
-
 // AMBIL DATA DARI PANGKALAN DATA
 
 $user_query = mysqli_query($conn, "SELECT * FROM users WHERE id = '$user_id'");
 
 $user_data  = mysqli_fetch_assoc($user_query);
 
-
-
 $bookings_query = mysqli_query($conn, "
 
-    SELECT b.*, c.court_name 
+    SELECT b.*, c.court_name
 
-    FROM bookings b 
+    FROM bookings b
 
-    JOIN courts c ON b.court_id = c.id 
+    JOIN courts c ON b.court_id = c.id
 
-    WHERE b.user_id = '$user_id' 
+    WHERE b.user_id = '$user_id'
 
     ORDER BY b.booking_date DESC, b.booking_time DESC
 
 ");
-
-
 
 $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = '$user_id' ORDER BY created_at DESC LIMIT 5");
 
@@ -172,8 +150,6 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
 
 <html lang="ms">
 
-
-
 <head>
 
     <meta charset="UTF-8">
@@ -181,8 +157,6 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>User Profile - Badminton Kampung Panji</title>
-
-
 
     <!-- Bootstrap 5 CSS -->
 
@@ -196,15 +170,13 @@ $notif_query = mysqli_query($conn, "SELECT * FROM notifications WHERE user_id = 
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-
-
     <style>
 :root{--bg:#090a0f;--panel:#141620;--panel2:#1a1c29;--border:rgba(255,255,255,.09);--text:#f8fafc;--muted:#94a3b8;--indigo:#6366f1;--purple:#a855f7;--green:#4ade80;--red:#fb7185;--yellow:#fbbf24}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;padding:0 0 65px;font-family:'Plus Jakarta Sans',sans-serif;background:#090a0f;color:var(--text);overflow-x:hidden}
 body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 8% 10%,rgba(99,102,241,.22),transparent 31%),radial-gradient(circle at 92% 72%,rgba(168,85,247,.16),transparent 32%),linear-gradient(180deg,#090a0f,#0d0e16 55%,#090a0f)}
 .app-container{max-width:none;margin:0;background:transparent;border-radius:0;overflow:visible;box-shadow:none;padding:0}
-.custom-navbar{height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.84);backdrop-filter:blur(18px);position:sticky;top:0;z-index:30;margin:0}
+.custom-navbar{position:relative;height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(9,10,15,.84);backdrop-filter:blur(18px);position:sticky;top:0;z-index:30;margin:0}
 .brand-container{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo-icon{width:53px;height:53px;display:flex;align-items:center;justify-content:center;border-radius:10px;overflow:hidden}.brand-logo-icon img{width:51px;height:51px;object-fit:contain;border-radius:9px}.brand-text{display:flex;flex-direction:column}.brand-text strong{font-size:.95rem;color:#fff;line-height:1.05}.brand-text span{font-size:.62rem;color:#a855f7;font-weight:800;letter-spacing:1.5px;margin-top:5px}
 .nav-actions{display:flex;align-items:center;gap:8px}.nav-btn{height:40px;padding:0 14px;border:1px solid var(--border);border-radius:50px;background:rgba(255,255,255,.035);color:#dbe3ef;text-decoration:none;display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;transition:.22s}.nav-btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.08);border-color:rgba(99,102,241,.25);color:#fff;box-shadow:0 7px 20px rgba(99,102,241,.1)}.nav-btn.active{background:rgba(99,102,241,.11);border-color:rgba(99,102,241,.25);color:#c4b5fd}.nav-btn.logout{border-color:rgba(251,113,133,.2);color:#fda4af;background:rgba(251,113,133,.06)}
 .page-content{width:min(1120px,calc(100% - 30px));margin:0 auto;padding-top:34px}
@@ -217,19 +189,23 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 .history-table-container{background:rgba(12,13,20,.65);border:1px solid var(--border);border-radius:16px;overflow:hidden}.table-custom-dark{margin-bottom:0;color:#fff;background:transparent}.table-custom-dark th{background:rgba(255,255,255,.035)!important;color:#94a3b8!important;font-weight:800;text-transform:uppercase;font-size:.66rem;letter-spacing:.5px;padding:13px 16px;border-bottom:1px solid var(--border)}.table-custom-dark td{background:transparent!important;padding:13px 16px;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.05);font-size:.72rem}.table-custom-dark tbody tr:hover{background:rgba(99,102,241,.045)}.badge-status{padding:6px 10px;border-radius:50px;font-weight:800;font-size:.58rem;display:inline-flex;align-items:center;gap:5px}.badge-status.bg-success{background:rgba(74,222,128,.1)!important;color:#86efac!important;border:1px solid rgba(74,222,128,.18)}.badge-status.bg-warning{background:rgba(251,191,36,.09)!important;color:#fcd34d!important;border:1px solid rgba(251,191,36,.16)}.badge-status.bg-danger{background:rgba(251,113,133,.09)!important;color:#fda4af!important;border:1px solid rgba(251,113,133,.16)}
 .notif-item{border-left:3px solid #818cf8;background:rgba(255,255,255,.035);border:1px solid var(--border);border-left:3px solid #818cf8;backdrop-filter:blur(5px);border-radius:13px;padding:14px;margin-bottom:10px;transition:.2s}.notif-item:hover{transform:translateX(3px);background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.2)}
 @media(max-width:800px){.custom-navbar{height:70px;padding:8px 15px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text{display:none}.nav-btn span{display:none}.nav-btn{width:40px;padding:0;justify-content:center}.nav-actions{gap:5px}.page-content{width:min(100% - 20px,1120px);padding-top:23px}.profile-card-header{padding:21px}.profile-avatar{width:58px;height:58px;border-radius:16px}.card-with-bg{padding:20px 16px}.nav-pills-custom .nav-link{padding:9px 11px}}
+
+/* CENTER MENU - same layout as Dashboard */
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:34px;white-space:nowrap}
+.nav-center a{position:relative;color:#94a3b8;text-decoration:none;font-size:.84rem;font-weight:700;transition:color .22s ease,transform .22s ease}
+.nav-center a:hover{color:#fff;transform:translateY(-1px)}
+.nav-center a.active{color:#f8fafc}
+.nav-center a.active:after{content:"";position:absolute;left:50%;bottom:-12px;width:20px;height:2px;border-radius:20px;background:linear-gradient(90deg,#6366f1,#a855f7);transform:translateX(-50%);box-shadow:0 0 10px rgba(168,85,247,.45)}
+@media(max-width:900px){.nav-center{gap:18px}.nav-center a{font-size:.72rem}}
+@media(max-width:720px){.nav-center{display:none}}
+
 </style>
 
 </head>
 
-
-
 <body>
 
-
-
     <div class="app-container">
-
-
 
         <!-- Header Navigation -->
 
@@ -238,17 +214,13 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
         <div class="brand-logo-icon"><img src="../logo-badminton.png" alt="Badminton Kampung Panji"></div>
         <div class="brand-text"><strong>BADMINTON</strong><span>KAMPUNG PANJI</span></div>
     </a>
-    <div class="nav-actions">
-        <a href="feedback_report.php" class="nav-btn"><i class="fa-solid fa-star"></i><span>Feedback</span></a>
-        <a href="my_booking.php" class="nav-btn"><i class="fa-solid fa-calendar-check"></i><span>My Booking</span></a>
-        <a href="profile.php" class="nav-btn active"><i class="fa-solid fa-user"></i><span>Profile</span></a>
-        <a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
-        <a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
-    </div>
+    <div class="nav-center"><a href="feedback_report.php" class="">Feedback</a><a href="message.php" class="">Message</a><a href="my_booking.php" class="">My Booking</a><a href="profile.php" class="active">Profile</a></div>
+<div class="nav-actions">
+<a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+<a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
+</div>
 </nav>
 <div class="page-content">
-
-
 
         <!-- Profile Header -->
 
@@ -274,8 +246,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
         </div>
 
-
-
         <!-- Mesej Status Notifikasi (Jika ada) -->
 
         <?php if (!empty($message)): ?>
@@ -289,8 +259,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
             </div>
 
         <?php endif; ?>
-
-
 
         <!-- Navigation Tabs -->
 
@@ -316,8 +284,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </li>
 
-
-
             <li class="nav-item">
 
                 <button class="nav-link" id="feedback-tab" data-bs-toggle="pill" data-bs-target="#feedback-panel">
@@ -340,13 +306,9 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
         </ul>
 
-
-
         <!-- Tab Content Panels -->
 
         <div class="tab-content" id="profileTabsContent">
-
-
 
             <!-- 1. PROFILE INFO -->
 
@@ -357,8 +319,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -406,8 +366,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </div>
 
-
-
             <!-- 2. EDIT PROFILE & DEACTIVATE -->
 
             <div class="tab-pane fade" id="edit-panel">
@@ -417,8 +375,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -462,8 +418,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
                 </div>
 
-
-
                 <!-- Kad Deactivate Account -->
 
                 <div class="card-with-bg border border-danger">
@@ -471,8 +425,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -496,8 +448,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </div>
 
-
-
             <!-- 3. BOOKING HISTORY -->
 
             <div class="tab-pane fade" id="history-panel">
@@ -507,8 +457,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -552,7 +500,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
                                                     <td>
 
-                                                        <?php 
+                                                        <?php
 
                                                             $st = strtolower($b['status']);
 
@@ -598,8 +546,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </div>
 
-
-
             <!-- 4. FEEDBACK / RATING -->
 
             <div class="tab-pane fade" id="feedback-panel">
@@ -609,8 +555,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -660,8 +604,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </div>
 
-
-
             <!-- 5. NOTIFICATION -->
 
             <div class="tab-pane fade" id="notif-panel">
@@ -671,8 +613,6 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
                     <img src="qr/userbackground.jpg" alt="User Background" class="card-bg-img">
 
                     <div class="card-bg-overlay"></div>
-
-
 
                     <div class="card-content-inner">
 
@@ -722,11 +662,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
 
             </div>
 
-
-
         </div>
-
-
 
     </div>
 </div>
@@ -736,7 +672,5 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
-
 
 </html>
