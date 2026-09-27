@@ -346,75 +346,168 @@ include __DIR__ . '/config/db.php';
             }
         }
     
-        /* TRANSPARENT / GLASS DOCK NAVIGATION */
+        /* ===== LOCKED PUBLIC NAVBAR / GLASS DOCK ===== */
+        html{
+            overflow-y:scroll;
+            scrollbar-gutter:stable;
+        }
+        .top-announcement-bar{
+            box-sizing:border-box !important;
+            min-height:39px !important;
+            height:39px !important;
+            padding:0 40px !important;
+            display:flex;
+            align-items:center;
+        }
         .custom-navbar{
-            position:sticky;
-            top:0;
-            z-index:1000;
+            box-sizing:border-box !important;
+            position:sticky !important;
+            top:0 !important;
+            z-index:1000 !important;
+            width:100% !important;
+            height:70px !important;
+            min-height:70px !important;
+            padding:0 40px !important;
+            display:flex !important;
+            align-items:center !important;
+            justify-content:space-between !important;
+            background:rgba(9,10,15,.88) !important;
+            border-bottom:1px solid rgba(255,255,255,.08) !important;
+            -webkit-backdrop-filter:blur(18px) !important;
+            backdrop-filter:blur(18px) !important;
+        }
+        .custom-navbar .brand-container{
+            width:230px !important;
+            min-width:230px !important;
+            height:70px !important;
+            display:flex !important;
+            align-items:center !important;
+            gap:12px !important;
+            margin:0 !important;
+            padding:0 !important;
+            flex-shrink:0 !important;
+        }
+        .custom-navbar .brand-logo-icon{
+            width:48px !important;
+            height:48px !important;
+            min-width:48px !important;
+            margin:0 !important;
+            padding:0 !important;
+        }
+        .custom-navbar .brand-logo-icon img{
+            width:46px !important;
+            height:46px !important;
+            max-width:46px !important;
+            max-height:46px !important;
+            object-fit:contain !important;
+        }
+        .custom-navbar .brand-text{
+            margin:0 !important;
+            padding:0 !important;
+        }
+        .custom-navbar .brand-text span{
+            font-size:.95rem !important;
+            line-height:1.1 !important;
+            font-weight:800 !important;
+            margin:0 !important;
+        }
+        .custom-navbar .brand-text small{
+            font-size:.65rem !important;
+            line-height:1.1 !important;
+            font-weight:700 !important;
+            margin:4px 0 0 !important;
         }
 
-        .nav-links{
-            display:flex;
-            align-items:center;
-            gap:4px !important;
-            padding:6px;
-            border:1px solid rgba(255,255,255,.10);
-            border-radius:999px;
-            background:rgba(255,255,255,.055);
-            -webkit-backdrop-filter:blur(18px) saturate(150%);
-            backdrop-filter:blur(18px) saturate(150%);
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,.08),
-                0 10px 30px rgba(0,0,0,.20);
+        /* Dock sentiasa tepat di tengah skrin, bukan ikut lebar kiri/kanan */
+        .custom-navbar .nav-links{
+            box-sizing:border-box !important;
+            position:absolute !important;
+            left:50% !important;
+            top:50% !important;
+            transform:translate(-50%,-50%) !important;
+            width:590px !important;
+            height:48px !important;
+            padding:5px !important;
+            margin:0 !important;
+            display:grid !important;
+            grid-template-columns:repeat(7,1fr) !important;
+            gap:3px !important;
+            align-items:center !important;
+            border:1px solid rgba(255,255,255,.10) !important;
+            border-radius:999px !important;
+            background:rgba(255,255,255,.055) !important;
+            -webkit-backdrop-filter:blur(18px) saturate(150%) !important;
+            backdrop-filter:blur(18px) saturate(150%) !important;
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.20) !important;
         }
-
-        .nav-links a{
-            position:relative;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            min-height:36px;
-            padding:8px 15px;
-            border:1px solid transparent;
-            border-radius:999px;
-            color:#94a3b8;
-            text-decoration:none;
-            font-size:.84rem;
-            font-weight:700;
-            line-height:1;
-            transition:
-                color .22s ease,
-                background .22s ease,
-                border-color .22s ease,
-                box-shadow .22s ease,
-                transform .22s ease;
+        .custom-navbar .nav-links a{
+            box-sizing:border-box !important;
+            width:100% !important;
+            height:36px !important;
+            min-width:0 !important;
+            padding:0 6px !important;
+            margin:0 !important;
+            display:flex !important;
+            align-items:center !important;
+            justify-content:center !important;
+            border:1px solid transparent !important;
+            border-radius:999px !important;
+            color:#94a3b8 !important;
+            text-decoration:none !important;
+            font-size:.82rem !important;
+            line-height:1 !important;
+            font-weight:700 !important;
+            white-space:nowrap !important;
+            transform:none !important;
+            transition:background .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease !important;
         }
-
-        .nav-links a:hover{
-            color:#fff;
-            background:rgba(255,255,255,.07);
-            border-color:rgba(255,255,255,.08);
-            box-shadow:0 0 18px rgba(99,102,241,.16);
-            transform:translateY(-1px);
+        .custom-navbar .nav-links a:hover{
+            color:#fff !important;
+            background:rgba(255,255,255,.07) !important;
+            border-color:rgba(255,255,255,.08) !important;
+            box-shadow:0 0 16px rgba(99,102,241,.16) !important;
+            transform:none !important;
         }
-
-        .nav-links a.active{
-            color:#fff;
-            background:linear-gradient(
-                135deg,
-                rgba(99,102,241,.24),
-                rgba(168,85,247,.18)
-            );
-            border-color:rgba(129,140,248,.34);
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,.10),
-                0 0 20px rgba(99,102,241,.22);
+        .custom-navbar .nav-links a.active{
+            color:#fff !important;
+            background:linear-gradient(135deg,rgba(99,102,241,.24),rgba(168,85,247,.18)) !important;
+            border-color:rgba(129,140,248,.34) !important;
+            box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 0 18px rgba(99,102,241,.20) !important;
+            transform:none !important;
         }
-
-        @media (max-width:991.98px){
-            .nav-links{
-                display:none !important;
-            }
+        .custom-navbar .btn-book-now{
+            box-sizing:border-box !important;
+            width:116px !important;
+            min-width:116px !important;
+            height:38px !important;
+            padding:0 !important;
+            margin:0 !important;
+            display:flex !important;
+            align-items:center !important;
+            justify-content:center !important;
+            flex-shrink:0 !important;
+            border:1px solid rgba(255,255,255,.12) !important;
+            border-radius:999px !important;
+            background:rgba(255,255,255,.04) !important;
+            color:#f8fafc !important;
+            font-size:.85rem !important;
+            font-weight:700 !important;
+            line-height:1 !important;
+            text-decoration:none !important;
+            white-space:nowrap !important;
+            transform:none !important;
+        }
+        .custom-navbar .btn-book-now:hover{
+            background:#6366f1 !important;
+            border-color:#6366f1 !important;
+            color:#fff !important;
+            box-shadow:0 0 22px rgba(99,102,241,.42) !important;
+            transform:none !important;
+        }
+        @media(max-width:991.98px){
+            .custom-navbar{padding:0 20px !important;}
+            .custom-navbar .nav-links{display:none !important;}
+            .custom-navbar .brand-container{width:auto !important;min-width:0 !important;}
         }
 
     </style>
@@ -425,7 +518,11 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <a href="auth/login.php" class="btn-book-now">Book Now</a>
+            <?php if (isset($_SESSION['user'])): ?>
+                <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
+            <?php else: ?>
+                <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
+            <?php endif; ?>
         </div>
     </div>
 
