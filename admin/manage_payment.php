@@ -1398,6 +1398,43 @@ $result = mysqli_query(
         .page-btn:hover:not(:disabled) { background: #2563eb !important; border-color: #2563eb !important; }
         .page-btn:disabled { background: #111827 !important; color: #64748b !important; }
         #noResults { background: #0d1a2d !important; color: #94a3b8 !important; }
+
+        /* CLEAN METHOD + BOOKING STATUS */
+        .payment-method {
+            color: #ffffff !important;
+            font-weight: 700;
+        }
+
+        .booking-status-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .booking-manage-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 11px;
+            background: rgba(59, 130, 246, 0.10);
+            border: 1px solid rgba(96, 165, 250, 0.35);
+            border-radius: 9px;
+            color: #60a5fa !important;
+            text-decoration: none !important;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: 0.2s ease;
+        }
+
+        .booking-manage-btn:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
 </style>
 
 
@@ -2250,7 +2287,7 @@ $result = mysqli_query(
 
 
 
-                                <span class="fw-semibold" style="color: #000000 !important;">
+                                <span class="payment-method">
 
                                     <?= htmlspecialchars(
 
@@ -2414,49 +2451,19 @@ $result = mysqli_query(
 
 
 
-                                <span
+                                <div class="booking-status-box">
 
-                                    class="status-badge <?= $bookingStatusClass ?>"
+                                    <span class="status-badge <?= $bookingStatusClass ?>">
+                                        <i class="fa-solid <?= $bookingStatusIcon ?>"></i>
+                                        <?= htmlspecialchars($r['booking_status']) ?>
+                                    </span>
 
-                                >
+                                    <a href="manage_booking.php" class="booking-manage-btn">
+                                        Manage
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </a>
 
-
-
-                                    <i
-
-                                        class="fa-solid <?= $bookingStatusIcon ?>"
-
-                                    ></i>
-
-
-
-                                    <?= htmlspecialchars(
-
-                                        $r['booking_status']
-
-                                    ) ?>
-
-
-
-                                </span>
-
-
-
-                                <br>
-
-
-
-                                <a
-
-                                    href="manage_booking.php"
-
-                                    class="manage-link"
-
-                                >
-
-                                    Manage →
-
-                                </a>
+                                </div>
 
 
 
