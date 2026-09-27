@@ -418,7 +418,7 @@ include __DIR__ . '/config/db.php';
                 <tbody>
                     <tr>
                         <td>Badminton court, per court per hour</td>
-                        <td>RM 15.00</td>
+                        <td>RM 10.00</td>
                     </tr>
                 </tbody>
             </table>
