@@ -4,13 +4,9 @@ session_start();
 
 include __DIR__ . '/../config/db.php';
 
-
-
 // Waktu tempatan Malaysia untuk semakan slot yang sudah lepas.
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
-
-
 
 if (!isset($_SESSION['user'])) {
 
@@ -20,11 +16,7 @@ if (!isset($_SESSION['user'])) {
 
 }
 
-
-
 $user_id = (int)$_SESSION['user']['id'];
-
-
 
 /* USER MESSAGE NOTIFICATION */
 
@@ -66,8 +58,6 @@ if ($stmtNoti) {
 
 }
 
-
-
 /* PILIHAN USER */
 
 $selected_date = $_POST['date'] ?? $_GET['date'] ?? date('Y-m-d');
@@ -78,13 +68,9 @@ $selected_time = $_POST['time'] ?? $_GET['time'] ?? '18:00:00';
 
 $court_page = isset($_POST['court_page']) ? (int)$_POST['court_page'] : (isset($_GET['court_page']) ? (int)$_GET['court_page'] : 1);
 
-
-
 /* VALIDATE DATE */
 
 $date_object = DateTime::createFromFormat('Y-m-d', $selected_date);
-
-
 
 if (
 
@@ -100,21 +86,15 @@ if (
 
 }
 
-
-
 if ($selected_duration < 1) $selected_duration = 1;
 
 if ($selected_duration > 4) $selected_duration = 4;
 
 if ($court_page < 1) $court_page = 1;
 
-
-
 // Slot yang masa mula sudah lepas pada hari ini tidak boleh ditempah.
 
 $selected_slot_is_past = strtotime($selected_date . ' ' . substr($selected_time, 0, 5)) <= time();
-
-
 
 /* BOOK COURT */
 
@@ -128,13 +108,9 @@ if (isset($_POST['court'])) {
 
     $duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 1;
 
-
-
     if ($duration < 1) $duration = 1;
 
     if ($duration > 4) $duration = 4;
-
-
 
     if (
 
@@ -158,8 +134,6 @@ if (isset($_POST['court'])) {
 
     }
 
-
-
     // Jangan benarkan booking slot yang sudah lepas untuk hari semasa.
 
     if (strtotime($booking_date . ' ' . substr($booking_time, 0, 5)) <= time()) {
@@ -178,8 +152,6 @@ if (isset($_POST['court'])) {
 
     }
 
-
-
     $url = "confirm_booking.php"
 
         . "?date=" . urlencode($booking_date)
@@ -190,21 +162,15 @@ if (isset($_POST['court'])) {
 
         . "&court_id=" . urlencode($court_id);
 
-
-
     header("Location: " . $url);
 
     exit();
 
 }
 
-
-
 /* COURT PAGINATION */
 
 $limit = 6;
-
-
 
 /* DISABLED & DELETED TAK DIKIRA */
 
@@ -218,19 +184,13 @@ $count_sql = "
 
 ";
 
-
-
 $count_result = mysqli_query($conn, $count_sql);
 
 $count_row = mysqli_fetch_assoc($count_result);
 
-
-
 $total_courts = (int)$count_row['total'];
 
 $total_pages = max(1, (int)ceil($total_courts / $limit));
-
-
 
 if ($court_page > $total_pages) {
 
@@ -238,11 +198,7 @@ if ($court_page > $total_pages) {
 
 }
 
-
-
 $offset = ($court_page - 1) * $limit;
-
-
 
 /* COURT + STATUS IKUT TARIKH */
 
@@ -251,8 +207,6 @@ $offset = ($court_page - 1) * $limit;
 $selected_start = $selected_date . ' ' . substr($selected_time, 0, 5) . ':00';
 
 $selected_end = date('Y-m-d H:i:s', strtotime($selected_start . " +{$selected_duration} hours"));
-
-
 
 $court_sql = "
 
@@ -354,11 +308,7 @@ $court_sql = "
 
 ";
 
-
-
 $court_stmt = mysqli_prepare($conn, $court_sql);
-
-
 
 mysqli_stmt_bind_param(
 
@@ -390,21 +340,15 @@ mysqli_stmt_bind_param(
 
 );
 
-
-
 mysqli_stmt_execute($court_stmt);
 
 $result = mysqli_stmt_get_result($court_stmt);
 
 ?>
 
-
-
 <!DOCTYPE html>
 
 <html lang="ms">
-
-
 
 <head>
 
@@ -412,11 +356,7 @@ $result = mysqli_stmt_get_result($court_stmt);
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-
 <title>Book Court - Badminton Kampung Panji</title>
-
-
 
 <!-- Bootstrap 5 CSS -->
 
@@ -428,8 +368,6 @@ $result = mysqli_stmt_get_result($court_stmt);
 
 >
 
-
-
 <!-- Font Awesome -->
 
 <link
@@ -440,8 +378,6 @@ $result = mysqli_stmt_get_result($court_stmt);
 
 >
 
-
-
 <!-- Google Fonts -->
 
 <link
@@ -451,8 +387,6 @@ $result = mysqli_stmt_get_result($court_stmt);
     rel="stylesheet"
 
 >
-
-
 
 <style>
 
@@ -474,15 +408,11 @@ $result = mysqli_stmt_get_result($court_stmt);
 
 }
 
-
-
 html {
 
     scroll-behavior: smooth;
 
 }
-
-
 
 body {
 
@@ -499,8 +429,6 @@ body {
     padding: 0;
 
 }
-
-
 
 /* TOP BAR */
 
@@ -525,8 +453,6 @@ body {
     backdrop-filter: blur(10px);
 
 }
-
-
 
 /* NAVBAR */
 
@@ -554,8 +480,6 @@ body {
 
 }
 
-
-
 .brand-container {
 
     display: flex;
@@ -568,38 +492,59 @@ body {
 
 }
 
-
-
 .brand-logo-icon {
+
     width: 53px;
+
     height: 53px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     flex-shrink: 0;
+
     background: transparent;
+
     border: none;
+
     border-radius: 10px;
+
     overflow: hidden;
+
     margin: 0;
+
     padding: 0;
+
 }
 
 .brand-logo-icon img {
+
     width: 51px;
+
     height: 51px;
+
     display: block;
+
     object-fit: contain;
+
     object-position: center;
+
     background: transparent;
+
     border-radius: 9px;
+
     border: none;
+
     margin: 0;
+
     padding: 0;
+
     filter: none;
+
 }
-
-
 
 .brand-text span {
 
@@ -617,8 +562,6 @@ body {
 
 }
 
-
-
 .brand-text small {
 
     font-size: 0.65rem;
@@ -633,8 +576,6 @@ body {
 
 }
 
-
-
 .nav-links {
 
     display: flex;
@@ -644,8 +585,6 @@ body {
     align-items: center;
 
 }
-
-
 
 .nav-links a {
 
@@ -661,8 +600,6 @@ body {
 
 }
 
-
-
 .nav-links a:hover,
 
 .nav-links a.active {
@@ -670,8 +607,6 @@ body {
     color: var(--text-main);
 
 }
-
-
 
 .message-nav {
 
@@ -684,8 +619,6 @@ body {
     gap: 6px;
 
 }
-
-
 
 .message-badge {
 
@@ -715,8 +648,6 @@ body {
 
 }
 
-
-
 .btn-logout {
 
     border: 1px solid rgba(239, 68, 68, 0.3);
@@ -739,8 +670,6 @@ body {
 
 }
 
-
-
 .btn-logout:hover {
 
     background: #ef4444;
@@ -753,8 +682,6 @@ body {
 
 }
 
-
-
 /* HERO */
 
 .hero {
@@ -766,8 +693,6 @@ body {
     padding: 0 20px;
 
 }
-
-
 
 .hero h1 {
 
@@ -783,8 +708,6 @@ body {
 
 }
 
-
-
 .hero p {
 
     color: var(--text-muted);
@@ -797,8 +720,6 @@ body {
 
 }
 
-
-
 /* CONTAINER */
 
 .wrap {
@@ -810,8 +731,6 @@ body {
     padding: 0 20px;
 
 }
-
-
 
 .panel {
 
@@ -831,8 +750,6 @@ body {
 
 }
 
-
-
 .step {
 
     font-size: 0.72rem;
@@ -848,8 +765,6 @@ body {
     color: #818cf8;
 
 }
-
-
 
 /* DATE - KEKAL MACAM ASAL */
 
@@ -868,8 +783,6 @@ body {
     scrollbar-color: rgba(255,255,255,0.2) transparent;
 
 }
-
-
 
 .date-card {
 
@@ -893,15 +806,11 @@ body {
 
 }
 
-
-
 .date-card input[type="radio"] {
 
     display: none;
 
 }
-
-
 
 .date-card:hover {
 
@@ -913,15 +822,11 @@ body {
 
 }
 
-
-
 .date-card:active {
 
     transform: scale(0.96);
 
 }
-
-
 
 .date-card.active {
 
@@ -943,8 +848,6 @@ body {
 
 }
 
-
-
 /* DURATION & TIME */
 
 .time-slots {
@@ -956,8 +859,6 @@ body {
     flex-wrap: wrap;
 
 }
-
-
 
 .time-slot-btn {
 
@@ -981,15 +882,11 @@ body {
 
 }
 
-
-
 .time-slot-btn input[type="radio"] {
 
     display: none;
 
 }
-
-
 
 .time-slot-btn:hover {
 
@@ -1001,15 +898,11 @@ body {
 
 }
 
-
-
 .time-slot-btn:active {
 
     transform: scale(0.95);
 
 }
-
-
 
 .time-slot-btn.active {
 
@@ -1022,8 +915,6 @@ body {
     box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
 
 }
-
-
 
 /* COURT TABLE */
 
@@ -1040,8 +931,6 @@ body {
     border: 1px solid var(--credix-border);
 
 }
-
-
 
 .table-custom th {
 
@@ -1063,8 +952,6 @@ body {
 
 }
 
-
-
 .table-custom td {
 
     padding: 16px;
@@ -1079,8 +966,6 @@ body {
 
 }
 
-
-
 .table-custom tr.unavailable td {
 
     opacity: 0.4;
@@ -1088,8 +973,6 @@ body {
     background: rgba(0, 0, 0, 0.2);
 
 }
-
-
 
 .btn-book {
 
@@ -1111,8 +994,6 @@ body {
 
 }
 
-
-
 .btn-book:hover {
 
     opacity: 0.92;
@@ -1122,8 +1003,6 @@ body {
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 
 }
-
-
 
 /* COURT PAGINATION */
 
@@ -1138,8 +1017,6 @@ body {
     margin-top: 24px;
 
 }
-
-
 
 .court-page-btn {
 
@@ -1161,8 +1038,6 @@ body {
 
 }
 
-
-
 .court-page-btn:hover:not(:disabled) {
 
     background: linear-gradient(135deg, #6366f1, #a855f7);
@@ -1173,8 +1048,6 @@ body {
 
 }
 
-
-
 .court-page-btn:disabled {
 
     opacity: 0.35;
@@ -1182,8 +1055,6 @@ body {
     cursor: not-allowed;
 
 }
-
-
 
 .court-page-info {
 
@@ -1195,8 +1066,6 @@ body {
 
 }
 
-
-
 hr {
 
     border-color: var(--credix-border) !important;
@@ -1204,8 +1073,6 @@ hr {
     opacity: 1;
 
 }
-
-
 
 .error-box {
 
@@ -1227,8 +1094,6 @@ hr {
 
 }
 
-
-
 @media (max-width: 768px) {
 
     .custom-navbar {
@@ -1237,15 +1102,11 @@ hr {
 
     }
 
-
-
     .panel {
 
         padding: 25px 18px;
 
     }
-
-
 
     .hero h1 {
 
@@ -1253,15 +1114,11 @@ hr {
 
     }
 
-
-
     .top-announcement-bar {
 
         padding: 10px 20px;
 
     }
-
-
 
     .court-page-btn {
 
@@ -1271,149 +1128,56 @@ hr {
 
 }
 
+/* NAVBAR - SAME STYLE AS FEEDBACK PAGE */
+.custom-navbar{height:78px;padding:10px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.09);background:rgba(9,10,15,.84);backdrop-filter:blur(18px);position:sticky;top:0;z-index:30}
+.brand-container{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand-logo-icon{width:53px;height:53px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:transparent;border:none;border-radius:10px;overflow:hidden;margin:0;padding:0}
+.brand-logo-icon img{width:51px;height:51px;display:block;object-fit:contain;object-position:center;background:transparent;border-radius:9px;border:none;margin:0;padding:0;filter:none}
+.brand-text{display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.brand-text span{display:block;color:#f8fafc;font-size:.95rem;font-weight:800;letter-spacing:.5px;line-height:1.1}
+.brand-text small{display:block;color:#a855f7;font-size:.65rem;font-weight:700;letter-spacing:1.5px;line-height:1;margin-top:5px;text-transform:uppercase}
+.nav-center{display:flex;gap:34px;align-items:center;margin-left:auto;margin-right:auto;white-space:nowrap}
+.nav-center a{color:#94a3b8;text-decoration:none;font-size:.84rem;font-weight:700;transition:color .22s ease,transform .22s ease}
+.nav-center a:hover{color:#fff;transform:translateY(-1px)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.nav-btn{height:40px;padding:0 14px;border:1px solid rgba(255,255,255,.09);border-radius:50px;background:rgba(255,255,255,.035);color:#dbe3ef;text-decoration:none;display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;transition:.22s}
+.nav-btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.08);border-color:rgba(99,102,241,.25);color:#fff;box-shadow:0 7px 20px rgba(99,102,241,.10)}
+.nav-btn.active{background:rgba(99,102,241,.11);border-color:rgba(99,102,241,.25);color:#c4b5fd}
+.nav-btn.logout{border-color:rgba(251,113,133,.2);color:#fda4af;background:rgba(251,113,133,.06)}
+.nav-btn.logout:hover{background:rgba(251,113,133,.11);border-color:rgba(251,113,133,.3)}
+@media(max-width:900px){.nav-center{gap:18px}.nav-center a{font-size:.72rem}}
+@media(max-width:768px){.custom-navbar{height:70px;padding:8px 16px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text{display:none}.nav-center{display:none}.nav-btn span{display:none}.nav-btn{width:40px;padding:0;justify-content:center}.nav-actions{gap:5px}}
+
 </style>
 
 </head>
 
-
-
 <body>
-
-
-
-<!-- TOP BAR -->
-
-<div class="top-announcement-bar d-none d-md-flex">
-
-    <div>
-
-        <i class="fa-solid fa-bolt me-1 text-indigo"></i>
-
-        CALL +60 11 6351 9188
-
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-
-        Dewan Kampung Panji, Kuala Terengganu
-
-    </div>
-
-
-
-    <div>
-
-        <?php if (isset($_SESSION['user'])) { ?>
-
-            <span class="text-light fw-bold">
-
-                <?php echo htmlspecialchars($_SESSION['user']['name']); ?>
-
-            </span>
-
-        <?php } ?>
-
-    </div>
-
-</div>
-
-
 
 <!-- NAVBAR -->
 
 <nav class="custom-navbar">
-
-
-
     <a href="dashboard.php" class="brand-container">
-
-        <div class="brand-logo-icon">
-            <img src="../logo-badminton.png" alt="Badminton Kampung Panji">
-        </div>
-
-
-
-        <div class="brand-text">
-
-            <span>BADMINTON</span>
-
-            <small>Kampung Panji</small>
-
-        </div>
-
+        <div class="brand-logo-icon"><img src="../logo-badminton.png" alt="Badminton Kampung Panji"></div>
+        <div class="brand-text"><span>BADMINTON</span><small>KAMPUNG PANJI</small></div>
     </a>
-
-
-
-    <div class="nav-links d-none d-md-flex">
-
+    <div class="nav-center">
         <a href="feedback_report.php">Feedback</a>
-
-        <a href="message.php" class="message-nav">
-
-            Message
-
-            <?php if ($unread_reply_count > 0) { ?>
-
-                <span class="message-badge"><?php echo $unread_reply_count > 99 ? '99+' : $unread_reply_count; ?></span>
-
-            <?php } ?>
-
-        </a>
-
+        <a href="message.php" class="message-nav">Message<?php if($unread_reply_count>0){ ?><span class="message-badge"><?php echo $unread_reply_count>99?'99+':$unread_reply_count; ?></span><?php } ?></a>
         <a href="my_booking.php">My Booking</a>
-
         <a href="profile.php">Profile</a>
-
     </div>
-
-
-
-    <div class="d-flex align-items-center gap-3">
-
-
-
-        <a
-
-            href="dashboard.php"
-
-            class="btn btn-dark rounded-pill fw-bold btn-sm px-3 py-2"
-
-            style="border:1px solid var(--credix-border);"
-
-        >
-
-            <i class="fa-solid fa-gauge me-1"></i>
-
-            Dashboard
-
-        </a>
-
-
-
-        <a href="../auth/logout.php" class="btn-logout">
-
-            <i class="fa-solid fa-right-from-bracket me-1"></i>
-
-            Log Out
-
-        </a>
-
-
-
+    <div class="nav-actions">
+        <a href="dashboard.php" class="nav-btn active"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+        <a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
     </div>
-
-
-
 </nav>
-
-
 
 <!-- HERO -->
 
 <div class="hero">
 
     <h1>Book your court.</h1>
-
-
 
     <p>
 
@@ -1427,17 +1191,11 @@ hr {
 
 </div>
 
-
-
 <!-- BOOKING -->
 
 <div class="wrap">
 
-
-
 <?php if (isset($_GET['error'])) { ?>
-
-
 
     <div class="error-box">
 
@@ -1447,19 +1205,11 @@ hr {
 
     </div>
 
-
-
 <?php } ?>
-
-
 
 <div class="panel">
 
-
-
 <form method="POST" action="dashboard.php" id="bookingForm">
-
-
 
 <!-- STEP 1 - DATE -->
 
@@ -1469,19 +1219,11 @@ hr {
 
 </div>
 
-
-
 <div class="dates mb-4">
-
-
 
 <?php
 
-
-
 for ($i = 0; $i < 14; $i++) {
-
-
 
     $date_val = date(
 
@@ -1490,8 +1232,6 @@ for ($i = 0; $i < 14; $i++) {
         strtotime("+$i days")
 
     );
-
-
 
     $day_name = ($i == 0)
 
@@ -1509,8 +1249,6 @@ for ($i = 0; $i < 14; $i++) {
 
         );
 
-
-
     $day_num = date(
 
         'd',
@@ -1518,8 +1256,6 @@ for ($i = 0; $i < 14; $i++) {
         strtotime("+$i days")
 
     );
-
-
 
     $month_short = date(
 
@@ -1529,15 +1265,11 @@ for ($i = 0; $i < 14; $i++) {
 
     );
 
-
-
     $checked = ($date_val === $selected_date)
 
         ? 'checked'
 
         : '';
-
-
 
     $active_class = ($date_val === $selected_date)
 
@@ -1545,11 +1277,7 @@ for ($i = 0; $i < 14; $i++) {
 
         : '';
 
-
-
 ?>
-
-
 
 <label
 
@@ -1558,8 +1286,6 @@ for ($i = 0; $i < 14; $i++) {
     onclick="updateDateCard(this)"
 
 >
-
-
 
     <input
 
@@ -1574,8 +1300,6 @@ for ($i = 0; $i < 14; $i++) {
         required
 
     >
-
-
 
     <span
 
@@ -1597,8 +1321,6 @@ for ($i = 0; $i < 14; $i++) {
 
     </span>
 
-
-
     <strong
 
         style="
@@ -1619,8 +1341,6 @@ for ($i = 0; $i < 14; $i++) {
 
     </strong>
 
-
-
     <span
 
         style="
@@ -1637,23 +1357,13 @@ for ($i = 0; $i < 14; $i++) {
 
     </span>
 
-
-
 </label>
-
-
 
 <?php } ?>
 
-
-
 </div>
 
-
-
 <hr class="my-4">
-
-
 
 <!-- STEP 2 - DURATION -->
 
@@ -1663,19 +1373,11 @@ for ($i = 0; $i < 14; $i++) {
 
 </div>
 
-
-
 <div class="time-slots mb-4">
-
-
 
 <?php
 
-
-
 for ($d = 1; $d <= 4; $d++) {
-
-
 
     $duration_checked =
 
@@ -1685,8 +1387,6 @@ for ($d = 1; $d <= 4; $d++) {
 
         : '';
 
-
-
     $duration_active =
 
         ($d === $selected_duration)
@@ -1695,11 +1395,7 @@ for ($d = 1; $d <= 4; $d++) {
 
         : '';
 
-
-
 ?>
-
-
 
 <label
 
@@ -1708,8 +1404,6 @@ for ($d = 1; $d <= 4; $d++) {
     onclick="updateDurationCard(this)"
 
 >
-
-
 
     <input
 
@@ -1725,29 +1419,17 @@ for ($d = 1; $d <= 4; $d++) {
 
     >
 
-
-
     <?php echo $d; ?>
 
     Hour<?php echo $d > 1 ? 's' : ''; ?>
 
-
-
 </label>
-
-
 
 <?php } ?>
 
-
-
 </div>
 
-
-
 <hr class="my-4">
-
-
 
 <!-- STEP 3 - TIME -->
 
@@ -1757,15 +1439,9 @@ for ($d = 1; $d <= 4; $d++) {
 
 </div>
 
-
-
 <div class="time-slots mb-4">
 
-
-
 <?php
-
-
 
 $times = [
 
@@ -1785,15 +1461,9 @@ $times = [
 
 ];
 
-
-
 foreach ($times as $t) {
 
-
-
     $time_value = $t . ':00';
-
-
 
     $t_checked =
 
@@ -1803,8 +1473,6 @@ foreach ($times as $t) {
 
         : '';
 
-
-
     $t_active =
 
         ($time_value === $selected_time)
@@ -1813,13 +1481,9 @@ foreach ($times as $t) {
 
         : '';
 
-
-
     $slot_timestamp = strtotime($selected_date . ' ' . $t);
 
     $time_is_past = ($slot_timestamp <= time());
-
-
 
     // Slot lama tidak boleh kekal selected.
 
@@ -1831,11 +1495,7 @@ foreach ($times as $t) {
 
     }
 
-
-
 ?>
-
-
 
 <label
 
@@ -1846,8 +1506,6 @@ foreach ($times as $t) {
     <?php echo $time_is_past ? 'style="opacity:.45;cursor:not-allowed;"' : ''; ?>
 
 >
-
-
 
     <input
 
@@ -1865,8 +1523,6 @@ foreach ($times as $t) {
 
     >
 
-
-
     <?php echo $t; ?>
 
     <?php if ($time_is_past): ?>
@@ -1875,23 +1531,13 @@ foreach ($times as $t) {
 
     <?php endif; ?>
 
-
-
 </label>
-
-
 
 <?php } ?>
 
-
-
 </div>
 
-
-
 <hr class="my-4">
-
-
 
 <!-- STEP 4 - COURT -->
 
@@ -1900,8 +1546,6 @@ foreach ($times as $t) {
     4. Choose a court
 
 </div>
-
-
 
 <input
 
@@ -1915,23 +1559,13 @@ foreach ($times as $t) {
 
 >
 
-
-
 <div class="table-responsive">
-
-
 
 <table class="table table-custom align-middle mb-0">
 
-
-
 <thead>
 
-
-
 <tr>
-
-
 
     <th style="width:80px;">
 
@@ -1939,15 +1573,11 @@ foreach ($times as $t) {
 
     </th>
 
-
-
     <th>
 
         Nama Gelanggang
 
     </th>
-
-
 
     <th
 
@@ -1961,8 +1591,6 @@ foreach ($times as $t) {
 
     </th>
 
-
-
     <th
 
         style="width:160px;"
@@ -1974,8 +1602,6 @@ foreach ($times as $t) {
         Status
 
     </th>
-
-
 
     <th
 
@@ -1989,27 +1615,15 @@ foreach ($times as $t) {
 
     </th>
 
-
-
 </tr>
-
-
 
 </thead>
 
-
-
 <tbody>
-
-
 
 <?php
 
-
-
 while ($row = mysqli_fetch_assoc($result)) {
-
-
 
     $is_available =
 
@@ -2021,8 +1635,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         ((int)$row['slot_booked'] === 0);
 
-
-
     $row_class =
 
         $is_available
@@ -2031,15 +1643,9 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         : 'unavailable';
 
-
-
 ?>
 
-
-
 <tr class="<?php echo $row_class; ?>">
-
-
 
 <!-- ID -->
 
@@ -2055,17 +1661,11 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 </td>
 
-
-
 <!-- COURT -->
 
 <td>
 
-
-
 <div class="d-flex align-items-center gap-3">
-
-
 
 <img
 
@@ -2091,8 +1691,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
 <span class="fw-bold fs-6">
 
     <?php
@@ -2107,15 +1705,9 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 </span>
 
-
-
 </div>
 
-
-
 </td>
-
-
 
 <!-- PRICE -->
 
@@ -2129,17 +1721,11 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 </td>
 
-
-
 <!-- STATUS -->
 
 <td class="text-center">
 
-
-
 <?php if ($is_available) { ?>
-
-
 
 <span
 
@@ -2155,21 +1741,13 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     <i class="fa-solid fa-circle-check me-1"></i>
 
     Available
 
-
-
 </span>
 
-
-
 <?php } else { ?>
-
-
 
 <span
 
@@ -2185,35 +1763,21 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     <i class="fa-solid fa-circle-xmark me-1"></i>
 
     Not Available
 
-
-
 </span>
-
-
 
 <?php } ?>
 
-
-
 </td>
-
-
 
 <!-- ACTION -->
 
 <td class="text-end">
 
-
-
 <?php if ($is_available) { ?>
-
-
 
 <button
 
@@ -2227,21 +1791,13 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     <i class="fa-solid fa-calendar-check me-1"></i>
 
     Book Court
 
-
-
 </button>
 
-
-
 <?php } else { ?>
-
-
 
 <button
 
@@ -2267,49 +1823,27 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     Unavailable
-
-
 
 </button>
 
-
-
 <?php } ?>
-
-
 
 </td>
 
-
-
 </tr>
-
-
 
 <?php } ?>
 
-
-
 </tbody>
-
-
 
 </table>
 
-
-
 </div>
-
-
 
 <!-- BACK / NEXT COURT -->
 
 <div class="court-pagination">
-
-
 
 <button
 
@@ -2323,21 +1857,13 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     <i class="fa-solid fa-arrow-left me-2"></i>
 
     Back
 
-
-
 </button>
 
-
-
 <span class="court-page-info">
-
-
 
     Page
 
@@ -2347,11 +1873,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <?php echo $total_pages; ?>
 
-
-
 </span>
-
-
 
 <button
 
@@ -2365,33 +1887,19 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 >
 
-
-
     Next
-
-
 
     <i class="fa-solid fa-arrow-right ms-2"></i>
 
-
-
 </button>
 
-
-
 </div>
-
-
 
 </form>
 
-
-
 </div>
 
 </div>
-
-
 
 <!-- Bootstrap -->
 
@@ -2401,23 +1909,15 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 ></script>
 
-
-
 <script>
-
-
 
 /* DATE / DURATION / TIME - update without page reload or scrolling */
 
 let dashboardUpdating = false;
 
-
-
 async function refreshAvailability() {
 
     if (dashboardUpdating) return;
-
-
 
     const form = document.getElementById('bookingForm');
 
@@ -2425,13 +1925,9 @@ async function refreshAvailability() {
 
     if (courtPage) courtPage.value = 1;
 
-
-
     dashboardUpdating = true;
 
     const fixedScrollY = window.scrollY;
-
-
 
     try {
 
@@ -2449,11 +1945,7 @@ async function refreshAvailability() {
 
         });
 
-
-
         if (!response.ok) throw new Error('Unable to update availability.');
-
-
 
         const html = await response.text();
 
@@ -2461,17 +1953,11 @@ async function refreshAvailability() {
 
         const freshForm = doc.getElementById('bookingForm');
 
-
-
         if (!freshForm) throw new Error('Booking form not found.');
-
-
 
         // Replace only the form content. Browser page itself never reloads.
 
         form.innerHTML = freshForm.innerHTML;
-
-
 
         // Keep viewport at exactly the same position.
 
@@ -2491,8 +1977,6 @@ async function refreshAvailability() {
 
 }
 
-
-
 function updateDateCard(element) {
 
     document.querySelectorAll('.date-card').forEach(card => card.classList.remove('active'));
@@ -2511,8 +1995,6 @@ function updateDateCard(element) {
 
 }
 
-
-
 function updateDurationCard(element) {
 
     document.querySelectorAll('.duration-card').forEach(card => card.classList.remove('active'));
@@ -2530,8 +2012,6 @@ function updateDurationCard(element) {
     }
 
 }
-
-
 
 function updateStartTimeCard(element) {
 
@@ -2553,15 +2033,11 @@ function updateStartTimeCard(element) {
 
 }
 
-
-
 /* COURT BACK / NEXT - AJAX too, so page stays still */
 
 async function changeCourtPage(page) {
 
     if (page < 1 || dashboardUpdating) return;
-
-
 
     const courtPage = document.getElementById('courtPage');
 
@@ -2569,13 +2045,9 @@ async function changeCourtPage(page) {
 
     courtPage.value = page;
 
-
-
     dashboardUpdating = true;
 
     const fixedScrollY = window.scrollY;
-
-
 
     try {
 
@@ -2595,11 +2067,7 @@ async function changeCourtPage(page) {
 
         });
 
-
-
         if (!response.ok) throw new Error('Unable to change court page.');
-
-
 
         const html = await response.text();
 
@@ -2608,8 +2076,6 @@ async function changeCourtPage(page) {
         const freshForm = doc.getElementById('bookingForm');
 
         if (!freshForm) throw new Error('Booking form not found.');
-
-
 
         form.innerHTML = freshForm.innerHTML;
 
@@ -2629,11 +2095,7 @@ async function changeCourtPage(page) {
 
 }
 
-
-
 </script>
-
-
 
 </body>
 
