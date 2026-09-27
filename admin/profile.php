@@ -1,484 +1,968 @@
 <?php
+
 session_start();
+
 include __DIR__ . '/../config/db.php';
 
+
+
 // CHECK ADMIN LOGIN
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
+
     header("Location: ../auth/login.php");
+
     exit();
+
 }
 
+
+
 $admin_id = $_SESSION['user']['id'];
+
 $message = "";
+
 $error = "";
+
+
 
 /* ================= HANDLE ACTIONS ================= */
 
+
+
 // Edit Profile & Upload Picture
+
 if (isset($_POST['update_profile'])) {
+
     $name  = trim($_POST['name']);
+
     $email = trim($_POST['email']);
+
     $phone = trim($_POST['phone']);
+
     $notif = isset($_POST['notifications']) ? 1 : 0;
 
-    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
-        $upload_dir = "../uploads/";
-        
-        // Cipta folder uploads secara automatik jika belum wujud
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
 
-        $ext = pathinfo($_FILES['profile_pic']['name'], PATHINFO_EXTENSION);
-        $filename = "admin_" . $admin_id . "_" . time() . "." . $ext;
-        $target = $upload_dir . $filename;
-        
-        if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target)) {
-            mysqli_query($conn, "UPDATE users SET profile_pic = '$filename' WHERE id = '$admin_id'");
-            // Keep the logged-in session in sync immediately so every admin page
-            // shows the same newly uploaded avatar without needing to log in again.
-            $_SESSION['user']['profile_pic'] = $filename;
+
+    // Simpan gambar terus dalam MySQL supaya tidak hilang selepas Render restart/redeploy
+    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        $tmpFile = $_FILES['profile_pic']['tmp_name'];
+        $mimeType = mime_content_type($tmpFile);
+
+        if (!in_array($mimeType, $allowedTypes, true)) {
+            $error = "Format gambar tidak dibenarkan. Gunakan JPG, PNG, WEBP atau GIF.";
+        } elseif ($_FILES['profile_pic']['size'] > $maxSize) {
+            $error = "Saiz gambar terlalu besar. Maksimum 5MB.";
+        } else {
+            $imageData = file_get_contents($tmpFile);
+            $imgStmt = mysqli_prepare($conn, "UPDATE users SET profile_image = ?, profile_image_type = ? WHERE id = ?");
+            mysqli_stmt_bind_param($imgStmt, "bsi", $null, $mimeType, $admin_id);
+            mysqli_stmt_send_long_data($imgStmt, 0, $imageData);
+            mysqli_stmt_execute($imgStmt);
+            mysqli_stmt_close($imgStmt);
         }
     }
 
     $stmt = mysqli_prepare($conn, "UPDATE users SET name = ?, email = ?, phone = ?, sms_alerts = ? WHERE id = ?");
+
     mysqli_stmt_bind_param($stmt, "sssii", $name, $email, $phone, $notif, $admin_id);
 
+
+
     if (mysqli_stmt_execute($stmt)) {
+
         $_SESSION['user']['name'] = $name;
+
         $_SESSION['user']['email'] = $email;
+
         $message = "Profil berjaya dikemaskini!";
+
     } else {
+
         $error = "Gagal mengemaskini profil.";
+
     }
+
 }
+
+
 
 // Change Password
+
 if (isset($_POST['change_password'])) {
+
     $old_pass = $_POST['old_password'];
+
     $new_pass = $_POST['new_password'];
+
     $con_pass = $_POST['confirm_password'];
 
+
+
     $res = mysqli_query($conn, "SELECT password FROM users WHERE id = '$admin_id'");
+
     $row = mysqli_fetch_assoc($res);
 
+
+
     if ($row && password_verify($old_pass, $row['password'])) {
+
         if ($new_pass === $con_pass) {
+
             $hashed = password_hash($new_pass, PASSWORD_DEFAULT);
+
             mysqli_query($conn, "UPDATE users SET password = '$hashed' WHERE id = '$admin_id'");
+
             $message = "Kata laluan berjaya ditukar!";
+
         } else {
+
             $error = "Kata laluan baharu tidak sepadan.";
+
         }
+
     } else {
+
         $error = "Kata laluan semasa salah.";
+
     }
+
 }
+
+
 
 /* ================= FETCH ADMIN DATA ================= */
+
 $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE id = ?");
+
 mysqli_stmt_bind_param($stmt, "i", $admin_id);
+
 mysqli_stmt_execute($stmt);
+
 $admin = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
+// Avatar daripada database (kekal selepas logout/login dan Render restart)
+$profile_image_style = '';
+$profile_has_image = !empty($admin['profile_image']) && !empty($admin['profile_image_type']);
+if ($profile_has_image) {
+    $profile_image_style = "background-image:url('data:" . e($admin['profile_image_type']) . ";base64," . base64_encode($admin['profile_image']) . "');background-size:cover;background-position:center;";
+}
+
+
+
 // Activity History
+
 $activities = mysqli_query($conn, "SELECT * FROM bookings ORDER BY id DESC LIMIT 5");
 
+
+
 function e($value) {
+
     return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+
 }
+
 ?>
+
 <!DOCTYPE html>
+
 <html lang="ms">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Admin Profile - UI Style</title>
 
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+
+
 <style>
+
     :root {
+
         --bg-main: #f4f6f9;
+
         --surface: #ffffff;
+
         --border: #e5e7eb;
+
         --text-main: #111827;
+
         --text-muted: #6b7280;
+
         --primary: #0f172a;
+
         --accent: #2563eb;
+
         --accent-light: #eff6ff;
+
         --radius: 16px;
+
     }
+
+
 
     * { box-sizing: border-box; }
 
+
+
     body {
+
         margin: 0;
+
         background-color: var(--bg-main);
+
         font-family: 'Plus Jakarta Sans', sans-serif;
+
         color: var(--text-main);
+
         display: flex;
+
         min-height: 100vh;
+
         overflow-x: hidden;
+
     }
+
+
 
     /* Tetapan kontena utama supaya selari dengan skrol gaya dashboard */
+
     .main-content {
+
         margin-left: 260px;
+
         flex-grow: 1;
+
         padding: 30px;
+
         box-sizing: border-box;
+
         overflow-y: auto;
+
     }
+
+
 
     .content-area {
+
         display: flex;
+
         flex-direction: column;
+
         gap: 25px;
+
         max-width: 1200px;
+
         margin: 0 auto;
+
     }
+
+
 
     .top-nav {
+
         background: var(--surface);
+
         border: 1px solid var(--border);
+
         border-radius: var(--radius);
+
         padding: 15px 25px;
+
         display: flex;
+
         justify-content: space-between;
+
         align-items: center;
+
         margin-bottom: 25px;
+
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+
     }
+
     .brand {
+
         font-weight: 700;
+
         font-size: 1.1rem;
+
         display: flex;
+
         align-items: center;
+
         gap: 8px;
+
         color: var(--text-main);
+
         text-decoration: none;
+
     }
-    
+
+
+
     .nav-right {
+
         display: flex;
+
         align-items: center;
+
         gap: 15px;
+
     }
+
     .user-pill {
+
         display: flex;
+
         align-items: center;
+
         gap: 10px;
+
         background: var(--bg-main);
+
         padding: 6px 14px 6px 6px;
+
         border-radius: 50px;
+
         border: 1px solid var(--border);
+
     }
+
     .user-avatar-top {
+
         width: 32px;
+
         height: 32px;
+
         border-radius: 50%;
+
         background: var(--primary);
+
         color: #fff;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         font-weight: 700;
+
         font-size: 0.85rem;
+
         background-size: cover;
+
         background-position: center;
+
     }
+
     .user-name {
+
         font-size: 0.85rem;
+
         font-weight: 600;
+
     }
+
+
 
     .profile-header-card {
+
         background: var(--surface);
+
         border: 1px solid var(--border);
+
         border-radius: var(--radius);
+
         overflow: hidden;
+
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+
     }
+
     .banner {
+
         height: 140px;
+
         background: linear-gradient(135deg, #1e293b, #0f172a);
+
         position: relative;
+
         overflow: hidden;
+
     }
+
+
 
     .banner video {
+
         width: 100%;
+
         height: 100%;
+
         display: block;
+
         object-fit: cover;
+
         object-position: center;
+
     }
+
     .profile-info-section {
+
         padding: 0 30px 25px 30px;
+
         position: relative;
+
         display: flex;
+
         justify-content: space-between;
+
         align-items: flex-end;
+
     }
+
     .profile-avatar-large {
+
         width: 100px;
+
         height: 100px;
+
         border-radius: 50%;
+
         border: 4px solid var(--surface);
+
         background: var(--primary);
+
         color: #fff;
+
         position: absolute;
+
         top: -50px;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         font-size: 2.2rem;
+
         font-weight: 700;
+
         background-size: cover;
+
         background-position: center;
+
     }
+
     .profile-details {
+
         margin-left: 115px;
+
         padding-top: 10px;
+
     }
+
     .profile-details h2 {
+
         margin: 0 0 4px 0;
+
         font-size: 1.3rem;
+
     }
+
     .profile-details p {
+
         margin: 0;
+
         color: var(--text-muted);
+
         font-size: 0.85rem;
+
     }
+
+
 
     .grid-2 {
+
         display: grid;
+
         grid-template-columns: 1fr 1fr;
+
         gap: 25px;
+
     }
+
+
 
     .card {
+
         background: var(--surface);
+
         border: 1px solid var(--border);
+
         border-radius: var(--radius);
+
         padding: 25px;
+
         box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+
     }
+
     .card h3 {
+
         font-size: 1rem;
+
         margin-top: 0;
+
         margin-bottom: 20px;
+
         display: flex;
+
         align-items: center;
+
         gap: 8px;
+
     }
+
+
 
     .field {
+
         margin-bottom: 15px;
+
     }
+
     .field label {
+
         display: block;
+
         font-size: 0.8rem;
+
         font-weight: 600;
+
         color: var(--text-muted);
+
         margin-bottom: 6px;
+
     }
+
     .form-control {
+
         width: 100%;
+
         padding: 10px 14px;
+
         border: 1px solid var(--border);
+
         border-radius: 10px;
+
         font-family: inherit;
+
         font-size: 0.9rem;
+
         background: #fdfdfd;
+
     }
+
     .form-control:focus {
+
         outline: none;
+
         border-color: var(--accent);
+
         background: #fff;
+
     }
+
+
 
     .btn {
+
         background: var(--primary);
+
         color: #fff;
+
         border: none;
+
         padding: 10px 20px;
+
         border-radius: 10px;
+
         font-weight: 600;
+
         font-size: 0.9rem;
+
         cursor: pointer;
+
         width: 100%;
+
         transition: 0.2s;
+
         text-decoration: none;
+
         display: inline-block;
+
     }
+
     .btn:hover { background: var(--accent); color: #fff; }
-    
+
+
+
     .btn-danger-custom {
+
         background: #dc2626;
+
         color: #fff;
+
         padding: 7px 14px;
+
         border-radius: 8px;
+
         font-size: 0.85rem;
+
         font-weight: 600;
+
         text-decoration: none;
+
         display: inline-flex;
+
         align-items: center;
+
         gap: 6px;
+
         transition: 0.2s;
+
     }
+
     .btn-danger-custom:hover { background: #b91c1c; }
 
-    .alert {
-        padding: 12px 16px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        margin-bottom: 20px;
+
+
+
+    .btn-dashboard {
+        background: #3478f6 !important;
+        color: #ffffff !important;
+        text-align: center;
+        display: block;
+        border: 1px solid #3478f6;
+        box-shadow: 0 5px 15px rgba(52, 120, 246, 0.20);
     }
+
+    .btn-dashboard:hover {
+        background: #2563eb !important;
+        border-color: #2563eb;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+    }
+
+    .alert {
+
+        padding: 12px 16px;
+
+        border-radius: 10px;
+
+        font-size: 0.85rem;
+
+        margin-bottom: 20px;
+
+    }
+
     .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+
     .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
 
+
+
     @media (max-width: 900px) {
+
         .main-content { margin-left: 0; padding: 15px; }
+
         .grid-2 { grid-template-columns: 1fr; }
+
     }
+
 </style>
+
     <link rel="stylesheet" href="sidebar.css?v=20260926">
 
+
+
     <!-- Stable shared admin shell -->
+
     <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
+
 </head>
+
 <body class="admin-page">
+
+
 
     <?php include __DIR__ . '/sidebar.php'; ?>
 
+
+
     <div class="main-content">
+
         <header class="top-nav">
+
             <div class="brand">
+
                 <i class="fa-solid fa-user-shield text-primary"></i> Admin Panel
+
             </div>
+
+
 
             <div class="nav-right">
+
                 <div class="user-pill">
+
                     <div class="user-avatar-top" style="<?php echo $admin_photo_style; ?>">
+
                         <?php echo $admin_photo === '' ? e($admin_initial) : ''; ?>
+
                     </div>
+
                     <span class="user-name"><?php echo e($current_admin['name'] ?? $admin['name'] ?? 'Admin'); ?></span>
+
                 </div>
+
                 <a href="../auth/logout.php" class="btn-danger-custom">
+
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
+
                 </a>
+
             </div>
+
         </header>
 
+
+
         <div class="content-body">
+
             <div class="content-area">
 
+
+
                 <?php if ($message): ?>
+
                     <div class="alert alert-success"><?php echo e($message); ?></div>
+
                 <?php endif; ?>
+
                 <?php if ($error): ?>
+
                     <div class="alert alert-danger"><?php echo e($error); ?></div>
+
                 <?php endif; ?>
+
+
 
                 <div class="profile-header-card">
+
                     <div class="banner">
+
                         <video autoplay muted loop playsinline preload="metadata">
+
                             <source src="yonex.mp4" type="video/mp4">
+
                             Browser anda tidak menyokong video HTML5.
+
                         </video>
+
                     </div>
+
                     <div class="profile-info-section">
+
                         <div class="profile-avatar-large" style="<?php echo $admin_photo_style; ?>">
+
                             <?php echo empty($admin['profile_pic']) ? e(strtoupper(substr($admin['name'] ?? 'A', 0, 1))) : ''; ?>
+
                         </div>
+
                         <div class="profile-details">
+
                             <h2><?php echo e($admin['name']); ?></h2>
+
                             <p><?php echo e($admin['email']); ?> &bull; <span style="text-transform: uppercase; font-weight: 600; color: var(--accent);"><?php echo e($admin['role']); ?></span></p>
+
                         </div>
+
                     </div>
+
                 </div>
+
+
 
                 <div class="grid-2">
+
                     <div class="card">
+
                         <h3><i class="fa-solid fa-user-pen"></i> Edit Profile</h3>
+
                         <form method="POST" enctype="multipart/form-data">
+
                             <div class="field">
+
                                 <label>Nama Admin</label>
+
                                 <input type="text" name="name" class="form-control" value="<?php echo e($admin['name']); ?>" required>
+
                             </div>
+
                             <div class="field">
+
                                 <label>E-mel</label>
+
                                 <input type="email" name="email" class="form-control" value="<?php echo e($admin['email']); ?>" required>
+
                             </div>
+
                             <div class="field">
+
                                 <label>No. Telefon</label>
+
                                 <input type="text" name="phone" class="form-control" value="<?php echo e($admin['phone'] ?? ''); ?>">
+
                             </div>
+
                             <div class="field">
+
                                 <label>Gambar Profil Baharu</label>
+
                                 <input type="file" name="profile_pic" accept="image/*" class="form-control" style="padding: 7px;">
+
                             </div>
-                            
+
+
+
                             <div style="margin: 20px 0 10px 0; font-size: 0.85rem; font-weight: 700;"><i class="fa-solid fa-bell"></i> Notification Settings</div>
+
                             <div class="field" style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+
                                 <input type="checkbox" name="notifications" value="1" <?php echo (!empty($admin['sms_alerts']) && $admin['sms_alerts'] == 1) ? 'checked' : ''; ?>>
+
                                 <span>Terima Notifikasi Tempahan & Bayaran</span>
+
                             </div>
+
+
 
                             <button type="submit" name="update_profile" class="btn" style="margin-top: 15px;">Simpan Perubahan</button>
+
                         </form>
+
                     </div>
+
+
 
                     <div style="display: flex; flex-direction: column; gap: 25px;">
-                        <div class="card">
-                            <h3><i class="fa-solid fa-key"></i> Change Password</h3>
-                            <form method="POST">
-                                <div class="field">
-                                    <label>Kata Laluan Semasa</label>
-                                    <input type="password" name="old_password" class="form-control" required>
-                                </div>
-                                <div class="field">
-                                    <label>Kata Laluan Baharu</label>
-                                    <input type="password" name="new_password" class="form-control" required>
-                                </div>
-                                <div class="field">
-                                    <label>Sahkan Kata Laluan Baharu</label>
-                                    <input type="password" name="confirm_password" class="form-control" required>
-                                </div>
-                                <button type="submit" name="change_password" class="btn">Tukar Kata Laluan</button>
-                            </form>
-                        </div>
 
                         <div class="card">
-                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Activity History</h3>
-                            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 10px;">
-                                <?php if(mysqli_num_rows($activities) > 0): ?>
-                                    <?php while($act = mysqli_fetch_assoc($activities)): ?>
-                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
-                                            <span>Tempahan ID #<?php echo $act['id']; ?> (<b><?php echo $act['status']; ?></b>)</span>
-                                            <span style="color: var(--text-muted); font-size: 0.75rem;"><?php echo $act['booking_date']; ?></span>
-                                        </div>
-                                    <?php endwhile; ?>
-                                <?php else: ?>
-                                    <span style="color: var(--text-muted);">Tiada aktiviti terkini.</span>
-                                <?php endif; ?>
-                            </div>
+
+                            <h3><i class="fa-solid fa-key"></i> Change Password</h3>
+
+                            <form method="POST">
+
+                                <div class="field">
+
+                                    <label>Kata Laluan Semasa</label>
+
+                                    <input type="password" name="old_password" class="form-control" required>
+
+                                </div>
+
+                                <div class="field">
+
+                                    <label>Kata Laluan Baharu</label>
+
+                                    <input type="password" name="new_password" class="form-control" required>
+
+                                </div>
+
+                                <div class="field">
+
+                                    <label>Sahkan Kata Laluan Baharu</label>
+
+                                    <input type="password" name="confirm_password" class="form-control" required>
+
+                                </div>
+
+                                <button type="submit" name="change_password" class="btn">Tukar Kata Laluan</button>
+
+                            </form>
+
                         </div>
+
+
+
+                        <div class="card">
+
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Activity History</h3>
+
+                            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 10px;">
+
+                                <?php if(mysqli_num_rows($activities) > 0): ?>
+
+                                    <?php while($act = mysqli_fetch_assoc($activities)): ?>
+
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+
+                                            <span>Tempahan ID #<?php echo $act['id']; ?> (<b><?php echo $act['status']; ?></b>)</span>
+
+                                            <span style="color: var(--text-muted); font-size: 0.75rem;"><?php echo $act['booking_date']; ?></span>
+
+                                        </div>
+
+                                    <?php endwhile; ?>
+
+                                <?php else: ?>
+
+                                    <span style="color: var(--text-muted);">Tiada aktiviti terkini.</span>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </div>
 
-                <a href="dashboard.php" class="btn" style="text-align: center; background: #e5e7eb; color: var(--text-main); display: block;">
-      <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
-            </a>
+
+
+                <a href="dashboard.php" class="btn btn-dashboard"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+
+
 
             </div>
+
         </div>
+
     </div>
 
+
+
 </body>
+
 </html>
