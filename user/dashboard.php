@@ -827,7 +827,7 @@ foreach ($times as $t) {
 <hr class="my-4">
 
 <!-- STEP 4 - COURT -->
-<div class="step">
+<div id="courtSection" class="step">
     4. Choose a court
 </div>
 
@@ -1073,6 +1073,7 @@ function refreshAvailability() {
     const form = document.getElementById('bookingForm');
     const courtPage = document.getElementById('courtPage');
     if (courtPage) courtPage.value = 1;
+    form.action = 'dashboard.php#courtSection';
     form.submit();
 }
 
@@ -1111,9 +1112,9 @@ function changeCourtPage(page) {
 
     courtPage.value = page;
 
-    document
-        .getElementById('bookingForm')
-        .submit();
+    const form = document.getElementById('bookingForm');
+    form.action = 'dashboard.php#courtSection';
+    form.submit();
 }
 
 </script>
