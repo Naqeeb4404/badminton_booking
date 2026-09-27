@@ -7,16 +7,15 @@ include __DIR__ . '/config/db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Badminton Kampung Panji - Court Booking</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Google Font -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -46,9 +45,9 @@ include __DIR__ . '/config/db.php';
             overflow-x: hidden;
         }
 
-        /* =========================
+        /* ==============================
            BACKGROUND
-        ========================= */
+        ============================== */
 
         .animated-bg-layer {
             position: fixed;
@@ -93,15 +92,14 @@ include __DIR__ . '/config/db.php';
             }
         }
 
-        /* =========================
+        /* ==============================
            TOP BAR
-        ========================= */
+        ============================== */
 
         .top-announcement-bar {
             font-size: 0.75rem;
             color: var(--text-muted);
             padding: 10px 40px;
-
             border-bottom: 1px solid var(--credix-border);
 
             display: flex;
@@ -114,17 +112,16 @@ include __DIR__ . '/config/db.php';
             -webkit-backdrop-filter: blur(10px);
         }
 
-        /* =========================
+        /* ==============================
            NAVBAR
-        ========================= */
+        ============================== */
 
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
 
-            padding: 8px 40px;
-
+            padding: 9px 40px;
             min-height: 76px;
 
             border-bottom: 1px solid var(--credix-border);
@@ -136,18 +133,16 @@ include __DIR__ . '/config/db.php';
 
             position: sticky;
             top: 0;
-
             z-index: 1000;
         }
 
-        /* =========================
+        /* ==============================
            BRAND
-        ========================= */
+        ============================== */
 
         .brand-container {
             display: inline-flex;
             align-items: center;
-
             gap: 12px;
 
             text-decoration: none;
@@ -155,9 +150,9 @@ include __DIR__ . '/config/db.php';
             flex-shrink: 0;
         }
 
-        /* =========================
+        /* ==============================
            LOGO
-        ========================= */
+        ============================== */
 
         .brand-logo-icon {
             width: 60px;
@@ -169,8 +164,8 @@ include __DIR__ . '/config/db.php';
 
             flex-shrink: 0;
 
-            margin: 0;
             padding: 0;
+            margin: 0;
 
             background: transparent;
 
@@ -191,8 +186,8 @@ include __DIR__ . '/config/db.php';
 
             display: block;
 
-            margin: 0;
             padding: 0;
+            margin: 0;
 
             border: none;
 
@@ -200,16 +195,16 @@ include __DIR__ . '/config/db.php';
             object-position: center;
 
             /*
-             * Logo asal warna hitam.
-             * Tukarkan kepada putih supaya
-             * nampak atas navbar gelap.
+             * Logo asal hitam.
+             * Jadikan putih supaya jelas
+             * atas navbar gelap.
              */
             filter: brightness(0) invert(1);
         }
 
-        /* =========================
+        /* ==============================
            BRAND TEXT
-        ========================= */
+        ============================== */
 
         .brand-text {
             display: flex;
@@ -242,7 +237,7 @@ include __DIR__ . '/config/db.php';
 
             color: #a855f7;
 
-            font-size: 0.67rem;
+            font-size: 0.68rem;
             font-weight: 700;
 
             letter-spacing: 1.5px;
@@ -256,15 +251,14 @@ include __DIR__ . '/config/db.php';
             text-transform: uppercase;
         }
 
-        /* =========================
-           NAV LINKS
-        ========================= */
+        /* ==============================
+           NAVIGATION
+        ============================== */
 
         .nav-links {
             display: flex;
-            align-items: center;
-
             gap: 24px;
+            align-items: center;
         }
 
         .nav-links a {
@@ -283,9 +277,9 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
         }
 
-        /* =========================
-           BOOK NOW
-        ========================= */
+        /* ==============================
+           BOOK BUTTON
+        ============================== */
 
         .btn-book-now {
             border: 1px solid var(--credix-border);
@@ -320,9 +314,9 @@ include __DIR__ . '/config/db.php';
             transform: translateY(-2px);
         }
 
-        /* =========================
+        /* ==============================
            HERO
-        ========================= */
+        ============================== */
 
         .hero-section {
             padding: 50px 0;
@@ -385,7 +379,6 @@ include __DIR__ . '/config/db.php';
             line-height: 1.1;
 
             margin-top: 15px;
-
             margin-bottom: 20px;
         }
 
@@ -399,9 +392,9 @@ include __DIR__ . '/config/db.php';
             margin-bottom: 30px;
         }
 
-        /* =========================
-           HERO BUTTONS
-        ========================= */
+        /* ==============================
+           BUTTONS
+        ============================== */
 
         .btn-primary-custom {
             background: var(--credix-accent);
@@ -425,7 +418,6 @@ include __DIR__ . '/config/db.php';
             text-decoration: none;
 
             display: inline-flex;
-
             align-items: center;
         }
 
@@ -459,7 +451,6 @@ include __DIR__ . '/config/db.php';
             text-decoration: none;
 
             display: inline-flex;
-
             align-items: center;
         }
 
@@ -471,13 +462,12 @@ include __DIR__ . '/config/db.php';
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* =========================
+        /* ==============================
            VIDEO
-        ========================= */
+        ============================== */
 
         .hero-video-wrapper {
             width: 100%;
-
             height: 100%;
 
             min-height: 340px;
@@ -491,9 +481,7 @@ include __DIR__ . '/config/db.php';
             overflow: hidden;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
@@ -501,7 +489,6 @@ include __DIR__ . '/config/db.php';
 
         .hero-video-wrapper video {
             width: 100%;
-
             height: 100%;
 
             object-fit: cover;
@@ -511,14 +498,15 @@ include __DIR__ . '/config/db.php';
             pointer-events: none;
         }
 
-        /* =========================
+        /* ==============================
            FOOTER
-        ========================= */
+        ============================== */
 
         .site-footer {
             background-color: rgba(19, 21, 31, 0.9);
 
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
 
             padding: 70px 40px 35px;
 
@@ -601,9 +589,9 @@ include __DIR__ . '/config/db.php';
             color: var(--text-muted);
         }
 
-        /* =========================
+        /* ==============================
            TABLET
-        ========================= */
+        ============================== */
 
         @media (max-width: 991px) {
             .master-hero-card {
@@ -615,15 +603,15 @@ include __DIR__ . '/config/db.php';
             }
         }
 
-        /* =========================
+        /* ==============================
            MOBILE
-        ========================= */
+        ============================== */
 
         @media (max-width: 768px) {
             .custom-navbar {
                 padding: 8px 18px;
 
-                min-height: 66px;
+                min-height: 68px;
             }
 
             .top-announcement-bar {
@@ -631,37 +619,35 @@ include __DIR__ . '/config/db.php';
             }
 
             .brand-container {
-                gap: 8px;
+                gap: 9px;
             }
 
             .brand-logo-icon {
                 width: 50px;
-
                 height: 50px;
             }
 
             .brand-logo-icon img {
                 width: 47px;
-
                 height: 47px;
             }
 
             .brand-text span {
-                font-size: 0.86rem;
+                font-size: 0.88rem;
             }
 
             .brand-text small {
-                font-size: 0.56rem;
+                font-size: 0.58rem;
 
-                letter-spacing: 1px;
+                letter-spacing: 1.2px;
 
                 margin-top: 5px;
             }
 
             .btn-book-now {
-                padding: 7px 14px;
+                padding: 7px 15px;
 
-                font-size: 0.74rem;
+                font-size: 0.75rem;
             }
 
             .hero-title {
@@ -693,9 +679,9 @@ include __DIR__ . '/config/db.php';
 
 <div class="animated-bg-layer"></div>
 
-<!-- =========================
+<!-- ==============================
      TOP BAR
-========================= -->
+============================== -->
 
 <div class="top-announcement-bar d-none d-md-flex">
 
@@ -727,19 +713,19 @@ include __DIR__ . '/config/db.php';
 
 </div>
 
-<!-- =========================
+<!-- ==============================
      NAVBAR
-========================= -->
+============================== -->
 
 <nav class="custom-navbar">
 
-    <!-- LOGO + BRAND -->
-    <a href="index.php" class="brand-container">
+    <!-- BRAND -->
+    <a href="/index.php" class="brand-container">
 
         <div class="brand-logo-icon">
 
             <img
-                src="./logo-badminton.png"
+                src="/logo-badminton.png"
                 alt="Badminton Kampung Panji"
             >
 
@@ -759,50 +745,50 @@ include __DIR__ . '/config/db.php';
 
     </a>
 
-    <!-- NAVIGATION -->
+    <!-- NAV LINKS -->
     <div class="nav-links d-none d-lg-flex">
 
-        <a href="index.php" class="active">
+        <a href="/index.php" class="active">
             Home
         </a>
 
-        <a href="rates.php">
+        <a href="/rates.php">
             Rates
         </a>
 
-        <a href="facility.php">
+        <a href="/facility.php">
             Facility
         </a>
 
-        <a href="about.php">
+        <a href="/about.php">
             About
         </a>
 
-        <a href="faq.php">
+        <a href="/faq.php">
             FAQ
         </a>
 
-        <a href="rules.php">
+        <a href="/rules.php">
             Rules
         </a>
 
-        <a href="location.php">
+        <a href="/location.php">
             Location
         </a>
 
     </div>
 
-    <!-- BOOK BUTTON -->
+    <!-- BOOK NOW -->
     <?php if (isset($_SESSION['user'])): ?>
 
-        <a href="booking.php"
+        <a href="/booking.php"
            class="btn-book-now">
             Book Now
         </a>
 
     <?php else: ?>
 
-        <a href="auth/login.php"
+        <a href="/auth/login.php"
            class="btn-book-now">
             Book Now
         </a>
@@ -811,9 +797,9 @@ include __DIR__ . '/config/db.php';
 
 </nav>
 
-<!-- =========================
+<!-- ==============================
      HERO
-========================= -->
+============================== -->
 
 <section class="hero-section">
 
@@ -841,20 +827,16 @@ include __DIR__ . '/config/db.php';
                     </h1>
 
                     <p class="hero-desc">
-
                         Sistem tempahan digital berprestasi tinggi.
-
                         Semak ketersediaan gelanggang secara real-time
-
                         dengan reka bentuk antara muka yang pantas dan lancar.
-
                     </p>
 
                     <div class="d-flex flex-wrap gap-3">
 
                         <?php if (isset($_SESSION['user'])): ?>
 
-                            <a href="booking.php"
+                            <a href="/booking.php"
                                class="btn btn-primary-custom">
 
                                 Check availability
@@ -865,7 +847,7 @@ include __DIR__ . '/config/db.php';
 
                         <?php else: ?>
 
-                            <a href="auth/login.php"
+                            <a href="/auth/login.php"
                                class="btn btn-primary-custom">
 
                                 Check availability
@@ -889,7 +871,7 @@ include __DIR__ . '/config/db.php';
 
                 </div>
 
-                <!-- VIDEO -->
+                <!-- RIGHT -->
                 <div class="col-lg-5">
 
                     <div class="hero-video-wrapper">
@@ -902,7 +884,7 @@ include __DIR__ . '/config/db.php';
                         >
 
                             <source
-                                src="videoiklan.mp4"
+                                src="/videoiklan.mp4"
                                 type="video/mp4"
                             >
 
@@ -922,24 +904,24 @@ include __DIR__ . '/config/db.php';
 
 </section>
 
-<!-- =========================
+<!-- ==============================
      FOOTER
-========================= -->
+============================== -->
 
 <footer class="site-footer">
 
     <div class="footer-container">
 
-        <!-- FOOTER BRAND -->
+        <!-- BRAND -->
         <div class="footer-col">
 
-            <a href="index.php"
+            <a href="/index.php"
                class="brand-container mb-3 d-inline-flex">
 
                 <div class="brand-logo-icon">
 
                     <img
-                        src="./logo-badminton.png"
+                        src="/logo-badminton.png"
                         alt="Badminton Kampung Panji"
                     >
 
@@ -966,13 +948,9 @@ include __DIR__ . '/config/db.php';
                 line-height: 1.7;
             ">
 
-                Dewan Kampung Panji,
-                Kampung Panji
-
+                Dewan Kampung Panji, Kampung Panji
                 <br>
-
-                20050 Kuala Terengganu,
-                Terengganu
+                20050 Kuala Terengganu, Terengganu
 
             </p>
 
@@ -988,19 +966,19 @@ include __DIR__ . '/config/db.php';
             <ul>
 
                 <li>
-                    <a href="rates.php">
+                    <a href="/rates.php">
                         Rates
                     </a>
                 </li>
 
                 <li>
-                    <a href="facility.php">
+                    <a href="/facility.php">
                         Facility
                     </a>
                 </li>
 
                 <li>
-                    <a href="about.php">
+                    <a href="/about.php">
                         About
                     </a>
                 </li>
@@ -1019,19 +997,19 @@ include __DIR__ . '/config/db.php';
             <ul>
 
                 <li>
-                    <a href="faq.php">
+                    <a href="/faq.php">
                         FAQ
                     </a>
                 </li>
 
                 <li>
-                    <a href="rules.php">
+                    <a href="/rules.php">
                         Rules
                     </a>
                 </li>
 
                 <li>
-                    <a href="location.php">
+                    <a href="/location.php">
                         Location
                     </a>
                 </li>
@@ -1042,12 +1020,10 @@ include __DIR__ . '/config/db.php';
 
     </div>
 
-    <!-- FOOTER BOTTOM -->
     <div class="footer-bottom">
 
         <div>
-            &copy;
-            <?php echo date('Y'); ?>
+            &copy; <?php echo date('Y'); ?>
             Badminton Kampung Panji
         </div>
 
@@ -1066,9 +1042,14 @@ include __DIR__ . '/config/db.php';
 document.addEventListener("scroll", function () {
 
     const scrollPosition = window.pageYOffset;
-    const heroCard = document.getElementById("heroCard");
 
-    if (window.innerWidth > 991 && heroCard) {
+    const heroCard =
+        document.getElementById("heroCard");
+
+    if (
+        window.innerWidth > 991 &&
+        heroCard
+    ) {
 
         heroCard.style.transform =
             `translateY(${scrollPosition * 0.04}px)`;
