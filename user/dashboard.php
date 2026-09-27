@@ -629,6 +629,7 @@ hr {
 
     <div class="nav-links d-none d-md-flex">
         <a href="feedback_report.php">Feedback</a>
+        <a href="message.php">Message</a>
         <a href="my_booking.php">My Booking</a>
         <a href="profile.php">Profile</a>
     </div>
