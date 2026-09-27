@@ -442,6 +442,12 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
     .custom-navbar .nav-center{display:none!important}
 }
 
+
+/* ===== EXACT DASHBOARD BRAND STRUCTURE ON PROFILE ===== */
+.custom-navbar .brand-text{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important}
+.custom-navbar .brand-text>span{display:block!important;color:#f8fafc!important;font-size:.95rem!important;font-weight:800!important;letter-spacing:.5px!important;line-height:1.1!important;margin:0!important;padding:0!important}
+.custom-navbar .brand-text>small{display:block!important;color:#a855f7!important;font-size:.65rem!important;font-weight:700!important;letter-spacing:1.5px!important;line-height:1!important;margin-top:5px!important;text-transform:uppercase!important;padding:0!important}
+
 </style>
 
 </head>
@@ -453,20 +459,30 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
         <!-- Header Navigation -->
 
         <nav class="custom-navbar">
+
     <a href="dashboard.php" class="brand-container">
+
         <div class="brand-logo-icon"><img src="../logo-badminton.png" alt="Badminton Kampung Panji"></div>
-        <div class="brand-text"><strong>BADMINTON</strong><span>KAMPUNG PANJI</span></div>
+
+        <div class="brand-text"><span>BADMINTON</span><small>KAMPUNG PANJI</small></div>
+
     </a>
+
     <div class="nav-center">
     <a href="feedback_report.php">Feedback</a>
     <a href="message.php">Message</a>
     <a href="my_booking.php">My Booking</a>
     <a href="profile.php" class="active">Profile</a>
 </div>
-<div class="nav-actions">
-<a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
-<a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
-</div>
+
+    <div class="nav-actions">
+
+        <a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+
+        <a href="../auth/logout.php" class="nav-btn logout"><i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span></a>
+
+    </div>
+
 </nav>
 <div class="page-content">
 
