@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,10 +175,21 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
-        .delay-4 { transition-delay: 0.4s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .delay-4 {
+            transition-delay: 0.4s;
+        }
 
         /* Custom Rule Card Styling */
         .rule-card {
@@ -286,10 +299,12 @@ include __DIR__ . '/config/db.php';
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .rules-title {
                 font-size: 2.5rem;
             }
@@ -302,7 +317,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -316,8 +331,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -331,7 +346,7 @@ include __DIR__ . '/config/db.php';
             <a href="location.php">Location</a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user'])): ?>
             <a href="booking.php" class="btn-book-now">Book Now</a>
         <?php else: ?>
             <a href="auth/login.php" class="btn-book-now">Book Now</a>
@@ -339,19 +354,21 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="rules-title">Rules & Regulations</h1>
-            <p class="rules-desc">Sila patuhi peraturan dan etika penggunaan gelanggang yang ditetapkan demi keselamatan dan keselesaan bersama.</p>
+            <p class="rules-desc">Sila patuhi peraturan dan etika penggunaan gelanggang yang ditetapkan demi keselamatan
+                dan keselesaan bersama.</p>
         </div>
 
         <div class="rules-list">
-            
+
             <div class="rule-card reveal-on-scroll delay-1">
                 <div class="rule-icon"><i class="fa-solid fa-shoe-prints"></i></div>
                 <div class="rule-content">
                     <h4>Kasut Sesuai (Non-Marking Shoes)</h4>
-                    <p>Semua pemain diwajibkan memakai kasut gelanggang jenis tapak getah yang tidak meninggalkan kesan (non-marking shoes) bagi menjaga kualiti permukaan lantai gelanggang.</p>
+                    <p>Semua pemain diwajibkan memakai kasut gelanggang jenis tapak getah yang tidak meninggalkan kesan
+                        (non-marking shoes) bagi menjaga kualiti permukaan lantai gelanggang.</p>
                 </div>
             </div>
 
@@ -359,7 +376,8 @@ include __DIR__ . '/config/db.php';
                 <div class="rule-icon"><i class="fa-solid fa-clock"></i></div>
                 <div class="rule-content">
                     <h4>Ketepatan Masa Tempahan</h4>
-                    <p>Sila masuk dan keluar gelanggang mengikut slot masa yang telah ditempah. Tempoh lewat tidak akan diganti sekiranya masa slot anda telah tamat.</p>
+                    <p>Sila masuk dan keluar gelanggang mengikut slot masa yang telah ditempah. Tempoh lewat tidak akan
+                        diganti sekiranya masa slot anda telah tamat.</p>
                 </div>
             </div>
 
@@ -367,7 +385,8 @@ include __DIR__ . '/config/db.php';
                 <div class="rule-icon"><i class="fa-solid fa-ban"></i></div>
                 <div class="rule-content">
                     <h4>Larangan Merokok & Makanan</h4>
-                    <p>Merokok, membuang sampah, serta membawa makanan atau minuman manis (selain air kosong) ke dalam kawasan gelanggang adalah dilarang sama sekali.</p>
+                    <p>Merokok, membuang sampah, serta membawa makanan atau minuman manis (selain air kosong) ke dalam
+                        kawasan gelanggang adalah dilarang sama sekali.</p>
                 </div>
             </div>
 
@@ -375,7 +394,8 @@ include __DIR__ . '/config/db.php';
                 <div class="rule-icon"><i class="fa-solid fa-child-reaching"></i></div>
                 <div class="rule-content">
                     <h4>Etika & Keselamatan Sukan</h4>
-                    <p>Sentiasa mengamalkan sikap sopan santun, menghormati pemain lain, serta menjaga keselamatan diri dan barangan peribadi sepanjang berada di premis.</p>
+                    <p>Sentiasa mengamalkan sikap sopan santun, menghormati pemain lain, serta menjaga keselamatan diri
+                        dan barangan peribadi sepanjang berada di premis.</p>
                 </div>
             </div>
 

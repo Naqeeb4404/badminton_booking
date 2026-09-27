@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -46,16 +47,24 @@ include __DIR__ . '/config/db.php';
             height: 100vh;
             z-index: -1;
             background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.18) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
-                        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, #090a0f 100%);
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, #090a0f 100%);
             animation: bgPulse 12s ease-in-out infinite alternate;
             pointer-events: none;
         }
 
         @keyframes bgPulse {
-            0% { transform: scale(1) translate(0px, 0px); }
-            50% { transform: scale(1.05) translate(-15px, -10px); }
-            100% { transform: scale(1.1) translate(15px, 10px); }
+            0% {
+                transform: scale(1) translate(0px, 0px);
+            }
+
+            50% {
+                transform: scale(1.05) translate(-15px, -10px);
+            }
+
+            100% {
+                transform: scale(1.1) translate(15px, 10px);
+            }
         }
 
         .top-announcement-bar {
@@ -135,7 +144,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -172,8 +182,8 @@ include __DIR__ . '/config/db.php';
             border: 1px solid var(--credix-border);
             border-radius: 32px;
             padding: 60px 50px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), 
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             position: relative;
             z-index: 2;
             transition: transform 0.2s ease-out;
@@ -336,6 +346,7 @@ include __DIR__ . '/config/db.php';
             .master-hero-card {
                 padding: 40px 25px;
             }
+
             .hero-title {
                 font-size: 2.5rem;
             }
@@ -345,14 +356,17 @@ include __DIR__ . '/config/db.php';
             .hero-title {
                 font-size: 2.1rem;
             }
+
             .hero-video-wrapper {
                 min-height: 240px;
                 margin-top: 25px;
             }
+
             .footer-container {
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
@@ -394,7 +408,7 @@ include __DIR__ . '/config/db.php';
             <a href="location.php">Location</a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user'])): ?>
             <a href="booking.php" class="btn-book-now">Book Now</a>
         <?php else: ?>
             <a href="auth/login.php" class="btn-book-now">Book Now</a>
@@ -406,7 +420,7 @@ include __DIR__ . '/config/db.php';
         <div class="container">
             <div class="master-hero-card" id="heroCard">
                 <div class="row align-items-center g-4">
-                    
+
                     <!-- Bahagian Kiri: Teks & Butang -->
                     <div class="col-lg-6">
                         <div class="badge-pill">
@@ -416,10 +430,11 @@ include __DIR__ . '/config/db.php';
                             Book a court.<br>Bring your game.
                         </h1>
                         <p class="hero-desc">
-                            Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time dengan reka bentuk antara muka yang pantas dan lancar.
+                            Sistem tempahan digital berprestasi tinggi. Semak ketersediaan gelanggang secara real-time
+                            dengan reka bentuk antara muka yang pantas dan lancar.
                         </p>
                         <div class="d-flex flex-wrap gap-3">
-                            <?php if(isset($_SESSION['user'])): ?>
+                            <?php if (isset($_SESSION['user'])): ?>
                                 <a href="booking.php" class="btn btn-primary-custom">
                                     Check availability <i class="fa-solid fa-arrow-right ms-2"></i>
                                 </a>
@@ -457,8 +472,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-bolt"></i>
                     </div>
                     <div class="brand-text">
-                        <span>SPORTS CENTER</span>
-                        <small>Badminton • Kuala Terengganu</small>
+                        <span>BADMINTON</span>
+                        <small>Kampung Panji</small>
                     </div>
                 </a>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">

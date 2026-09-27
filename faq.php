@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,10 +175,21 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
-        .delay-4 { transition-delay: 0.4s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
+
+        .delay-4 {
+            transition-delay: 0.4s;
+        }
 
         /* Custom Dark Accordion Styling */
         .accordion-item {
@@ -281,10 +294,12 @@ include __DIR__ . '/config/db.php';
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .faq-title {
                 font-size: 2.5rem;
             }
@@ -297,7 +312,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -311,8 +326,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -326,7 +341,7 @@ include __DIR__ . '/config/db.php';
             <a href="location.php">Location</a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user'])): ?>
             <a href="booking.php" class="btn-book-now">Book Now</a>
         <?php else: ?>
             <a href="auth/login.php" class="btn-book-now">Book Now</a>
@@ -334,62 +349,78 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="faq-title">FAQ</h1>
-            <p class="faq-desc">Soalan Lazim mengenai proses tempahan gelanggang, pembayaran, dan peraturan pusat sukan kami.</p>
+            <p class="faq-desc">Soalan Lazim mengenai proses tempahan gelanggang, pembayaran, dan peraturan pusat sukan
+                kami.</p>
         </div>
 
         <div class="accordion reveal-on-scroll delay-1" id="faqAccordion">
-            
+
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                         Bagaimanakah cara untuk membuat tempahan gelanggang?
                     </button>
                 </h2>
-                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Anda boleh membuat tempahan dengan mendaftar atau log masuk ke akaun anda melalui butang "Book Now" di atas. Pilih tarikh, masa slot yang tersedia, dan teruskan dengan pembayaran dalam talian.
+                        Anda boleh membuat tempahan dengan mendaftar atau log masuk ke akaun anda melalui butang "Book
+                        Now" di atas. Pilih tarikh, masa slot yang tersedia, dan teruskan dengan pembayaran dalam
+                        talian.
                     </div>
                 </div>
             </div>
 
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                         Bolehkah saya membatalkan atau menukar masa tempahan?
                     </button>
                 </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                    data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Sebarang pembatalan atau pertukaran masa perlu dilakukan sekurang-kurangnya 24 jam sebelum tarikh tempahan anda. Sila hubungi pihak pengurusan kami di talian yang tertera untuk bantuan lanjut.
+                        Sebarang pembatalan atau pertukaran masa perlu dilakukan sekurang-kurangnya 24 jam sebelum
+                        tarikh tempahan anda. Sila hubungi pihak pengurusan kami di talian yang tertera untuk bantuan
+                        lanjut.
                     </div>
                 </div>
             </div>
 
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                         Adakah peralatan badminton seperti raket dan bulu tangkis disediakan?
                     </button>
                 </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                    data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Pemain digalakkan membawa raket dan bulu tangkis sendiri. Walau bagaimanapun, anda boleh mendapatkan aksesori asas di kaunter pusat sukan kami jika diperlukan.
+                        Pemain digalakkan membawa raket dan bulu tangkis sendiri. Walau bagaimanapun, anda boleh
+                        mendapatkan aksesori asas di kaunter pusat sukan kami jika diperlukan.
                     </div>
                 </div>
             </div>
 
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFour">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                         Di manakah lokasi sebenar pusat sukan ini?
                     </button>
                 </h2>
-                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
+                    data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Lokasi kami terletak di kawasan gudang Sungai Bangat, Wilayah Persekutuan Labuan, berhampiran dengan Savemore Superstore. Ruang parkir yang luas juga disediakan secara percuma untuk pengunjung.
+                        Lokasi kami terletak di kawasan gudang Sungai Bangat, Wilayah Persekutuan Labuan, berhampiran
+                        dengan Savemore Superstore. Ruang parkir yang luas juga disediakan secara percuma untuk
+                        pengunjung.
                     </div>
                 </div>
             </div>

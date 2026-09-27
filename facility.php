@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,9 +175,17 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
 
         .facility-card {
             background: var(--credix-card);
@@ -299,10 +309,12 @@ include __DIR__ . '/config/db.php';
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .facility-title {
                 font-size: 2.5rem;
             }
@@ -315,7 +327,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -329,8 +341,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -348,10 +360,11 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="facility-title">Facility & Amenities</h1>
-            <p class="facility-desc">Our indoor sports center at Sungai Bangat is designed for comfort, optimal airflow, and quality gameplay. Explore what we provide for players.</p>
+            <p class="facility-desc">Our indoor sports center at Sungai Bangat is designed for comfort, optimal airflow,
+                and quality gameplay. Explore what we provide for players.</p>
         </div>
 
         <div class="row g-4">
@@ -361,7 +374,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-table-tennis-paddle-ball"></i>
                     </div>
                     <h4>6 Professional Courts</h4>
-                    <p>Equipped with high-grade synthetic surfaces designed to absorb impact and reduce joint stress during intense rallies.</p>
+                    <p>Equipped with high-grade synthetic surfaces designed to absorb impact and reduce joint stress
+                        during intense rallies.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-2">
@@ -370,7 +384,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-wind"></i>
                     </div>
                     <h4>Optimal Ventilation</h4>
-                    <p>Designed with high warehouse ceilings and side airflow management to maintain a cool indoor playing environment.</p>
+                    <p>Designed with high warehouse ceilings and side airflow management to maintain a cool indoor
+                        playing environment.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-3">
@@ -379,7 +394,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-shoe-prints"></i>
                     </div>
                     <h4>Shoe Change Area</h4>
-                    <p>Dedicated shoe rack zone outside the courts to ensure non-marking court floors remain clean and slip-free.</p>
+                    <p>Dedicated shoe rack zone outside the courts to ensure non-marking court floors remain clean and
+                        slip-free.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-1">
@@ -388,7 +404,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-square-parking"></i>
                     </div>
                     <h4>Ample Parking Space</h4>
-                    <p>Spacious parking grounds located right outside the warehouse for easy and secure vehicle placement.</p>
+                    <p>Spacious parking grounds located right outside the warehouse for easy and secure vehicle
+                        placement.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-2">
@@ -406,7 +423,8 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-store"></i>
                     </div>
                     <h4>Convenient Location</h4>
-                    <p>Strategically situated at Sungai Bangat, right near Savemore Superstore for easy accessibility.</p>
+                    <p>Strategically situated at Sungai Bangat, right near Savemore Superstore for easy accessibility.
+                    </p>
                 </div>
             </div>
         </div>

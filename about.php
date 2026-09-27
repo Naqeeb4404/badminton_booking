@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,9 +175,17 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
 
         .info-card {
             background: var(--credix-card);
@@ -295,10 +305,12 @@ include __DIR__ . '/config/db.php';
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .about-title {
                 font-size: 2.5rem;
             }
@@ -311,7 +323,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -325,8 +337,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -340,7 +352,7 @@ include __DIR__ . '/config/db.php';
             <a href="location.php">Location</a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user'])): ?>
             <a href="booking.php" class="btn-book-now">Book Now</a>
         <?php else: ?>
             <a href="auth/login.php" class="btn-book-now">Book Now</a>
@@ -348,10 +360,11 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="about-title">About Us</h1>
-            <p class="about-desc">Pusat Sukan Badminton Labuan F.T di Sungai Bangat membawakan kemudahan gelanggang badminton bertaraf moden untuk komuniti tempatan beriadah, berlatih, dan mengadakan pertandingan.</p>
+            <p class="about-desc">Pusat Sukan Badminton Labuan F.T di Sungai Bangat membawakan kemudahan gelanggang
+                badminton bertaraf moden untuk komuniti tempatan beriadah, berlatih, dan mengadakan pertandingan.</p>
         </div>
 
         <div class="row g-4 mt-2">
@@ -359,21 +372,24 @@ include __DIR__ . '/config/db.php';
                 <div class="info-card">
                     <span>Misi Kami</span>
                     <h4>Komuniti Sihat & Aktif</h4>
-                    <p>Menyediakan ruang sukan yang selesa, mudah diakses, dan sistematik untuk semua pencinta sukan badminton di Wilayah Persekutuan Labuan.</p>
+                    <p>Menyediakan ruang sukan yang selesa, mudah diakses, dan sistematik untuk semua pencinta sukan
+                        badminton di Wilayah Persekutuan Labuan.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-2">
                 <div class="info-card">
                     <span>Lokasi Strategik</span>
                     <h4>Sungai Bangat</h4>
-                    <p>Terletak di kawasan gudang Sungai Bangat, berdekatan dengan Savemore Superstore. Mempunyai ruang letak kereta yang luas dan selesa untuk pengunjung.</p>
+                    <p>Terletak di kawasan gudang Sungai Bangat, berdekatan dengan Savemore Superstore. Mempunyai ruang
+                        letak kereta yang luas dan selesa untuk pengunjung.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-3">
                 <div class="info-card">
                     <span>Kemudahan</span>
                     <h4>6 Gelanggang Berkualiti</h4>
-                    <p>Dilengkapi dengan sejumlah 6 gelanggang badminton profesional lengkap sistem tempahan dalam talian yang pantas dan mudah digunakan.</p>
+                    <p>Dilengkapi dengan sejumlah 6 gelanggang badminton profesional lengkap sistem tempahan dalam
+                        talian yang pantas dan mudah digunakan.</p>
                 </div>
             </div>
         </div>

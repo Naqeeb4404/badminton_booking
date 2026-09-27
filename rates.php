@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,9 +175,17 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
 
         .rates-table-wrapper {
             background: var(--credix-card);
@@ -339,10 +349,12 @@ include __DIR__ . '/config/db.php';
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .rates-title {
                 font-size: 2.5rem;
             }
@@ -355,7 +367,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -388,10 +400,11 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="rates-title">Rates</h1>
-            <p class="rates-desc">One flat rate per court, per hour — the same in every season and at every hour of the day. The booking page confirms the exact price for the hours you pick.</p>
+            <p class="rates-desc">One flat rate per court, per hour — the same in every season and at every hour of the
+                day. The booking page confirms the exact price for the hours you pick.</p>
         </div>
 
         <div class="rates-table-wrapper reveal-on-scroll delay-1">
@@ -421,7 +434,8 @@ include __DIR__ . '/config/db.php';
             <div class="col-md-4 reveal-on-scroll delay-2">
                 <div class="info-card">
                     <span>Changes</span>
-                    <p>48 hours advance notice must be given for any change of booking time, subject to court availability.</p>
+                    <p>48 hours advance notice must be given for any change of booking time, subject to court
+                        availability.</p>
                 </div>
             </div>
             <div class="col-md-4 reveal-on-scroll delay-3">
@@ -442,12 +456,12 @@ include __DIR__ . '/config/db.php';
                         <i class="fa-solid fa-bolt"></i>
                     </div>
                     <div class="brand-text">
-                        <span>SPORTS CENTER</span>
-                        <small>Badminton • Labuan F.T</small>
+                        <span>BADMINTON</span>
+                        <small>Kampung Panji</small>
                     </div>
                 </a>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
-                    Sungai Bangat Warehouse<br>near Savemore Superstore
+                    Dewan Kampung Panji, Kampung Panji<br>20050 Kuala Terengganu, Terengganu
                 </p>
             </div>
             <div class="footer-col">

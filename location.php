@@ -16,7 +16,8 @@ include __DIR__ . '/config/db.php';
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -114,7 +115,8 @@ include __DIR__ . '/config/db.php';
             transition: color 0.2s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text-main);
         }
 
@@ -173,9 +175,17 @@ include __DIR__ . '/config/db.php';
             transform: translateY(0);
         }
 
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
+        .delay-1 {
+            transition-delay: 0.1s;
+        }
+
+        .delay-2 {
+            transition-delay: 0.2s;
+        }
+
+        .delay-3 {
+            transition-delay: 0.3s;
+        }
 
         .location-grid {
             display: grid;
@@ -309,14 +319,17 @@ include __DIR__ . '/config/db.php';
             .location-grid {
                 grid-template-columns: 1fr;
             }
+
             .footer-container {
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
+
             .footer-bottom {
                 flex-direction: column;
                 gap: 10px;
             }
+
             .location-title {
                 font-size: 2.5rem;
             }
@@ -329,7 +342,7 @@ include __DIR__ . '/config/db.php';
     <div class="top-announcement-bar d-none d-md-flex">
         <div>CALL +60 11 6351 9188 &nbsp;&nbsp;|&nbsp;&nbsp; Dewan Kampung Panji, Kuala Terengganu</div>
         <div>
-            <?php if(isset($_SESSION['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <a href="user/dashboard.php" class="text-decoration-none text-light fw-bold">Dashboard</a>
             <?php else: ?>
                 <a href="auth/login.php" class="text-decoration-none text-light fw-bold">Login / Register</a>
@@ -343,8 +356,8 @@ include __DIR__ . '/config/db.php';
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="brand-text">
-                <span>SPORTS CENTER</span>
-                <small>Badminton • Kuala Terengganu</small>
+                <span>BADMINTON</span>
+                <small>Kampung Panji</small>
             </div>
         </a>
 
@@ -358,7 +371,7 @@ include __DIR__ . '/config/db.php';
             <a href="location.php" class="active">Location</a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
+        <?php if (isset($_SESSION['user'])): ?>
             <a href="booking.php" class="btn-book-now">Book Now</a>
         <?php else: ?>
             <a href="auth/login.php" class="btn-book-now">Book Now</a>
@@ -366,21 +379,22 @@ include __DIR__ . '/config/db.php';
     </nav>
 
     <div class="content-container">
-        
+
         <div class="reveal-on-scroll">
             <h1 class="location-title">Our Location</h1>
             <p class="location-desc">Kunjungi pusat sukan kami yang terletak di lokasi strategik Kuala Terengganu.</p>
         </div>
 
         <div class="location-grid">
-            
+
             <div class="info-card reveal-on-scroll delay-1">
                 <h3><i class="fa-solid fa-map-pin"></i> Alamat Premis</h3>
                 <p><strong>Sports Center Badminton</strong><br>
-                Dewan Kampung Panji,<br>
-                Kampung Panji,<br>
-                20050 Kuala Terengganu, Terengganu.</p>
-                <p class="mb-0"><i class="fa-solid fa-phone text-indigo me-2" style="color: #818cf8;"></i> +60 11 6351 9188</p>
+                    Dewan Kampung Panji,<br>
+                    Kampung Panji,<br>
+                    20050 Kuala Terengganu, Terengganu.</p>
+                <p class="mb-0"><i class="fa-solid fa-phone text-indigo me-2" style="color: #818cf8;"></i> +60 11 6351
+                    9188</p>
             </div>
 
             <div class="info-card reveal-on-scroll delay-2">
@@ -394,7 +408,9 @@ include __DIR__ . '/config/db.php';
 
         <!-- Google Maps Embed for Dewan Kampung Panji -->
         <div class="map-container reveal-on-scroll delay-3">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.318459461127!2d103.138!3d5.331!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sNcKwMTknNTEuNiJOIDEwM8KwMDgnMTYuOCJF!5e0!3m2!1sen!2smy!4v1620000000000!5m2!1sen!2smy" allowfullscreen="" loading="lazy"></iframe>
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.318459461127!2d103.138!3d5.331!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sNcKwMTknNTEuNiJOIDEwM8KwMDgnMTYuOCJF!5e0!3m2!1sen!2smy!4v1620000000000!5m2!1sen!2smy"
+                allowfullscreen="" loading="lazy"></iframe>
         </div>
 
     </div>
