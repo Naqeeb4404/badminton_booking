@@ -472,7 +472,9 @@ function e($value) {
                     </div>
                 </div>
 
-                <a href="dashboard.php" class="btn" style="text-align: center; background: #e5e7eb; color: var(--text-main); display: block;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+                <a href="dashboard.php" class="btn" style="text-align: center; background: #e5e7eb; color: var(--text-main); display: block;">
+      <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
+            </a>
 
             </div>
         </div>
