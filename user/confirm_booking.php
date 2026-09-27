@@ -180,16 +180,16 @@ body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:#090a0f;colo
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo-icon{width:53px;height:53px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:10px;overflow:hidden}.brand-logo-icon img{width:51px;height:51px;display:block;object-fit:contain;border-radius:9px}
 .brand-text{display:flex;flex-direction:column}.brand-text span{color:#f8fafc;font-size:.95rem;font-weight:800;letter-spacing:.5px;line-height:1.1}.brand-text small{color:#a855f7;font-size:.65rem;font-weight:700;letter-spacing:1.5px;margin-top:5px;text-transform:uppercase}
 .my-booking-link{color:#cbd5e1;text-decoration:none;font-size:.82rem;font-weight:700;padding:9px 16px;border:1px solid var(--border);border-radius:50px;background:rgba(255,255,255,.03);transition:.2s}.my-booking-link:hover{color:#fff;background:rgba(255,255,255,.08)}
-.page{width:100%;display:flex;justify-content:center;padding:45px 20px 70px}.containerx{width:100%;max-width:650px}
-.steps{display:flex;align-items:center;justify-content:center;margin-bottom:22px}.step-item{display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:700;color:#64748b;white-space:nowrap}.step-item.active{color:#fff}.step-number{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:.65rem}.step-item.active .step-number{background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;box-shadow:0 0 20px rgba(99,102,241,.35)}.step-line{width:28px;height:1px;margin:0 8px;background:rgba(255,255,255,.10)}
+.page{width:100%;display:flex;justify-content:center;padding:32px 20px 70px}.containerx{width:100%;max-width:650px}
+
 .cardx{position:relative;background:linear-gradient(145deg,rgba(24,26,39,.94),rgba(15,16,25,.94));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.10);border-radius:26px;padding:30px;box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}.cardx:before{content:"";position:absolute;top:-80px;right:-80px;width:180px;height:180px;border-radius:50%;background:#6366f1;filter:blur(80px);opacity:.12;pointer-events:none}
 .badge-step{width:max-content;margin:0 auto 12px;display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:50px;background:rgba(99,102,241,.09);border:1px solid rgba(99,102,241,.22);color:#a5b4fc;font-size:.65rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
 .title{text-align:center;font-size:1.55rem;font-weight:800;letter-spacing:-.5px;margin:0 0 7px}.subtitle{text-align:center;color:var(--muted);font-size:.78rem;line-height:1.5;margin-bottom:22px}
-.booking-highlight{display:flex;align-items:center;gap:13px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.16);border-radius:15px;padding:14px 15px;margin-bottom:16px}.booking-highlight .icon{width:38px;height:38px;flex-shrink:0;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.15);color:#a5b4fc}.booking-highlight small{display:block;color:#94a3b8;font-size:.65rem;margin-bottom:2px}.booking-highlight strong{font-size:.8rem}
+.court-preview{position:relative;height:175px;margin-bottom:16px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.10);background:#11131d}.court-preview>img{width:100%;height:100%;display:block;object-fit:cover}.court-preview-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,9,14,.05) 15%,rgba(8,9,14,.88) 100%)}.court-preview-content{position:absolute;left:0;right:0;bottom:0;padding:16px 17px;display:flex;align-items:flex-end;justify-content:space-between;gap:15px}.court-label{display:block;color:#c7d2fe;font-size:.58rem;font-weight:800;letter-spacing:1.2px;margin-bottom:4px}.court-preview-content strong{display:block;color:#fff;font-size:1rem;font-weight:800}.ready-badge{flex-shrink:0;padding:6px 9px;border-radius:50px;background:rgba(74,222,128,.13);border:1px solid rgba(74,222,128,.25);color:#86efac;font-size:.6rem;font-weight:800;backdrop-filter:blur(8px)}
 .details{background:rgba(255,255,255,.025);border:1px solid var(--border);padding:7px 16px;border-radius:15px}.detail{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:.78rem}.detail:last-child{border-bottom:0}.detail-label{display:flex;align-items:center;gap:9px}.detail-label i{width:18px;text-align:center;color:#818cf8}.detail strong{color:#fff;text-align:right;font-weight:700}.detail.total-row{padding:15px 0}.detail .total{font-size:1.25rem;color:var(--green)!important;font-weight:800}
 .actions{display:grid;grid-template-columns:1fr 1.35fr;gap:10px;margin-top:20px}.btn-confirm,.btn-back{min-height:48px;border-radius:50px;font-family:inherit;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:.2s}.btn-confirm{background:linear-gradient(135deg,#6366f1,#a855f7);border:0;color:#fff;box-shadow:0 8px 25px rgba(99,102,241,.25)}.btn-confirm:hover{transform:translateY(-2px);color:#fff;box-shadow:0 12px 30px rgba(99,102,241,.35)}.btn-back{border:1px solid var(--border);color:#cbd5e1;background:rgba(255,255,255,.025)}.btn-back:hover{color:#fff;background:rgba(255,255,255,.07)}
 .security-note{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;color:#64748b;font-size:.62rem}.security-note i{color:#4ade80}
-@media(max-width:768px){.nav{min-height:70px;padding:10px 18px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text span{font-size:.85rem}.brand-text small{font-size:.57rem}.page{padding:30px 14px 50px}.cardx{padding:24px 18px;border-radius:22px}.step-line{width:18px;margin:0 5px}.step-item{font-size:.6rem}}
+@media(max-width:768px){.nav{min-height:70px;padding:10px 18px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text span{font-size:.85rem}.brand-text small{font-size:.57rem}.page{padding:24px 14px 50px}.cardx{padding:24px 18px;border-radius:22px}}
 @media(max-width:480px){.brand-text{display:none}.nav{padding-left:14px;padding-right:14px}.cardx{padding:22px 16px}.title{font-size:1.35rem}.actions{grid-template-columns:1fr}.btn-confirm{order:1}.btn-back{order:2}}
 </style>
 </head>
@@ -248,11 +248,19 @@ body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:#090a0f;colo
             Semak maklumat tempahan anda sebelum meneruskan ke pembayaran.
         </div>
 
-        <div class="booking-highlight">
-            <div class="icon"><i class="fa-solid fa-badminton"></i></div>
-            <div>
-                <small>Selected Court</small>
-                <strong><?= htmlspecialchars($court['court_name']) ?></strong>
+        <div class="court-preview">
+            <img
+                src="../images/court<?= (int)$courtId ?>.jpg"
+                alt="<?= htmlspecialchars($court['court_name']) ?>"
+                onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?q=80&w=900&auto=format&fit=crop';"
+            >
+            <div class="court-preview-overlay"></div>
+            <div class="court-preview-content">
+                <div>
+                    <span class="court-label">YOUR SELECTED COURT</span>
+                    <strong><?= htmlspecialchars($court['court_name']) ?></strong>
+                </div>
+                <span class="ready-badge"><i class="fa-solid fa-circle-check"></i> Ready to Book</span>
             </div>
         </div>
 
