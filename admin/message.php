@@ -1,310 +1,1325 @@
 <?php
+
 session_start();
 
-// Periksa kebenaran akses Admin
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== "admin") {
+
+// =====================================================
+// CHECK ADMIN LOGIN
+// =====================================================
+
+if (
+    !isset($_SESSION['user']) ||
+    ($_SESSION['user']['role'] ?? '') !== 'admin'
+) {
     header("Location: ../auth/login.php");
     exit();
 }
 
-// Sambungan ke pangkalan data mengikut struktur folder config/db.php
+
+// =====================================================
+// DATABASE CONNECTION
+// =====================================================
+
 $db_path = __DIR__ . '/../config/db.php';
+
 if (file_exists($db_path)) {
     include $db_path;
 } else {
     die("Ralat: Fail pangkalan data (db.php) tidak dijumpai.");
 }
 
+
 if (!isset($conn) || !$conn) {
     die("Ralat: Sambungan ke pangkalan data gagal.");
 }
 
-$user = $_SESSION['user'];
-$searchTerm = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 
-// Query untuk mengambil senarai mesej (menyokong carian jika ada)
-if (!empty($searchTerm)) {
-    $query = "SELECT * FROM messages WHERE name LIKE '%$searchTerm%' OR message LIKE '%$searchTerm%' ORDER BY id DESC";
+// =====================================================
+// CURRENT USER
+// =====================================================
+
+$user = $_SESSION['user'];
+
+
+// =====================================================
+// MARK ALL MESSAGE AS READ
+// =====================================================
+//
+// Bila admin buka page message.php,
+// semua message yang belum dibaca akan ditanda read.
+//
+// is_read:
+// 0 = belum dibaca
+// 1 = sudah dibaca
+//
+// =====================================================
+
+mysqli_query(
+    $conn,
+    "UPDATE messages
+     SET is_read = 1
+     WHERE is_read = 0"
+);
+
+
+// =====================================================
+// SEARCH
+// =====================================================
+
+$searchTerm = isset($_GET['search'])
+    ? trim($_GET['search'])
+    : '';
+
+
+// =====================================================
+// GET MESSAGES
+// =====================================================
+
+if ($searchTerm !== '') {
+
+    $safeSearch = mysqli_real_escape_string(
+        $conn,
+        $searchTerm
+    );
+
+    $query = "
+        SELECT *
+        FROM messages
+        WHERE
+            name LIKE '%$safeSearch%'
+            OR email LIKE '%$safeSearch%'
+            OR message LIKE '%$safeSearch%'
+        ORDER BY id DESC
+    ";
+
 } else {
-    $query = "SELECT * FROM messages ORDER BY id DESC";
+
+    $query = "
+        SELECT *
+        FROM messages
+        ORDER BY id DESC
+    ";
 }
+
+
 $result = mysqli_query($conn, $query);
+
 ?>
 <!DOCTYPE html>
+
 <html lang="ms">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesej & Pertanyaan - Admin Dashboard</title>
 
-    <!-- Bootstrap 5 CSS & FontAwesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Mesej & Pertanyaan - Admin Dashboard
+    </title>
+
+
+    <!-- Bootstrap -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+
+    <!-- Font Awesome -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+
+    <!-- Google Font -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- Shared Sidebar CSS -->
+
+    <link
+        rel="stylesheet"
+        href="sidebar.css?v=20260927"
+    >
+
 
     <style>
+
         :root {
-            --sidebar-bg: #1c2434;
+
+            --sidebar-bg: #07101f;
             --sidebar-text: #dee4ee;
-            --sidebar-hover: #333a48;
-            --accent-lime: #ccff00;
-            --text-dark: #111111;
-            --body-bg: #f1f5f9;
+
+            --body-bg: #07111f;
+
+            --panel-bg: #0d1a2d;
+
+            --border-color: #19345c;
+
+            --text-main: #f8fafc;
+
+            --text-muted: #94a3b8;
+
+            --blue: #3b82f6;
+
         }
+
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--body-bg);
-            color: var(--text-dark);
-            min-height: 100vh;
+
             margin: 0;
-            display: flex;
-        }
 
-        /* SIDEBAR STYLING */
-        .sidebar {
-            width: 280px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar-brand {
-            padding: 25px 20px;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            text-decoration: none;
-        }
-
-        .sidebar-menu {
-            padding: 20px 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .menu-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8a99ad;
-            margin-bottom: 10px;
-            padding-left: 10px;
-            font-weight: 700;
-        }
-
-        .sidebar-nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 15px;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-nav-link-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-nav-link:hover, .sidebar-nav-link.active {
-            background-color: var(--sidebar-hover);
-            color: #fff;
-        }
-
-        .sidebar-nav-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* MAIN CONTENT AREA */
-        .main-content {
-            margin-left: 280px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
             min-height: 100vh;
+
+            font-family:
+                'Plus Jakarta Sans',
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(6, 182, 212, 0.08),
+                    transparent 35%
+                ),
+                #07111f;
+
+            color: var(--text-main);
+
         }
 
-        /* TOPBAR STYLING */
-        .topbar {
-            height: 80px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
-            z-index: 99;
+
+        /* ==================================================
+           MAIN CONTENT
+        ================================================== */
+
+        .main-content {
+
+            margin-left: 350px;
+
+            min-height: 100vh;
+
         }
+
+
+        /* ==================================================
+           TOPBAR
+        ================================================== */
+
+        .topbar {
+
+            height: 80px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 42px;
+
+            background:
+                rgba(7, 17, 31, 0.90);
+
+            border-bottom:
+                1px solid rgba(
+                    148,
+                    163,
+                    184,
+                    0.10
+                );
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 50;
+
+            backdrop-filter:
+                blur(12px);
+
+        }
+
+
+        /* ==================================================
+           SEARCH
+        ================================================== */
 
         .search-form {
+
             position: relative;
-            width: 350px;
+
+            width: 425px;
+
         }
+
 
         .search-input {
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 50px !important;
-            padding: 10px 20px 10px 45px !important;
-            font-size: 0.85rem !important;
-            width: 100% !important;
-            color: #1e293b !important;
-            outline: none !important;
+
+            width: 100%;
+
+            height: 54px;
+
+            padding:
+                0
+                20px
+                0
+                55px;
+
+            background: #111d31;
+
+            border:
+                1px solid #27364d;
+
+            border-radius: 13px;
+
+            outline: none;
+
+            color: #ffffff;
+
+            font-size: 15px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+
         }
 
-        .search-form i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
+
+        .search-input::placeholder {
+
+            color: #7c8aa3;
+
         }
+
+
+        .search-input:focus {
+
+            border-color: #3b82f6;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    59,
+                    130,
+                    246,
+                    0.12
+                );
+
+        }
+
+
+        .search-form > i {
+
+            position: absolute;
+
+            left: 20px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color: #7f8eaa;
+
+            font-size: 18px;
+
+            pointer-events: none;
+
+        }
+
+
+        /* ==================================================
+           ADMIN PILL
+        ================================================== */
+
+        .topbar-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+        }
+
 
         .user-pill {
+
             display: flex;
+
             align-items: center;
+
             gap: 12px;
-            background: #f8fafc;
-            padding: 6px 16px 6px 6px;
-            border-radius: 50px;
-            border: 1px solid #e2e8f0;
+
+            padding:
+                6px
+                18px
+                6px
+                6px;
+
+            background: #111d31;
+
+            border:
+                1px solid #263750;
+
+            border-radius: 999px;
+
         }
+
 
         .user-avatar {
-            width: 38px;
-            height: 38px;
+
+            width: 45px;
+
+            height: 45px;
+
             border-radius: 50%;
-            background: var(--sidebar-bg);
-            color: var(--accent-lime);
+
+            background: #07111f;
+
+            border:
+                2px solid #2563eb;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
+            background-size: cover;
+
+            background-position: center;
+
             font-weight: 800;
-            font-size: 0.9rem;
+
+            color: #ffffff;
+
         }
 
-        /* CONTENT BODY */
+
+        .admin-name {
+
+            color: #ffffff;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+        }
+
+
+        .logout-btn {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                11px
+                22px;
+
+            border-radius: 14px;
+
+            background: #dc2626;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease;
+
+        }
+
+
+        .logout-btn:hover {
+
+            color: #ffffff;
+
+            background: #ef4444;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        /* ==================================================
+           CONTENT
+        ================================================== */
+
         .content-body {
-            padding: 40px;
-            flex-grow: 1;
+
+            padding:
+                38px
+                44px;
+
         }
 
-        .card-custom {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+
+        .page-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin-bottom: 28px;
+
         }
 
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .sidebar .sidebar-brand span, .sidebar .menu-label, .sidebar .sidebar-nav-link span, .sidebar .badge { display: none; }
-            .main-content { margin-left: 70px; }
-            .topbar { padding: 0 20px; }
-            .search-form { display: none; }
-            .content-body { padding: 20px; }
+
+        .page-title i {
+
+            color: #60a5fa;
+
+            font-size: 36px;
+
         }
+
+
+        .page-title h1 {
+
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size: 36px;
+
+            font-weight: 800;
+
+            letter-spacing:
+                -1px;
+
+        }
+
+
+        /* ==================================================
+           CARD
+        ================================================== */
+
+        .message-card {
+
+            background:
+                rgba(
+                    13,
+                    26,
+                    45,
+                    0.94
+                );
+
+            border:
+                1px solid #19345c;
+
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow:
+                0
+                18px
+                50px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.16
+                );
+
+        }
+
+
+        /* ==================================================
+           TABLE
+        ================================================== */
+
+        .message-table {
+
+            width: 100%;
+
+            border-collapse:
+                collapse;
+
+            color: #ffffff;
+
+        }
+
+
+        .message-table thead {
+
+            background: #26344d;
+
+        }
+
+
+        .message-table th {
+
+            padding:
+                15px
+                12px;
+
+            color: #9fb4de;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                0.2px;
+
+            border: 0;
+
+        }
+
+
+        .message-table th:first-child {
+
+            border-radius:
+                10px
+                0
+                0
+                0;
+
+        }
+
+
+        .message-table th:last-child {
+
+            border-radius:
+                0
+                10px
+                0
+                0;
+
+        }
+
+
+        .message-table td {
+
+            padding:
+                18px
+                12px;
+
+            border-bottom:
+                1px solid
+                rgba(
+                    148,
+                    163,
+                    184,
+                    0.15
+                );
+
+            color: #e7edf8;
+
+            vertical-align:
+                middle;
+
+            font-size: 15px;
+
+        }
+
+
+        .message-table tbody tr {
+
+            transition:
+                background 0.15s ease;
+
+        }
+
+
+        .message-table tbody tr:hover {
+
+            background:
+                rgba(
+                    59,
+                    130,
+                    246,
+                    0.05
+                );
+
+        }
+
+
+        .message-name {
+
+            font-weight: 800;
+
+            color: #ffffff;
+
+        }
+
+
+        .message-text {
+
+            max-width: 430px;
+
+            white-space:
+                normal;
+
+            word-break:
+                break-word;
+
+            line-height: 1.6;
+
+        }
+
+
+        .message-date {
+
+            color: #c5d0e2;
+
+            white-space:
+                nowrap;
+
+        }
+
+
+        /* ==================================================
+           REPLY BUTTON
+        ================================================== */
+
+        .reply-btn {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap: 7px;
+
+            padding:
+                9px
+                18px;
+
+            border-radius:
+                13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #3b82f6,
+                    #2563eb
+                );
+
+            color: #ffffff;
+
+            text-decoration:
+                none;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            box-shadow:
+                0
+                8px
+                20px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.20
+                );
+
+            transition:
+                transform 0.15s ease,
+                filter 0.15s ease;
+
+        }
+
+
+        .reply-btn:hover {
+
+            color: #ffffff;
+
+            transform:
+                translateY(-1px);
+
+            filter:
+                brightness(1.08);
+
+        }
+
+
+        /* ==================================================
+           EMPTY
+        ================================================== */
+
+        .empty-message {
+
+            padding: 45px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+        }
+
+
+        .empty-message i {
+
+            display: block;
+
+            margin-bottom: 12px;
+
+            font-size: 35px;
+
+            color: #64748b;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (
+            max-width: 1100px
+        ) {
+
+            .main-content {
+
+                margin-left:
+                    280px;
+
+            }
+
+            .search-form {
+
+                width:
+                    300px;
+
+            }
+
+        }
+
+
+        @media (
+            max-width: 768px
+        ) {
+
+            .main-content {
+
+                margin-left:
+                    70px;
+
+            }
+
+
+            .topbar {
+
+                padding:
+                    0
+                    18px;
+
+            }
+
+
+            .search-form {
+
+                display:
+                    none;
+
+            }
+
+
+            .admin-name {
+
+                display:
+                    none;
+
+            }
+
+
+            .user-pill {
+
+                padding: 5px;
+
+            }
+
+
+            .content-body {
+
+                padding:
+                    25px
+                    18px;
+
+            }
+
+
+            .page-title h1 {
+
+                font-size:
+                    25px;
+
+            }
+
+
+            .message-card {
+
+                padding:
+                    15px;
+
+            }
+
+        }
+
     </style>
-    <link rel="stylesheet" href="sidebar.css?v=20260926">
 
-    <!-- Stable shared admin shell -->
-    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
 </head>
+
 
 <body class="admin-page">
 
-    <!-- SIDEBAR -->
-    <?php include __DIR__ . '/sidebar.php'; ?>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        
-        <!-- TOPBAR -->
-        <header class="topbar">
-            <form action="" method="GET" class="search-form">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" name="search" class="form-control search-input" placeholder="Cari mesej..." autocomplete="off" value="<?php echo $searchTerm; ?>">
-            </form>
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-pill">
-                    <div class="user-avatar" style="<?php echo $admin_photo_style; ?>"><?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?></div>
+<?php
+
+include __DIR__ . '/sidebar.php';
+
+?>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="main-content">
+
+
+    <!-- =================================================
+         TOPBAR
+    ================================================== -->
+
+    <header class="topbar">
+
+
+        <!-- SEARCH -->
+
+        <form
+            action=""
+            method="GET"
+            class="search-form"
+        >
+
+            <i
+                class="fa-solid fa-magnifying-glass"
+            ></i>
+
+            <input
+                type="text"
+                name="search"
+                class="search-input"
+                placeholder="Cari mesej..."
+                autocomplete="off"
+                value="<?php
+                    echo htmlspecialchars(
+                        $searchTerm,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+                ?>"
+            >
+
+        </form>
+
+
+
+        <!-- ADMIN -->
+
+        <div class="topbar-right">
+
+
+            <div class="user-pill">
+
+
+                <div
+                    class="user-avatar"
+                    style="<?php
+                        echo $admin_photo_style;
+                    ?>"
+                >
+
+                    <?php
+
+                    echo $admin_photo === ''
+                        ? htmlspecialchars(
+                            $admin_initial,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        )
+                        : '';
+
+                    ?>
+
                 </div>
-                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Log Keluar
-                </a>
-            </div>
-        </header>
 
-        <!-- CONTENT BODY -->
-        <main class="content-body">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h3 class="fw-bold mb-0"><i class="fa-solid fa-comments text-primary me-2"></i> Senarai Mesej & Pertanyaan</h3>
+
+                <div class="admin-name">
+
+                    <?php
+
+                    echo htmlspecialchars(
+                        $current_admin['name']
+                            ?? $user['name']
+                            ?? 'Admin',
+                        ENT_QUOTES,
+                        'UTF-8'
+                    );
+
+                    ?>
+
+                </div>
+
             </div>
 
-            <div class="card-custom">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
+
+
+            <a
+                href="../auth/logout.php"
+                class="logout-btn"
+            >
+
+                <i
+                    class="fa-solid fa-right-from-bracket"
+                ></i>
+
+                Log Keluar
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         CONTENT
+    ================================================== -->
+
+    <main class="content-body">
+
+
+        <!-- PAGE TITLE -->
+
+        <div class="page-title">
+
+            <i
+                class="fa-solid fa-comments"
+            ></i>
+
+            <h1>
+                Senarai Mesej & Pertanyaan
+            </h1>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MESSAGE CARD
+        ================================================== -->
+
+        <div class="message-card">
+
+
+            <div class="table-responsive">
+
+
+                <table class="message-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Nama Pengirim
+                            </th>
+
+                            <th>
+                                Mesej
+                            </th>
+
+                            <th>
+                                Tarikh
+                            </th>
+
+                            <th class="text-end">
+                                Tindakan
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    <?php
+
+                    if (
+                        $result &&
+                        mysqli_num_rows($result) > 0
+                    ):
+
+                    ?>
+
+
+                        <?php
+
+                        while (
+                            $row =
+                                mysqli_fetch_assoc(
+                                    $result
+                                )
+                        ):
+
+                        ?>
+
+
                             <tr>
-                                <th>ID</th>
-                                <th>Nama Pengirim</th>
-                                <th>Mesej</th>
-                                <th>Tarikh</th>
-                                <th class="text-end">Tindakan</th>
+
+
+                                <!-- ID -->
+
+                                <td>
+
+                                    #<?php
+                                    echo (int)$row['id'];
+                                    ?>
+
+                                </td>
+
+
+
+                                <!-- NAME -->
+
+                                <td
+                                    class="message-name"
+                                >
+
+                                    <?php
+
+                                    echo htmlspecialchars(
+                                        $row['name']
+                                            ?? '-',
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    );
+
+                                    ?>
+
+                                </td>
+
+
+
+                                <!-- MESSAGE -->
+
+                                <td
+                                    class="message-text"
+                                >
+
+                                    <?php
+
+                                    echo nl2br(
+                                        htmlspecialchars(
+                                            $row['message']
+                                                ?? '',
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        )
+                                    );
+
+                                    ?>
+
+                                </td>
+
+
+
+                                <!-- DATE -->
+
+                                <td
+                                    class="message-date"
+                                >
+
+                                    <?php
+
+                                    echo !empty(
+                                        $row['created_at']
+                                    )
+                                        ? htmlspecialchars(
+                                            $row['created_at'],
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        )
+                                        : '-';
+
+                                    ?>
+
+                                </td>
+
+
+
+                                <!-- ACTION -->
+
+                                <td class="text-end">
+
+
+                                    <?php
+
+                                    $reply_email =
+                                        trim(
+                                            (string)(
+                                                $row['email']
+                                                ?? ''
+                                            )
+                                        );
+
+                                    ?>
+
+
+                                    <?php
+                                    if (
+                                        $reply_email !== ''
+                                    ):
+                                    ?>
+
+
+                                        <a
+                                            href="mailto:<?php
+                                                echo htmlspecialchars(
+                                                    $reply_email,
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                );
+                                            ?>?subject=<?php
+                                                echo rawurlencode(
+                                                    'Balasan Pertanyaan Badminton Kampung Panji'
+                                                );
+                                            ?>"
+                                            class="reply-btn"
+                                        >
+
+                                            <i
+                                                class="fa-solid fa-reply"
+                                            ></i>
+
+                                            Balas
+
+                                        </a>
+
+
+                                    <?php else: ?>
+
+
+                                        <span
+                                            class="text-secondary small"
+                                        >
+
+                                            Tiada email
+
+                                        </span>
+
+
+                                    <?php endif; ?>
+
+
+                                </td>
+
+
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($result && mysqli_num_rows($result) > 0): ?>
-                                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                                    <tr>
-                                        <td>#<?php echo $row['id']; ?></td>
-                                        <td class="fw-semibold"><?php echo htmlspecialchars($row['name']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['message']); ?></td>
-                                        <td><?php echo isset($row['created_at']) ? $row['created_at'] : '-'; ?></td>
-                                        <td class="text-end">
-                                            <a href="mailto:<?php echo isset($row['email']) ? $row['email'] : '#'; ?>" class="btn btn-sm btn-primary rounded-pill px-3">
-                                                <i class="fa-solid fa-reply me-1"></i> Balas
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">Tiada mesej ditemui.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+
+
+                        <?php endwhile; ?>
+
+
+                    <?php else: ?>
+
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="empty-message"
+                            >
+
+                                <i
+                                    class="fa-regular fa-message"
+                                ></i>
+
+                                Tiada mesej ditemui.
+
+                            </td>
+
+                        </tr>
+
+
+                    <?php endif; ?>
+
+
+                    </tbody>
+
+
+                </table>
+
+
             </div>
-        </main>
-    </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
 
 </body>
+
 </html>
