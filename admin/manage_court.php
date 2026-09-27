@@ -469,22 +469,52 @@ if (
 // =====================================================
 
 // =====================================================
-// 5. SET COURT NOT AVAILABLE IKUT TARIKH
+// 5. SET COURT NOT AVAILABLE IKUT TARIKH + MASA
 // =====================================================
 if (isset($_POST['set_date_unavailable'])) {
     $unavailable_court_id = (int)($_POST['unavailable_court_id'] ?? 0);
     $unavailable_date = trim($_POST['unavailable_date'] ?? '');
+    $start_time = trim($_POST['start_time'] ?? '');
+    $duration = (int)($_POST['duration'] ?? 1);
     $unavailable_reason = trim($_POST['unavailable_reason'] ?? '');
 
     $valid_date = DateTime::createFromFormat('Y-m-d', $unavailable_date);
     $valid_date = $valid_date && $valid_date->format('Y-m-d') === $unavailable_date;
+    $valid_time = preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $start_time);
+    $valid_duration = in_array($duration, [1, 2, 3, 4], true);
 
-    if ($unavailable_court_id > 0 && $valid_date && $unavailable_date >= date('Y-m-d')) {
-        $stmt = $conn->prepare("\n            INSERT INTO court_unavailability (court_id, unavailable_date, reason)\n            VALUES (?, ?, ?)\n            ON DUPLICATE KEY UPDATE reason = VALUES(reason)\n        ");
-        if ($stmt) {
-            $stmt->bind_param("iss", $unavailable_court_id, $unavailable_date, $unavailable_reason);
-            $stmt->execute();
-            $stmt->close();
+    // Kira End Time secara automatik berdasarkan Start Time + Duration.
+    $start_minutes = 0;
+    $end_time = '';
+    if ($valid_time && $valid_duration) {
+        [$start_hour, $start_minute] = array_map('intval', explode(':', $start_time));
+        $start_minutes = ($start_hour * 60) + $start_minute;
+        $end_minutes = $start_minutes + ($duration * 60);
+        // court_unavailability simpan masa dalam hari yang sama
+        if ($end_minutes <= 1440) {
+            $end_hour = intdiv($end_minutes, 60);
+            $end_minute = $end_minutes % 60;
+            $end_time = ($end_minutes === 1440) ? '23:59:59' : sprintf('%02d:%02d:00', $end_hour, $end_minute);
+        }
+    }
+
+    if ($unavailable_court_id > 0 && $valid_date && $valid_time && $valid_duration && $end_time !== '' && $unavailable_date >= date('Y-m-d')) {
+        // Elak admin masukkan blok masa yang bertindih untuk court/tarikh sama.
+        $check = $conn->prepare("\n            SELECT id FROM court_unavailability\n            WHERE court_id = ? AND unavailable_date = ?\n              AND (start_time IS NULL OR end_time IS NULL OR (start_time < ? AND end_time > ?))\n            LIMIT 1\n        ");
+        if ($check) {
+            $check->bind_param("isss", $unavailable_court_id, $unavailable_date, $end_time, $start_time);
+            $check->execute();
+            $existing = $check->get_result()->fetch_assoc();
+            $check->close();
+
+            if (!$existing) {
+                $stmt = $conn->prepare("\n                    INSERT INTO court_unavailability\n                    (court_id, unavailable_date, start_time, end_time, reason)\n                    VALUES (?, ?, ?, ?, ?)\n                ");
+                if ($stmt) {
+                    $stmt->bind_param("issss", $unavailable_court_id, $unavailable_date, $start_time, $end_time, $unavailable_reason);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
         }
     }
 
@@ -506,11 +536,9 @@ if (isset($_GET['remove_unavailable'])) {
     exit();
 }
 
-// Senarai court untuk dropdown tarikh.
 $date_courts = mysqli_query($conn, "\n    SELECT id, court_name\n    FROM courts\n    WHERE status NOT IN ('Disabled', 'Deleted')\n    ORDER BY court_name ASC, id ASC\n");
 
-// Senarai tarikh yang admin sudah block.
-$unavailable_dates = mysqli_query($conn, "\n    SELECT cu.id, cu.court_id, cu.unavailable_date, cu.reason, c.court_name\n    FROM court_unavailability cu\n    JOIN courts c ON c.id = cu.court_id\n    WHERE cu.unavailable_date >= CURDATE()\n      AND c.status NOT IN ('Deleted')\n    ORDER BY cu.unavailable_date ASC, c.court_name ASC\n");
+$unavailable_dates = mysqli_query($conn, "\n    SELECT cu.id, cu.court_id, cu.unavailable_date, cu.start_time, cu.end_time, cu.reason, c.court_name\n    FROM court_unavailability cu\n    JOIN courts c ON c.id = cu.court_id\n    WHERE cu.unavailable_date >= CURDATE()\n      AND c.status NOT IN ('Deleted')\n    ORDER BY cu.unavailable_date ASC, cu.start_time ASC, c.court_name ASC\n");
 
 
 // =====================================================
@@ -2679,15 +2707,15 @@ $result = mysqli_query(
 
 
                     <!-- =================================
-                         COURT UNAVAILABLE BY DATE
+                         COURT UNAVAILABLE BY DATE + TIME
                     ================================== -->
                     <div id="date-unavailability" class="gray-box mb-5" style="scroll-margin-top:100px;">
                         <h5 class="fw-bold mb-1 text-secondary fs-6">
                             <i class="fa-solid fa-calendar-xmark me-1"></i>
-                            Set Court Not Available by Date
+                            Set Court Not Available by Date & Time
                         </h5>
                         <p class="text-muted small mb-4">
-                            Pilih gelanggang dan tarikh tertentu. Court hanya akan ditutup pada tarikh tersebut.
+                            Pilih court, tarikh, duration dan start time. End time akan dikira secara automatik.
                         </p>
 
                         <form method="POST" class="row g-3 mb-4">
@@ -2710,25 +2738,49 @@ $result = mysqli_query(
                                 <input type="date" name="unavailable_date" min="<?php echo date('Y-m-d'); ?>" class="form-control bg-white" required>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7 text-muted">Duration</label>
+                                <select name="duration" class="form-select bg-white" required>
+                                    <option value="1">1 Hour</option>
+                                    <option value="2">2 Hours</option>
+                                    <option value="3">3 Hours</option>
+                                    <option value="4">4 Hours</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7 text-muted">Start Time</label>
+                                <select name="start_time" class="form-select bg-white" required>
+                                    <option value="08:00">08:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="22:00">22:00</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-9">
                                 <label class="form-label fw-semibold fs-7 text-muted">Reason</label>
                                 <input type="text" name="unavailable_reason" maxlength="255" class="form-control bg-white" placeholder="Example: Maintenance">
                             </div>
 
-                            <div class="col-md-2 d-flex align-items-end">
+                            <div class="col-md-3 d-flex align-items-end">
                                 <button type="submit" name="set_date_unavailable" value="1" class="btn btn-minimal-dark w-100">
                                     <i class="fa-solid fa-ban me-1"></i> Set
                                 </button>
                             </div>
                         </form>
 
-                        <h6 class="fw-bold mb-3">Upcoming Unavailable Dates</h6>
+                        <h6 class="fw-bold mb-3">Upcoming Unavailable Slots</h6>
                         <div class="table-responsive">
                             <table class="table table-bordered text-center align-middle bg-white mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Court</th>
                                         <th>Date</th>
+                                        <th>Time</th>
                                         <th>Reason</th>
                                         <th style="width:120px;">Action</th>
                                     </tr>
@@ -2739,18 +2791,25 @@ $result = mysqli_query(
                                         <tr>
                                             <td class="fw-bold"><?php echo htmlspecialchars($blocked['court_name']); ?></td>
                                             <td><?php echo htmlspecialchars(date('d M Y', strtotime($blocked['unavailable_date']))); ?></td>
+                                            <td>
+                                                <?php if (empty($blocked['start_time']) || empty($blocked['end_time'])): ?>
+                                                    All Day
+                                                <?php else: ?>
+                                                    <?php echo htmlspecialchars(substr($blocked['start_time'],0,5)); ?> - <?php echo htmlspecialchars(substr($blocked['end_time'],0,5)); ?>
+                                                <?php endif; ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($blocked['reason'] ?: '-'); ?></td>
                                             <td>
                                                 <a href="?remove_unavailable=<?php echo (int)$blocked['id']; ?>#date-unavailability"
                                                    class="btn btn-minimal text-danger"
-                                                   onclick="return confirm('Remove this unavailable date?');">
+                                                   onclick="return confirm('Remove this unavailable slot?');">
                                                     <i class="fa-solid fa-trash me-1"></i> Remove
                                                 </a>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="4" class="text-muted py-4">Tiada tarikh court yang disekat.</td></tr>
+                                    <tr><td colspan="5" class="text-muted py-4">Tiada slot court yang disekat.</td></tr>
                                 <?php endif; ?>
                                 </tbody>
                             </table>
