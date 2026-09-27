@@ -65,10 +65,11 @@ if (isset($_POST['court'])) {
 /* COURT PAGINATION */
 $limit = 6;
 
+/* DISABLED & DELETED TAK DIKIRA */
 $count_sql = "
     SELECT COUNT(*) AS total
     FROM courts
-    WHERE status <> 'Deleted'
+    WHERE status NOT IN ('Disabled', 'Deleted')
 ";
 
 $count_result = mysqli_query($conn, $count_sql);
@@ -84,6 +85,7 @@ if ($court_page > $total_pages) {
 $offset = ($court_page - 1) * $limit;
 
 /* COURT + STATUS IKUT TARIKH */
+/* DISABLED & DELETED TAK DIPAPARKAN */
 $court_sql = "
     SELECT
         c.*,
@@ -93,7 +95,7 @@ $court_sql = "
     LEFT JOIN court_unavailability cu
         ON cu.court_id = c.id
         AND cu.unavailable_date = ?
-    WHERE c.status <> 'Deleted'
+    WHERE c.status NOT IN ('Disabled', 'Deleted')
     ORDER BY c.id ASC
     LIMIT ? OFFSET ?
 ";
@@ -314,10 +316,7 @@ body {
     color: #818cf8;
 }
 
-/* =========================
-   DATE - KEKAL MACAM ASAL
-========================= */
-
+/* DATE - KEKAL MACAM ASAL */
 .dates {
     display: flex;
     gap: 12px;
@@ -607,10 +606,7 @@ hr {
 
 <form method="POST" action="dashboard.php" id="bookingForm">
 
-<!-- =====================
-     STEP 1 - DATE
-===================== -->
-
+<!-- STEP 1 - DATE -->
 <div class="step">
     1. Choose a date
 </div>
@@ -707,10 +703,7 @@ for ($i = 0; $i < 14; $i++) {
 
 <hr class="my-4">
 
-<!-- =====================
-     STEP 2 - DURATION
-===================== -->
-
+<!-- STEP 2 - DURATION -->
 <div class="step">
     2. Choose duration (hours)
 </div>
@@ -757,10 +750,7 @@ for ($d = 1; $d <= 4; $d++) {
 
 <hr class="my-4">
 
-<!-- =====================
-     STEP 3 - TIME
-===================== -->
-
+<!-- STEP 3 - TIME -->
 <div class="step">
     3. Choose a start time
 </div>
@@ -818,10 +808,7 @@ foreach ($times as $t) {
 
 <hr class="my-4">
 
-<!-- =====================
-     STEP 4 - COURT
-===================== -->
-
+<!-- STEP 4 - COURT -->
 <div class="step">
     4. Choose a court
 </div>
@@ -938,7 +925,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 >
 
     <i class="fa-solid fa-circle-check me-1"></i>
-
     Available
 
 </span>
@@ -954,7 +940,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 >
 
     <i class="fa-solid fa-circle-xmark me-1"></i>
-
     Not Available
 
 </span>
@@ -976,7 +961,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 >
 
     <i class="fa-solid fa-calendar-check me-1"></i>
-
     Book Court
 
 </button>
@@ -1014,10 +998,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 </div>
 
-<!-- =====================
-     BACK / NEXT COURT
-===================== -->
-
+<!-- BACK / NEXT COURT -->
 <div class="court-pagination">
 
 <button
@@ -1028,7 +1009,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 >
 
     <i class="fa-solid fa-arrow-left me-2"></i>
-
     Back
 
 </button>
@@ -1069,10 +1049,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <script>
 
-/* =========================
-   DATE
-========================= */
-
+/* DATE */
 function updateDateCard(element) {
 
     document
@@ -1092,11 +1069,6 @@ function updateDateCard(element) {
 
         radio.checked = true;
 
-        /* KEKAL MACAM FLOW ASAL:
-           reload supaya status court
-           ikut tarikh yang dipilih
-        */
-
         window.location.href =
             'dashboard.php?date=' +
             encodeURIComponent(
@@ -1105,11 +1077,7 @@ function updateDateCard(element) {
     }
 }
 
-
-/* =========================
-   DURATION
-========================= */
-
+/* DURATION */
 function updateDurationCard(element) {
 
     document
@@ -1130,11 +1098,7 @@ function updateDurationCard(element) {
     }
 }
 
-
-/* =========================
-   START TIME
-========================= */
-
+/* START TIME */
 function updateStartTimeCard(element) {
 
     document
@@ -1155,11 +1119,7 @@ function updateStartTimeCard(element) {
     }
 }
 
-
-/* =========================
-   COURT BACK / NEXT
-========================= */
-
+/* COURT BACK / NEXT */
 function changeCourtPage(page) {
 
     if (page < 1) {
@@ -1172,15 +1132,6 @@ function changeCourtPage(page) {
         );
 
     courtPage.value = page;
-
-    /*
-        Submit form yang sama.
-        Jadi:
-        - date kekal
-        - duration kekal
-        - time kekal
-        - cuma page court berubah
-    */
 
     document
         .getElementById('bookingForm')
