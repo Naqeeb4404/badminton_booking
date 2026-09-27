@@ -995,10 +995,9 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <!-- PRICE -->
 <td class="text-center">
-    <span class="fw-bold" style="color:#f8fafc;">
-        RM <?php echo number_format((float)$row['price'], 2); ?>
+    <span style="display:inline-block;white-space:nowrap;font-weight:800;color:#f8fafc;font-size:0.92rem;">
+        RM <?php echo number_format((float)$row['price'], 2); ?> / hour
     </span>
-    <span style="color:#94a3b8;font-size:0.75rem;">/ hour</span>
 </td>
 
 <!-- STATUS -->
