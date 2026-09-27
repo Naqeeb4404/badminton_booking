@@ -10,7 +10,28 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$user_id = $_SESSION['user']['id'];
+$user_id = (int)$_SESSION['user']['id'];
+
+/* USER MESSAGE NOTIFICATION */
+$unread_reply_count = 0;
+$stmtNoti = $conn->prepare("
+    SELECT COUNT(*) AS total
+    FROM messages
+    WHERE user_id = ?
+      AND admin_reply IS NOT NULL
+      AND admin_reply != ''
+      AND reply_is_read = 0
+");
+if ($stmtNoti) {
+    $stmtNoti->bind_param("i", $user_id);
+    $stmtNoti->execute();
+    $notiResult = $stmtNoti->get_result();
+    if ($notiResult) {
+        $notiData = $notiResult->fetch_assoc();
+        $unread_reply_count = (int)($notiData['total'] ?? 0);
+    }
+    $stmtNoti->close();
+}
 
 /* PILIHAN USER */
 $selected_date = $_POST['date'] ?? $_GET['date'] ?? date('Y-m-d');
@@ -311,6 +332,28 @@ body {
 .nav-links a:hover,
 .nav-links a.active {
     color: var(--text-main);
+}
+
+.message-nav {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.message-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
 }
 
 .btn-logout {
@@ -629,7 +672,12 @@ hr {
 
     <div class="nav-links d-none d-md-flex">
         <a href="feedback_report.php">Feedback</a>
-        <a href="message.php">Message</a>
+        <a href="message.php" class="message-nav">
+            Message
+            <?php if ($unread_reply_count > 0) { ?>
+                <span class="message-badge"><?php echo $unread_reply_count > 99 ? '99+' : $unread_reply_count; ?></span>
+            <?php } ?>
+        </a>
         <a href="my_booking.php">My Booking</a>
         <a href="profile.php">Profile</a>
     </div>

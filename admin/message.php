@@ -12,7 +12,7 @@ if (
 include __DIR__ . '/../config/db.php';
 
 if (!isset($conn) || !$conn) {
-    die("Ralat: Sambungan ke pangkalan data gagal.");
+    die("Ralat: Sambungan ke database gagal.");
 }
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
@@ -20,7 +20,7 @@ date_default_timezone_set('Asia/Kuala_Lumpur');
 $user = $_SESSION['user'];
 
 /* =====================================================
-   REPLY MESSAGE
+   ADMIN REPLY
 ===================================================== */
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
@@ -31,24 +31,24 @@ if (
 
     if ($message_id > 0 && $admin_reply !== '') {
 
-        $stmt = mysqli_prepare(
-            $conn,
-            "UPDATE messages
-             SET admin_reply = ?,
-                 replied_at = NOW()
-             WHERE id = ?"
-        );
+        $stmt = $conn->prepare("
+            UPDATE messages
+            SET
+                admin_reply = ?,
+                replied_at = NOW(),
+                reply_is_read = 0
+            WHERE id = ?
+        ");
 
         if ($stmt) {
-            mysqli_stmt_bind_param(
-                $stmt,
+            $stmt->bind_param(
                 "si",
                 $admin_reply,
                 $message_id
             );
 
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            $stmt->execute();
+            $stmt->close();
         }
 
         header("Location: message.php?reply=success");
@@ -67,20 +67,19 @@ if (
 
     if ($message_id > 0) {
 
-        $stmt = mysqli_prepare(
-            $conn,
-            "DELETE FROM messages WHERE id = ?"
-        );
+        $stmt = $conn->prepare("
+            DELETE FROM messages
+            WHERE id = ?
+        ");
 
         if ($stmt) {
-            mysqli_stmt_bind_param(
-                $stmt,
+            $stmt->bind_param(
                 "i",
                 $message_id
             );
 
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+            $stmt->execute();
+            $stmt->close();
         }
     }
 
@@ -89,7 +88,7 @@ if (
 }
 
 /* =====================================================
-   MARK ALL MESSAGE AS READ
+   MARK USER MESSAGE AS READ BY ADMIN
 ===================================================== */
 mysqli_query(
     $conn,
@@ -130,15 +129,19 @@ if ($searchTerm !== '') {
     ";
 }
 
-$result = mysqli_query($conn, $query);
+$result = mysqli_query(
+    $conn,
+    $query
+);
 
 if (!$result) {
     die(
-        "Ralat query message: " .
+        "Ralat query: " .
         htmlspecialchars(mysqli_error($conn))
     );
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="ms">
 
@@ -151,7 +154,9 @@ if (!$result) {
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>Mesej & Pertanyaan - Admin Dashboard</title>
+<title>
+    Mesej & Pertanyaan - Admin Dashboard
+</title>
 
 <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -176,8 +181,6 @@ if (!$result) {
 <style>
 
 :root {
-    --sidebar-bg: #07101f;
-    --sidebar-text: #dee4ee;
     --body-bg: #07111f;
     --panel-bg: #0d1a2d;
     --border-color: #19345c;
@@ -193,55 +196,55 @@ if (!$result) {
 body {
     margin: 0;
     min-height: 100vh;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+
+    font-family:
+        'Plus Jakarta Sans',
+        sans-serif;
 
     background:
         radial-gradient(
             circle at top right,
-            rgba(6, 182, 212, 0.08),
+            rgba(6,182,212,.08),
             transparent 35%
         ),
         #07111f;
 
-    color: var(--text-main);
+    color: #f8fafc;
 }
-
-/* =====================================================
-   MAIN
-===================================================== */
 
 .main-content {
     margin-left: 350px;
     min-height: 100vh;
 }
 
-/* =====================================================
-   TOPBAR
-===================================================== */
+/* ================= TOPBAR ================= */
 
 .topbar {
     height: 80px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     padding: 0 42px;
 
-    background: rgba(7, 17, 31, 0.90);
+    background:
+        rgba(7,17,31,.90);
 
     border-bottom:
-        1px solid rgba(148, 163, 184, 0.10);
+        1px solid
+        rgba(148,163,184,.10);
 
     position: sticky;
     top: 0;
+
     z-index: 50;
 
-    backdrop-filter: blur(12px);
+    backdrop-filter:
+        blur(12px);
 }
 
-/* =====================================================
-   SEARCH
-===================================================== */
+/* ================= SEARCH ================= */
 
 .search-form {
     position: relative;
@@ -253,10 +256,7 @@ body {
     height: 54px;
 
     padding:
-        0
-        20px
-        0
-        55px;
+        0 20px 0 55px;
 
     background: #111d31;
 
@@ -267,13 +267,9 @@ body {
 
     outline: none;
 
-    color: #ffffff;
+    color: #fff;
 
     font-size: 15px;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
 }
 
 .search-input::placeholder {
@@ -285,7 +281,7 @@ body {
 
     box-shadow:
         0 0 0 3px
-        rgba(59, 130, 246, 0.12);
+        rgba(59,130,246,.12);
 }
 
 .search-form > i {
@@ -294,18 +290,13 @@ body {
     left: 20px;
     top: 50%;
 
-    transform: translateY(-50%);
+    transform:
+        translateY(-50%);
 
     color: #7f8eaa;
-
-    font-size: 18px;
-
-    pointer-events: none;
 }
 
-/* =====================================================
-   ADMIN
-===================================================== */
+/* ================= ADMIN ================= */
 
 .topbar-right {
     display: flex;
@@ -320,10 +311,7 @@ body {
     gap: 12px;
 
     padding:
-        6px
-        18px
-        6px
-        6px;
+        6px 18px 6px 6px;
 
     background: #111d31;
 
@@ -339,10 +327,10 @@ body {
 
     border-radius: 50%;
 
-    background: #07111f;
-
     border:
         2px solid #2563eb;
+
+    background: #07111f;
 
     display: flex;
     align-items: center;
@@ -351,16 +339,12 @@ body {
     background-size: cover;
     background-position: center;
 
+    color: #fff;
     font-weight: 800;
-
-    color: #ffffff;
 }
 
 .admin-name {
-    color: #ffffff;
-
-    font-size: 16px;
-
+    color: #fff;
     font-weight: 800;
 }
 
@@ -371,42 +355,29 @@ body {
     gap: 8px;
 
     padding:
-        11px
-        22px;
+        11px 22px;
 
     border-radius: 14px;
 
     background: #dc2626;
 
-    color: #ffffff;
+    color: #fff;
 
     text-decoration: none;
 
-    font-size: 14px;
-
     font-weight: 800;
-
-    transition:
-        transform 0.15s ease,
-        background 0.15s ease;
 }
 
 .logout-btn:hover {
-    color: #ffffff;
-
     background: #ef4444;
-
-    transform: translateY(-1px);
+    color: #fff;
 }
 
-/* =====================================================
-   CONTENT
-===================================================== */
+/* ================= CONTENT ================= */
 
 .content-body {
     padding:
-        38px
-        44px;
+        38px 44px;
 }
 
 .page-title {
@@ -420,63 +391,57 @@ body {
 
 .page-title i {
     color: #60a5fa;
-
     font-size: 36px;
 }
 
 .page-title h1 {
     margin: 0;
 
-    color: #ffffff;
+    color: #fff;
 
     font-size: 36px;
-
     font-weight: 800;
-
-    letter-spacing: -1px;
 }
 
-/* =====================================================
-   ALERT
-===================================================== */
+/* ================= ALERT ================= */
 
-.custom-alert {
-    padding: 15px 18px;
+.notice {
+    padding: 14px 18px;
 
-    border-radius: 14px;
+    margin-bottom: 20px;
 
-    margin-bottom: 22px;
+    border-radius: 13px;
 
     font-weight: 700;
 }
 
-.alert-success-custom {
+.notice-success {
     color: #86efac;
 
     background:
-        rgba(34, 197, 94, 0.10);
+        rgba(34,197,94,.10);
 
     border:
-        1px solid rgba(34, 197, 94, 0.25);
+        1px solid
+        rgba(34,197,94,.25);
 }
 
-.alert-delete-custom {
+.notice-delete {
     color: #fca5a5;
 
     background:
-        rgba(239, 68, 68, 0.10);
+        rgba(239,68,68,.10);
 
     border:
-        1px solid rgba(239, 68, 68, 0.25);
+        1px solid
+        rgba(239,68,68,.25);
 }
 
-/* =====================================================
-   CARD
-===================================================== */
+/* ================= CARD ================= */
 
 .message-card {
     background:
-        rgba(13, 26, 45, 0.94);
+        rgba(13,26,45,.94);
 
     border:
         1px solid #19345c;
@@ -484,24 +449,17 @@ body {
     border-radius: 24px;
 
     padding: 30px;
-
-    box-shadow:
-        0
-        18px
-        50px
-        rgba(0, 0, 0, 0.16);
 }
 
-/* =====================================================
-   TABLE
-===================================================== */
+/* ================= TABLE ================= */
 
 .message-table {
     width: 100%;
 
-    border-collapse: collapse;
+    border-collapse:
+        collapse;
 
-    color: #ffffff;
+    color: #fff;
 }
 
 .message-table thead {
@@ -510,8 +468,7 @@ body {
 
 .message-table th {
     padding:
-        15px
-        12px;
+        15px 12px;
 
     color: #9fb4de;
 
@@ -519,62 +476,27 @@ body {
 
     font-weight: 800;
 
-    text-transform: uppercase;
-
-    letter-spacing: 0.2px;
-
-    border: 0;
-}
-
-.message-table th:first-child {
-    border-radius:
-        10px
-        0
-        0
-        0;
-}
-
-.message-table th:last-child {
-    border-radius:
-        0
-        10px
-        0
-        0;
+    text-transform:
+        uppercase;
 }
 
 .message-table td {
     padding:
-        18px
-        12px;
+        18px 12px;
 
     border-bottom:
         1px solid
-        rgba(148, 163, 184, 0.15);
+        rgba(148,163,184,.15);
 
-    color: #e7edf8;
-
-    vertical-align: middle;
-
-    font-size: 15px;
-}
-
-.message-table tbody tr {
-    transition:
-        background 0.15s ease;
-}
-
-.message-table tbody tr:hover {
-    background:
-        rgba(59, 130, 246, 0.05);
+    vertical-align:
+        middle;
 }
 
 .message-name {
     font-weight: 800;
-
-    color: #ffffff;
 }
 
-.email-text {
+.email {
     display: block;
 
     margin-top: 4px;
@@ -587,11 +509,10 @@ body {
 }
 
 .message-text {
-    max-width: 390px;
+    max-width: 400px;
 
-    white-space: normal;
-
-    word-break: break-word;
+    word-break:
+        break-word;
 
     line-height: 1.6;
 }
@@ -599,117 +520,49 @@ body {
 .message-date {
     color: #c5d0e2;
 
-    white-space: nowrap;
+    white-space:
+        nowrap;
 }
 
-/* =====================================================
-   ADMIN REPLY PREVIEW
-===================================================== */
-
-.reply-preview {
-    margin-top: 10px;
-
-    padding:
-        10px
-        12px;
-
-    background:
-        rgba(59, 130, 246, 0.08);
-
-    border:
-        1px solid
-        rgba(59, 130, 246, 0.18);
-
-    border-radius: 10px;
-
-    color: #cbd5e1;
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
-    text-align: left;
-
-    max-width: 260px;
-
-    margin-left: auto;
-}
-
-.reply-preview strong {
-    color: #60a5fa;
-}
-
-/* =====================================================
-   ACTION BUTTONS
-===================================================== */
+/* ================= ACTION ================= */
 
 .action-buttons {
     display: flex;
 
-    align-items: center;
-
-    justify-content: flex-end;
+    justify-content:
+        flex-end;
 
     gap: 8px;
 }
 
 .reply-btn,
 .delete-btn {
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 7px;
-
     border: 0;
 
-    color: #ffffff;
+    border-radius: 12px;
+
+    padding:
+        9px 15px;
+
+    color: #fff;
 
     font-size: 13px;
 
     font-weight: 800;
 
     cursor: pointer;
-
-    white-space: nowrap;
 }
 
 .reply-btn {
-    padding:
-        9px
-        18px;
-
-    border-radius: 13px;
-
     background:
         linear-gradient(
             135deg,
             #3b82f6,
             #2563eb
         );
-
-    box-shadow:
-        0
-        8px
-        20px
-        rgba(37, 99, 235, 0.20);
-}
-
-.reply-btn:hover {
-    filter: brightness(1.08);
-
-    transform: translateY(-1px);
 }
 
 .delete-btn {
-    padding:
-        9px
-        15px;
-
-    border-radius: 13px;
-
     background:
         linear-gradient(
             135deg,
@@ -718,15 +571,35 @@ body {
         );
 }
 
-.delete-btn:hover {
-    filter: brightness(1.08);
+.reply-preview {
+    max-width: 280px;
 
-    transform: translateY(-1px);
+    margin:
+        12px 0 0 auto;
+
+    padding: 11px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(59,130,246,.08);
+
+    border:
+        1px solid
+        rgba(59,130,246,.20);
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+
+    text-align: left;
 }
 
-/* =====================================================
-   EMPTY
-===================================================== */
+.reply-preview strong {
+    color: #60a5fa;
+}
+
+/* ================= EMPTY ================= */
 
 .empty-message {
     padding: 45px !important;
@@ -736,19 +609,7 @@ body {
     color: #94a3b8 !important;
 }
 
-.empty-message i {
-    display: block;
-
-    margin-bottom: 12px;
-
-    font-size: 35px;
-
-    color: #64748b;
-}
-
-/* =====================================================
-   REPLY MODAL
-===================================================== */
+/* ================= MODAL ================= */
 
 .reply-modal {
     display: none;
@@ -760,15 +621,15 @@ body {
     z-index: 99999;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 20px;
 
     background:
-        rgba(0, 0, 0, 0.72);
+        rgba(0,0,0,.72);
 
-    backdrop-filter: blur(5px);
+    backdrop-filter:
+        blur(5px);
 }
 
 .reply-modal-box {
@@ -784,22 +645,13 @@ body {
         1px solid #24456f;
 
     border-radius: 22px;
-
-    box-shadow:
-        0
-        30px
-        80px
-        rgba(0, 0, 0, 0.45);
 }
 
 .reply-modal-header {
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
-
-    gap: 15px;
 
     margin-bottom: 15px;
 }
@@ -807,29 +659,14 @@ body {
 .reply-modal-header h3 {
     margin: 0;
 
-    color: #ffffff;
-
     font-size: 21px;
 
     font-weight: 800;
 }
 
-.reply-modal-header h3 i {
-    color: #60a5fa;
-
-    margin-right: 7px;
-}
-
 .close-reply {
     width: 38px;
-
     height: 38px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
 
     border: 0;
 
@@ -837,17 +674,9 @@ body {
 
     background: #17263c;
 
-    color: #94a3b8;
+    color: #fff;
 
     font-size: 25px;
-
-    cursor: pointer;
-}
-
-.close-reply:hover {
-    color: #ffffff;
-
-    background: #253750;
 }
 
 .reply-to {
@@ -856,8 +685,6 @@ body {
     color: #94a3b8;
 
     font-size: 14px;
-
-    font-weight: 700;
 }
 
 .reply-modal textarea {
@@ -867,36 +694,22 @@ body {
 
     padding: 15px;
 
-    resize: vertical;
-
-    outline: none;
-
     border:
         1px solid #334155;
 
     border-radius: 13px;
 
+    outline: none;
+
+    resize: vertical;
+
     background: #111d31;
 
-    color: #ffffff;
+    color: #fff;
 
     font-family:
         'Plus Jakarta Sans',
         sans-serif;
-
-    font-size: 14px;
-}
-
-.reply-modal textarea::placeholder {
-    color: #64748b;
-}
-
-.reply-modal textarea:focus {
-    border-color: #3b82f6;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(59, 130, 246, 0.12);
 }
 
 .send-reply-btn {
@@ -904,9 +717,7 @@ body {
 
     margin-top: 15px;
 
-    padding:
-        13px
-        18px;
+    padding: 13px;
 
     border: 0;
 
@@ -919,22 +730,12 @@ body {
             #2563eb
         );
 
-    color: #ffffff;
+    color: #fff;
 
     font-weight: 800;
-
-    cursor: pointer;
 }
 
-.send-reply-btn:hover {
-    filter: brightness(1.08);
-}
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-@media (max-width: 1100px) {
+@media(max-width:1100px) {
 
     .main-content {
         margin-left: 280px;
@@ -945,42 +746,18 @@ body {
     }
 }
 
-@media (max-width: 768px) {
+@media(max-width:768px) {
 
     .main-content {
         margin-left: 70px;
-    }
-
-    .topbar {
-        padding:
-            0
-            18px;
     }
 
     .search-form {
         display: none;
     }
 
-    .admin-name {
-        display: none;
-    }
-
-    .user-pill {
-        padding: 5px;
-    }
-
     .content-body {
-        padding:
-            25px
-            18px;
-    }
-
-    .page-title h1 {
-        font-size: 25px;
-    }
-
-    .message-card {
-        padding: 15px;
+        padding: 25px 18px;
     }
 
     .action-buttons {
@@ -1000,460 +777,367 @@ include __DIR__ . '/sidebar.php';
 
 <div class="main-content">
 
-    <!-- TOPBAR -->
-    <header class="topbar">
+<header class="topbar">
 
-        <form
-            action=""
-            method="GET"
-            class="search-form"
+    <form
+        method="GET"
+        class="search-form"
+    >
+
+        <i
+            class="fa-solid fa-magnifying-glass"
+        ></i>
+
+        <input
+            type="text"
+            name="search"
+            class="search-input"
+            placeholder="Cari mesej..."
+            value="<?= htmlspecialchars(
+                $searchTerm,
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>"
+        >
+
+    </form>
+
+
+    <div class="topbar-right">
+
+        <div class="user-pill">
+
+            <div
+                class="user-avatar"
+                style="<?= $admin_photo_style ?? '' ?>"
+            >
+
+                <?= empty($admin_photo)
+                    ? htmlspecialchars(
+                        $admin_initial ?? 'A'
+                    )
+                    : ''
+                ?>
+
+            </div>
+
+            <div class="admin-name">
+
+                <?= htmlspecialchars(
+                    $current_admin['name']
+                    ?? $user['name']
+                    ?? 'Admin'
+                ) ?>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="../auth/logout.php"
+            class="logout-btn"
         >
 
             <i
-                class="fa-solid fa-magnifying-glass"
+                class="fa-solid fa-right-from-bracket"
             ></i>
 
-            <input
-                type="text"
-                name="search"
-                class="search-input"
-                placeholder="Cari mesej..."
-                autocomplete="off"
-                value="<?php
-                    echo htmlspecialchars(
-                        $searchTerm,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    );
-                ?>"
-            >
+            Log Keluar
 
-        </form>
+        </a>
 
-        <div class="topbar-right">
+    </div>
 
-            <div class="user-pill">
-
-                <div
-                    class="user-avatar"
-                    style="<?php
-                        echo $admin_photo_style ?? '';
-                    ?>"
-                >
-                    <?php
-                    echo empty($admin_photo)
-                        ? htmlspecialchars(
-                            $admin_initial ?? 'A',
-                            ENT_QUOTES,
-                            'UTF-8'
-                        )
-                        : '';
-                    ?>
-                </div>
-
-                <div class="admin-name">
-                    <?php
-                    echo htmlspecialchars(
-                        $current_admin['name']
-                            ?? $user['name']
-                            ?? 'Admin',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    );
-                    ?>
-                </div>
-
-            </div>
-
-            <a
-                href="../auth/logout.php"
-                class="logout-btn"
-            >
-                <i
-                    class="fa-solid fa-right-from-bracket"
-                ></i>
-
-                Log Keluar
-            </a>
-
-        </div>
-
-    </header>
+</header>
 
 
-    <!-- CONTENT -->
-    <main class="content-body">
+<main class="content-body">
 
-        <div class="page-title">
+    <div class="page-title">
 
+        <i
+            class="fa-solid fa-comments"
+        ></i>
+
+        <h1>
+            Senarai Mesej & Pertanyaan
+        </h1>
+
+    </div>
+
+
+    <?php if (
+        ($_GET['reply'] ?? '') === 'success'
+    ): ?>
+
+        <div
+            class="
+                notice
+                notice-success
+            "
+        >
             <i
-                class="fa-solid fa-comments"
+                class="fa-solid fa-circle-check"
             ></i>
 
-            <h1>
-                Senarai Mesej & Pertanyaan
-            </h1>
-
+            Balasan berjaya dihantar.
         </div>
 
-
-        <!-- SUCCESS REPLY -->
-        <?php if (
-            isset($_GET['reply']) &&
-            $_GET['reply'] === 'success'
-        ): ?>
-
-            <div
-                class="
-                    custom-alert
-                    alert-success-custom
-                "
-            >
-                <i
-                    class="fa-solid fa-circle-check me-2"
-                ></i>
-
-                Balasan berjaya dihantar kepada user.
-            </div>
-
-        <?php endif; ?>
+    <?php endif; ?>
 
 
-        <!-- SUCCESS DELETE -->
-        <?php if (
-            isset($_GET['delete']) &&
-            $_GET['delete'] === 'success'
-        ): ?>
+    <?php if (
+        ($_GET['delete'] ?? '') === 'success'
+    ): ?>
 
-            <div
-                class="
-                    custom-alert
-                    alert-delete-custom
-                "
-            >
-                <i
-                    class="fa-solid fa-trash me-2"
-                ></i>
+        <div
+            class="
+                notice
+                notice-delete
+            "
+        >
+            <i
+                class="fa-solid fa-trash"
+            ></i>
 
-                Mesej berjaya dipadam.
-            </div>
+            Mesej berjaya dipadam.
+        </div>
 
-        <?php endif; ?>
+    <?php endif; ?>
 
 
-        <div class="message-card">
+    <div class="message-card">
 
-            <div class="table-responsive">
+        <div class="table-responsive">
 
-                <table class="message-table">
+            <table class="message-table">
 
-                    <thead>
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>
+                            Nama Pengirim
+                        </th>
+
+                        <th>Mesej</th>
+
+                        <th>Tarikh</th>
+
+                        <th class="text-end">
+                            Tindakan
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <?php if (
+                    mysqli_num_rows($result) > 0
+                ): ?>
+
+                    <?php while (
+                        $row =
+                            mysqli_fetch_assoc(
+                                $result
+                            )
+                    ): ?>
 
                         <tr>
 
-                            <th>
-                                ID
-                            </th>
-
-                            <th>
-                                Nama Pengirim
-                            </th>
-
-                            <th>
-                                Mesej
-                            </th>
-
-                            <th>
-                                Tarikh
-                            </th>
-
-                            <th class="text-end">
-                                Tindakan
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    <?php
-                    if (
-                        $result &&
-                        mysqli_num_rows($result) > 0
-                    ):
-                    ?>
-
-                        <?php
-                        while (
-                            $row =
-                                mysqli_fetch_assoc(
-                                    $result
-                                )
-                        ):
-                        ?>
-
-                            <tr>
-
-                                <!-- ID -->
-                                <td>
-                                    #<?php
-                                    echo (int)$row['id'];
-                                    ?>
-                                </td>
+                            <td>
+                                #<?= (int)$row['id'] ?>
+                            </td>
 
 
-                                <!-- USER -->
-                                <td
-                                    class="message-name"
-                                >
+                            <td
+                                class="message-name"
+                            >
 
-                                    <?php
-                                    echo htmlspecialchars(
-                                        $row['name']
-                                            ?? '-',
-                                        ENT_QUOTES,
-                                        'UTF-8'
-                                    );
-                                    ?>
+                                <?= htmlspecialchars(
+                                    $row['name']
+                                    ?? '-'
+                                ) ?>
 
-                                    <?php if (
-                                        !empty(
-                                            $row['email']
-                                        )
-                                    ): ?>
+                                <span class="email">
 
-                                        <span
-                                            class="email-text"
-                                        >
-                                            <?php
-                                            echo htmlspecialchars(
-                                                $row['email'],
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            );
-                                            ?>
-                                        </span>
+                                    <?= htmlspecialchars(
+                                        $row['email']
+                                        ?? ''
+                                    ) ?>
 
-                                    <?php endif; ?>
+                                </span>
 
-                                </td>
+                            </td>
 
 
-                                <!-- MESSAGE -->
-                                <td
-                                    class="message-text"
-                                >
+                            <td
+                                class="message-text"
+                            >
 
-                                    <?php
-                                    echo nl2br(
-                                        htmlspecialchars(
-                                            $row['message']
-                                                ?? '',
-                                            ENT_QUOTES,
-                                            'UTF-8'
-                                        )
-                                    );
-                                    ?>
-
-                                </td>
-
-
-                                <!-- DATE -->
-                                <td
-                                    class="message-date"
-                                >
-
-                                    <?php
-                                    echo !empty(
-                                        $row['created_at']
+                                <?= nl2br(
+                                    htmlspecialchars(
+                                        $row['message']
+                                        ?? ''
                                     )
-                                        ? htmlspecialchars(
-                                            $row['created_at'],
-                                            ENT_QUOTES,
-                                            'UTF-8'
-                                        )
-                                        : '-';
-                                    ?>
+                                ) ?>
 
-                                </td>
+                            </td>
 
 
-                                <!-- ACTION -->
-                                <td class="text-end">
+                            <td
+                                class="message-date"
+                            >
 
-                                    <div
-                                        class="action-buttons"
+                                <?= htmlspecialchars(
+                                    $row['created_at']
+                                    ?? '-'
+                                ) ?>
+
+                            </td>
+
+
+                            <td class="text-end">
+
+                                <div
+                                    class="action-buttons"
+                                >
+
+                                    <button
+                                        type="button"
+                                        class="reply-btn"
+                                        onclick='openReply(
+                                            <?= (int)$row['id'] ?>,
+                                            <?= json_encode(
+                                                $row['name']
+                                                ?? 'User'
+                                            ) ?>,
+                                            <?= json_encode(
+                                                $row['admin_reply']
+                                                ?? ''
+                                            ) ?>
+                                        )'
                                     >
 
-                                        <!-- REPLY -->
+                                        <i
+                                            class="fa-solid fa-reply"
+                                        ></i>
+
+                                        Balas
+
+                                    </button>
+
+
+                                    <form
+                                        method="POST"
+                                        onsubmit="
+                                            return confirm(
+                                                'Delete message ini?'
+                                            );
+                                        "
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="message_id"
+                                            value="<?= (int)$row['id'] ?>"
+                                        >
+
                                         <button
-                                            type="button"
-                                            class="reply-btn"
-                                            onclick='openReply(
-                                                <?php
-                                                echo (int)$row['id'];
-                                                ?>,
-                                                <?php
-                                                echo json_encode(
-                                                    $row['name']
-                                                        ?? 'User'
-                                                );
-                                                ?>,
-                                                <?php
-                                                echo json_encode(
-                                                    $row['admin_reply']
-                                                        ?? ''
-                                                );
-                                                ?>
-                                            )'
+                                            type="submit"
+                                            name="delete_message"
+                                            class="delete-btn"
                                         >
 
                                             <i
-                                                class="fa-solid fa-reply"
+                                                class="fa-solid fa-trash"
                                             ></i>
 
-                                            Balas
+                                            Delete
 
                                         </button>
 
+                                    </form>
 
-                                        <!-- DELETE -->
-                                        <form
-                                            method="POST"
-                                            style="display:inline;"
-                                            onsubmit="
-                                                return confirm(
-                                                    'Adakah anda pasti mahu delete mesej ini?'
-                                                );
-                                            "
-                                        >
+                                </div>
 
-                                            <input
-                                                type="hidden"
-                                                name="message_id"
-                                                value="<?php
-                                                    echo (int)$row['id'];
-                                                ?>"
-                                            >
 
-                                            <button
-                                                type="submit"
-                                                name="delete_message"
-                                                class="delete-btn"
-                                            >
+                                <?php if (
+                                    !empty(
+                                        $row['admin_reply']
+                                    )
+                                ): ?>
 
-                                                <i
-                                                    class="fa-solid fa-trash"
-                                                ></i>
+                                    <div
+                                        class="reply-preview"
+                                    >
 
-                                                Delete
+                                        <strong>
+                                            Admin Reply
+                                        </strong>
 
-                                            </button>
+                                        <br>
 
-                                        </form>
+                                        <?= nl2br(
+                                            htmlspecialchars(
+                                                $row['admin_reply']
+                                            )
+                                        ) ?>
 
                                     </div>
 
-
-                                    <!-- EXISTING REPLY -->
-                                    <?php if (
-                                        !empty(
-                                            $row['admin_reply']
-                                        )
-                                    ): ?>
-
-                                        <div
-                                            class="reply-preview"
-                                        >
-
-                                            <strong>
-                                                Admin Reply:
-                                            </strong>
-
-                                            <br>
-
-                                            <?php
-                                            echo nl2br(
-                                                htmlspecialchars(
-                                                    $row['admin_reply'],
-                                                    ENT_QUOTES,
-                                                    'UTF-8'
-                                                )
-                                            );
-                                            ?>
-
-                                            <?php if (
-                                                !empty(
-                                                    $row['replied_at']
-                                                )
-                                            ): ?>
-
-                                                <div
-                                                    style="
-                                                        margin-top:6px;
-                                                        color:#64748b;
-                                                    "
-                                                >
-                                                    <?php
-                                                    echo htmlspecialchars(
-                                                        $row['replied_at'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    );
-                                                    ?>
-                                                </div>
-
-                                            <?php endif; ?>
-
-                                        </div>
-
-                                    <?php endif; ?>
-
-                                </td>
-
-                            </tr>
-
-                        <?php endwhile; ?>
-
-
-                    <?php else: ?>
-
-                        <tr>
-
-                            <td
-                                colspan="5"
-                                class="empty-message"
-                            >
-
-                                <i
-                                    class="fa-regular fa-message"
-                                ></i>
-
-                                Tiada mesej ditemui.
+                                <?php endif; ?>
 
                             </td>
 
                         </tr>
 
-                    <?php endif; ?>
+                    <?php endwhile; ?>
 
-                    </tbody>
 
-                </table>
+                <?php else: ?>
 
-            </div>
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty-message"
+                        >
+
+                            <i
+                                class="fa-regular fa-message"
+                            ></i>
+
+                            <br>
+
+                            Tiada mesej ditemui.
+
+                        </td>
+
+                    </tr>
+
+                <?php endif; ?>
+
+                </tbody>
+
+            </table>
 
         </div>
 
-    </main>
+    </div>
+
+</main>
 
 </div>
 
 
-<!-- =====================================================
-     REPLY MODAL
-===================================================== -->
+<!-- REPLY MODAL -->
 
 <div
     id="replyModal"
@@ -1513,7 +1197,7 @@ include __DIR__ . '/sidebar.php';
             >
 
                 <i
-                    class="fa-solid fa-paper-plane me-1"
+                    class="fa-solid fa-paper-plane"
                 ></i>
 
                 Hantar Balasan
@@ -1535,72 +1219,44 @@ function openReply(
     currentReply
 ) {
 
-    document
-        .getElementById(
-            'replyMessageId'
-        )
-        .value = id;
+    document.getElementById(
+        'replyMessageId'
+    ).value = id;
 
-    document
-        .getElementById(
-            'replyUser'
-        )
-        .textContent =
-            'Balas kepada: ' + name;
+    document.getElementById(
+        'replyUser'
+    ).textContent =
+        'Balas kepada: ' + name;
 
-    document
-        .getElementById(
-            'adminReply'
-        )
-        .value =
-            currentReply || '';
+    document.getElementById(
+        'adminReply'
+    ).value =
+        currentReply || '';
 
-    document
-        .getElementById(
-            'replyModal'
-        )
-        .style.display =
-            'flex';
-
+    document.getElementById(
+        'replyModal'
+    ).style.display =
+        'flex';
 }
 
 
 function closeReply() {
 
-    document
-        .getElementById(
-            'replyModal'
-        )
-        .style.display =
-            'none';
-
+    document.getElementById(
+        'replyModal'
+    ).style.display =
+        'none';
 }
 
 
-document
-    .getElementById(
-        'replyModal'
-    )
-    .addEventListener(
-        'click',
-        function (event) {
-
-            if (
-                event.target === this
-            ) {
-                closeReply();
-            }
-
-        }
-    );
-
-
-document.addEventListener(
-    'keydown',
-    function (event) {
+document.getElementById(
+    'replyModal'
+).addEventListener(
+    'click',
+    function(event) {
 
         if (
-            event.key === 'Escape'
+            event.target === this
         ) {
             closeReply();
         }
