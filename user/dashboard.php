@@ -885,6 +885,13 @@ foreach ($times as $t) {
     </th>
 
     <th
+        style="width:140px;"
+        class="text-center"
+    >
+        Harga
+    </th>
+
+    <th
         style="width:160px;"
         class="text-center"
     >
@@ -958,6 +965,14 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 </div>
 
+</td>
+
+<!-- PRICE -->
+<td class="text-center">
+    <span class="fw-bold" style="color:#f8fafc;">
+        RM <?php echo number_format((float)$row['price'], 2); ?>
+    </span>
+    <span style="color:#94a3b8;font-size:0.75rem;">/ hour</span>
 </td>
 
 <!-- STATUS -->
