@@ -9,9 +9,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
 
-/* =========================
+/* =========================================
    FILTER
-========================= */
+========================================= */
+
 $reportDate = $_GET['date'] ?? date('Y-m-d');
 $statusFilter = $_GET['status'] ?? 'All';
 
@@ -21,13 +22,24 @@ if (!in_array($statusFilter, $allowedStatus, true)) {
     $statusFilter = 'All';
 }
 
-/* Back / Next date */
-$previousDate = date('Y-m-d', strtotime($reportDate . ' -1 day'));
-$nextDate = date('Y-m-d', strtotime($reportDate . ' +1 day'));
+/* =========================================
+   BACK / NEXT TARIKH
+========================================= */
 
-/* =========================
+$previousDate = date(
+    'Y-m-d',
+    strtotime($reportDate . ' -1 day')
+);
+
+$nextDate = date(
+    'Y-m-d',
+    strtotime($reportDate . ' +1 day')
+);
+
+/* =========================================
    STATISTIK HARIAN
-========================= */
+========================================= */
+
 $summaryQuery = $conn->prepare("
     SELECT
         COUNT(DISTINCT b.id) AS total_bookings,
@@ -47,14 +59,17 @@ $summaryQuery = $conn->prepare("
             THEN b.id
         END) AS rejected_bookings,
 
-        COALESCE(SUM(
-            CASE
-                WHEN b.status = 'Approved'
-                AND p.status = 'Approved'
-                THEN p.amount
-                ELSE 0
-            END
-        ), 0) AS total_revenue,
+        COALESCE(
+            SUM(
+                CASE
+                    WHEN b.status = 'Approved'
+                    AND p.status = 'Approved'
+                    THEN p.amount
+                    ELSE 0
+                END
+            ),
+            0
+        ) AS total_revenue,
 
         COUNT(DISTINCT b.user_id) AS total_customers
 
@@ -73,9 +88,9 @@ $stats = $summaryQuery
     ->get_result()
     ->fetch_assoc();
 
-/* =========================
+/* =========================================
    COURT USAGE
-========================= */
+========================================= */
 
 if ($statusFilter === 'All') {
 
@@ -94,6 +109,7 @@ if ($statusFilter === 'All') {
         WHERE c.status <> 'Deleted'
 
         GROUP BY c.id, c.court_name
+
         ORDER BY c.id ASC
     ");
 
@@ -119,6 +135,7 @@ if ($statusFilter === 'All') {
         WHERE c.status <> 'Deleted'
 
         GROUP BY c.id, c.court_name
+
         ORDER BY c.id ASC
     ");
 
@@ -130,11 +147,79 @@ if ($statusFilter === 'All') {
 }
 
 $courtUsageQuery->execute();
-$courtUsageResult = $courtUsageQuery->get_result();
 
-/* =========================
-   BOOKING DETAIL
-========================= */
+$courtUsageResult =
+    $courtUsageQuery->get_result();
+
+/* =========================================
+   PAGINATION SENARAI TEMPAHAN
+========================================= */
+
+$limit = 5;
+
+$page = isset($_GET['page'])
+    ? (int)$_GET['page']
+    : 1;
+
+if ($page < 1) {
+    $page = 1;
+}
+
+/* =========================================
+   KIRA JUMLAH BOOKING
+========================================= */
+
+if ($statusFilter === 'All') {
+
+    $countQuery = $conn->prepare("
+        SELECT COUNT(*) AS total
+        FROM bookings
+        WHERE booking_date = ?
+    ");
+
+    $countQuery->bind_param(
+        "s",
+        $reportDate
+    );
+
+} else {
+
+    $countQuery = $conn->prepare("
+        SELECT COUNT(*) AS total
+        FROM bookings
+        WHERE booking_date = ?
+        AND status = ?
+    ");
+
+    $countQuery->bind_param(
+        "ss",
+        $reportDate,
+        $statusFilter
+    );
+}
+
+$countQuery->execute();
+
+$countResult =
+    $countQuery->get_result()->fetch_assoc();
+
+$totalBookingsFiltered =
+    (int)($countResult['total'] ?? 0);
+
+$totalPages = max(
+    1,
+    (int)ceil($totalBookingsFiltered / $limit)
+);
+
+if ($page > $totalPages) {
+    $page = $totalPages;
+}
+
+$offset = ($page - 1) * $limit;
+
+/* =========================================
+   SENARAI BOOKING
+========================================= */
 
 if ($statusFilter === 'All') {
 
@@ -159,11 +244,15 @@ if ($statusFilter === 'All') {
         WHERE b.booking_date = ?
 
         ORDER BY b.booking_time ASC
+
+        LIMIT ? OFFSET ?
     ");
 
     $bookingQuery->bind_param(
-        "s",
-        $reportDate
+        "sii",
+        $reportDate,
+        $limit,
+        $offset
     );
 
 } else {
@@ -190,17 +279,24 @@ if ($statusFilter === 'All') {
         AND b.status = ?
 
         ORDER BY b.booking_time ASC
+
+        LIMIT ? OFFSET ?
     ");
 
     $bookingQuery->bind_param(
-        "ss",
+        "ssii",
         $reportDate,
-        $statusFilter
+        $statusFilter,
+        $limit,
+        $offset
     );
 }
 
 $bookingQuery->execute();
-$bookingResult = $bookingQuery->get_result();
+
+$bookingResult =
+    $bookingQuery->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -240,15 +336,15 @@ body.admin-page .main-content {
 }
 
 /* =========================
-   REPORT HEADER
+   TITLE
 ========================= */
 
 .report-title {
     font-weight: 800;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 }
 
-.report-date {
+.report-subtitle {
     color: #94a3b8;
     font-size: 14px;
 }
@@ -258,20 +354,37 @@ body.admin-page .main-content {
 ========================= */
 
 .report-filter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+    min-width: 350px;
 }
 
-.report-filter .form-control,
-.report-filter .form-select {
-    min-height: 38px;
-    border-radius: 9px;
+.filter-fields {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.filter-date {
+    width: 160px;
+}
+
+.filter-status {
+    width: 170px;
+}
+
+.filter-button-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.filter-button-row .btn {
+    min-width: 105px;
+    border-radius: 8px;
+    font-weight: 700;
 }
 
 /* =========================
-   NAVIGATION BUTTON
+   DATE NAVIGATION
 ========================= */
 
 .date-navigation {
@@ -279,7 +392,7 @@ body.admin-page .main-content {
     justify-content: space-between;
     align-items: center;
     gap: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .date-navigation .btn {
@@ -292,10 +405,10 @@ body.admin-page .main-content {
     background: #17233a;
     border: 1px solid #263550;
     color: #ffffff;
-    padding: 9px 20px;
+    padding: 9px 22px;
     border-radius: 9px;
-    text-align: center;
     font-weight: 700;
+    text-align: center;
 }
 
 /* =========================
@@ -306,12 +419,17 @@ body.admin-page .main-content {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 85px;
-    padding: 6px 10px;
+
+    min-width: 90px;
+
+    padding: 6px 12px;
+
     border-radius: 999px;
+
     font-size: 12px;
     font-weight: 800;
-    color: #000 !important;
+
+    color: #000000 !important;
 }
 
 .status-approved {
@@ -339,9 +457,70 @@ body.admin-page .main-content {
 }
 
 .empty-data {
-    padding: 30px !important;
     text-align: center;
+    padding: 35px !important;
     color: #94a3b8 !important;
+}
+
+/* =========================
+   PAGINATION
+========================= */
+
+.booking-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 18px;
+}
+
+.booking-pagination .btn {
+    min-width: 100px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.page-info {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+    .report-header {
+        flex-direction: column;
+    }
+
+    .report-filter {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .filter-fields {
+        width: 100%;
+    }
+
+    .filter-date,
+    .filter-status {
+        width: 50%;
+    }
+
+    .date-navigation {
+        gap: 6px;
+    }
+
+    .date-navigation .btn {
+        min-width: auto;
+    }
+
+    .current-date-box {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
 }
 
 </style>
@@ -354,9 +533,9 @@ body.admin-page .main-content {
 
 <div class="main-content">
 
-<!-- =========================
+<!-- =========================================
      TOPBAR
-========================= -->
+========================================= -->
 
 <header class="topbar">
 
@@ -381,7 +560,6 @@ body.admin-page .main-content {
                 class="user-avatar"
                 style="<?php echo $admin_photo_style; ?>"
             >
-
                 <?php
                 echo $admin_photo === ''
                     ? htmlspecialchars(
@@ -391,11 +569,9 @@ body.admin-page .main-content {
                     )
                     : '';
                 ?>
-
             </div>
 
             <div class="fw-bold fs-7 pe-2">
-
                 <?php
                 echo htmlspecialchars(
                     $current_admin['name']
@@ -403,7 +579,6 @@ body.admin-page .main-content {
                     ?? 'Admin'
                 );
                 ?>
-
             </div>
 
         </div>
@@ -412,28 +587,33 @@ body.admin-page .main-content {
             href="../auth/logout.php"
             class="btn btn-danger btn-sm rounded-pill fw-bold px-3"
         >
-
             <i class="fa-solid fa-right-from-bracket me-1"></i>
             Log Keluar
-
         </a>
 
     </div>
 
 </header>
 
-<!-- =========================
+<!-- =========================================
      CONTENT
-========================= -->
+========================================= -->
 
 <main class="content-body">
 
-<!-- TITLE + FILTER -->
+<!-- =========================================
+     TITLE + FILTER
+========================================= -->
 
 <div
-    class="d-flex justify-content-between align-items-start
-           flex-wrap gap-3 mb-4"
+    class="report-header d-flex
+           justify-content-between
+           align-items-start
+           gap-3
+           mb-4"
 >
+
+    <!-- KIRI -->
 
     <div>
 
@@ -441,7 +621,7 @@ body.admin-page .main-content {
             Laporan Harian Tempahan
         </h2>
 
-        <div class="report-date">
+        <div class="report-subtitle">
 
             Laporan untuk
 
@@ -453,86 +633,96 @@ body.admin-page .main-content {
 
     </div>
 
+    <!-- KANAN -->
+
     <form
         method="GET"
         class="report-filter"
     >
 
-        <input
-            type="date"
-            name="date"
-            value="<?= htmlspecialchars($reportDate) ?>"
-            class="form-control form-control-sm"
-        >
+        <!-- DATE + STATUS -->
 
-        <select
-            name="status"
-            class="form-select form-select-sm"
-        >
+        <div class="filter-fields">
 
-            <option
-                value="All"
-                <?= $statusFilter === 'All' ? 'selected' : '' ?>
+            <input
+                type="date"
+                name="date"
+                value="<?= htmlspecialchars($reportDate) ?>"
+                class="form-control form-control-sm filter-date"
             >
-                Semua Status
-            </option>
 
-            <option
-                value="Approved"
-                <?= $statusFilter === 'Approved' ? 'selected' : '' ?>
+            <select
+                name="status"
+                class="form-select form-select-sm filter-status"
             >
-                Approved
-            </option>
 
-            <option
-                value="Pending"
-                <?= $statusFilter === 'Pending' ? 'selected' : '' ?>
+                <option
+                    value="All"
+                    <?= $statusFilter === 'All' ? 'selected' : '' ?>
+                >
+                    Semua Status
+                </option>
+
+                <option
+                    value="Approved"
+                    <?= $statusFilter === 'Approved' ? 'selected' : '' ?>
+                >
+                    Approved
+                </option>
+
+                <option
+                    value="Pending"
+                    <?= $statusFilter === 'Pending' ? 'selected' : '' ?>
+                >
+                    Pending
+                </option>
+
+                <option
+                    value="Rejected"
+                    <?= $statusFilter === 'Rejected' ? 'selected' : '' ?>
+                >
+                    Rejected
+                </option>
+
+            </select>
+
+        </div>
+
+        <!-- BUTTON FILTER KANAN BAWAH -->
+
+        <div class="filter-button-row">
+
+            <button
+                type="submit"
+                class="btn btn-primary btn-sm px-4"
             >
-                Pending
-            </option>
+                <i class="fa-solid fa-filter me-1"></i>
+                Filter
+            </button>
 
-            <option
-                value="Rejected"
-                <?= $statusFilter === 'Rejected' ? 'selected' : '' ?>
-            >
-                Rejected
-            </option>
-
-        </select>
-
-        <button
-            type="submit"
-            class="btn btn-primary btn-sm px-3"
-        >
-
-            <i class="fa-solid fa-filter me-1"></i>
-            Filter
-
-        </button>
+        </div>
 
     </form>
 
 </div>
 
-<!-- =========================
-     BACK / NEXT
-========================= -->
+<!-- =========================================
+     BACK / NEXT TARIKH
+========================================= -->
 
 <div class="date-navigation">
 
     <a
-        href="?date=<?= urlencode($previousDate) ?>&status=<?= urlencode($statusFilter) ?>"
+        href="?date=<?= urlencode($previousDate) ?>&status=<?= urlencode($statusFilter) ?>&page=1"
         class="btn btn-outline-primary"
     >
-
         <i class="fa-solid fa-chevron-left me-1"></i>
         Back
-
     </a>
 
     <div class="current-date-box">
 
-        <i class="fa-solid fa-calendar-day me-2"></i>
+        <i class="fa-solid fa-calendar-days me-2"></i>
 
         <?= date(
             'd M Y',
@@ -542,20 +732,18 @@ body.admin-page .main-content {
     </div>
 
     <a
-        href="?date=<?= urlencode($nextDate) ?>&status=<?= urlencode($statusFilter) ?>"
+        href="?date=<?= urlencode($nextDate) ?>&status=<?= urlencode($statusFilter) ?>&page=1"
         class="btn btn-primary"
     >
-
         Next
         <i class="fa-solid fa-chevron-right ms-1"></i>
-
     </a>
 
 </div>
 
-<!-- =========================
-     SUMMARY
-========================= -->
+<!-- =========================================
+     SUMMARY CARDS
+========================================= -->
 
 <div class="row g-3 mb-4">
 
@@ -679,15 +867,16 @@ body.admin-page .main-content {
 
 </div>
 
-<!-- =========================
-     BOOKING DETAIL
-========================= -->
+<!-- =========================================
+     SENARAI TEMPAHAN
+========================================= -->
 
 <div class="card border-0 shadow-sm mb-4">
 
     <div
         class="card-header bg-white py-3
-               d-flex justify-content-between align-items-center"
+               d-flex justify-content-between
+               align-items-center"
     >
 
         <h5 class="mb-0">
@@ -699,7 +888,9 @@ body.admin-page .main-content {
 
         <span class="badge bg-primary">
 
-            <?= htmlspecialchars($statusFilter) ?>
+            <?= $statusFilter === 'All'
+                ? 'Semua Status'
+                : htmlspecialchars($statusFilter) ?>
 
         </span>
 
@@ -710,7 +901,8 @@ body.admin-page .main-content {
         <div class="table-responsive">
 
             <table
-                class="table table-bordered align-middle report-table"
+                class="table table-bordered
+                       align-middle report-table"
             >
 
                 <thead class="table-light">
@@ -733,12 +925,31 @@ body.admin-page .main-content {
                 <?php if ($bookingResult->num_rows > 0): ?>
 
                     <?php
-                    $number = 1;
+                    $number = $offset + 1;
 
                     while (
                         $booking =
                         $bookingResult->fetch_assoc()
                     ):
+
+                        $status =
+                            $booking['status'];
+
+                        if ($status === 'Approved') {
+
+                            $statusClass =
+                                'status-approved';
+
+                        } elseif ($status === 'Pending') {
+
+                            $statusClass =
+                                'status-pending';
+
+                        } else {
+
+                            $statusClass =
+                                'status-rejected';
+                        }
                     ?>
 
                     <tr>
@@ -785,26 +996,10 @@ body.admin-page .main-content {
 
                         <td>
 
-                            <?php
-                            $status =
-                                $booking['status'];
-
-                            $statusClass =
-                                $status === 'Approved'
-                                    ? 'status-approved'
-                                    : (
-                                        $status === 'Pending'
-                                            ? 'status-pending'
-                                            : 'status-rejected'
-                                    );
-                            ?>
-
                             <span
                                 class="status-badge <?= $statusClass ?>"
                             >
-
                                 <?= htmlspecialchars($status) ?>
-
                             </span>
 
                         </td>
@@ -823,12 +1018,14 @@ body.admin-page .main-content {
                         >
 
                             <i
-                                class="fa-solid fa-calendar-xmark
-                                       fs-3 d-block mb-2"
+                                class="fa-solid
+                                       fa-calendar-xmark
+                                       fs-3
+                                       d-block
+                                       mb-2"
                             ></i>
 
-                            Tiada tempahan dijumpai untuk
-                            tarikh dan filter ini.
+                            Tiada tempahan dijumpai.
 
                         </td>
 
@@ -842,13 +1039,74 @@ body.admin-page .main-content {
 
         </div>
 
+        <!-- =================================
+             PAGINATION BOOKING
+        ================================== -->
+
+        <div class="booking-pagination">
+
+            <?php if ($page > 1): ?>
+
+                <a
+                    href="?date=<?= urlencode($reportDate) ?>&status=<?= urlencode($statusFilter) ?>&page=<?= $page - 1 ?>"
+                    class="btn btn-outline-primary btn-sm"
+                >
+                    <i class="fa-solid fa-chevron-left me-1"></i>
+                    Back
+                </a>
+
+            <?php else: ?>
+
+                <button
+                    class="btn btn-outline-secondary btn-sm"
+                    disabled
+                >
+                    <i class="fa-solid fa-chevron-left me-1"></i>
+                    Back
+                </button>
+
+            <?php endif; ?>
+
+            <div class="page-info">
+
+                Page
+                <?= $page ?>
+                of
+                <?= $totalPages ?>
+
+            </div>
+
+            <?php if ($page < $totalPages): ?>
+
+                <a
+                    href="?date=<?= urlencode($reportDate) ?>&status=<?= urlencode($statusFilter) ?>&page=<?= $page + 1 ?>"
+                    class="btn btn-primary btn-sm"
+                >
+                    Next
+                    <i class="fa-solid fa-chevron-right ms-1"></i>
+                </a>
+
+            <?php else: ?>
+
+                <button
+                    class="btn btn-secondary btn-sm"
+                    disabled
+                >
+                    Next
+                    <i class="fa-solid fa-chevron-right ms-1"></i>
+                </button>
+
+            <?php endif; ?>
+
+        </div>
+
     </div>
 
 </div>
 
-<!-- =========================
+<!-- =========================================
      COURT USAGE
-========================= -->
+========================================= -->
 
 <div class="card border-0 shadow-sm">
 
@@ -889,12 +1147,10 @@ body.admin-page .main-content {
 
                 <tbody>
 
-                <?php
-                while (
+                <?php while (
                     $c =
                     $courtUsageResult->fetch_assoc()
-                ):
-                ?>
+                ): ?>
 
                     <tr>
 
