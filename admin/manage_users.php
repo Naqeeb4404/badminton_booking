@@ -1,323 +1,162 @@
 <?php
-
 session_start();
-
 include __DIR__ . '/../config/db.php';
 
-// Pastikan hanya admin yang boleh akses
-if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin"){
-    header("Location: ../auth/login.php");
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    header('Location: ../auth/login.php');
     exit();
 }
 
 $user = $_SESSION['user'];
 
-// Dapatkan jumlah mesej untuk notifikasi badge pada sidebar
-$msg_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM messages");
-$msg_row = mysqli_fetch_assoc($msg_query);
-$total_messages = $msg_row['total'];
+// Search
+$search = trim($_GET['search'] ?? '');
 
-// Statistik tambahan untuk dashboard (Contoh: Jumlah pengguna berdaftar)
-$user_query = mysqli_query($conn, "SELECT COUNT(*) as total_users FROM users");
-$user_row = mysqli_fetch_assoc($user_query);
-$total_users = $user_row['total_users'];
+// Summary statistics (read-only)
+$totalUsers = 0;
+$totalAdmins = 0;
+$totalBookings = 0;
 
+$r = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role <> 'admin'");
+if ($r) $totalUsers = (int)(mysqli_fetch_assoc($r)['total'] ?? 0);
+
+$r = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role = 'admin'");
+if ($r) $totalAdmins = (int)(mysqli_fetch_assoc($r)['total'] ?? 0);
+
+$r = mysqli_query($conn, "SELECT COUNT(*) AS total FROM bookings");
+if ($r) $totalBookings = (int)(mysqli_fetch_assoc($r)['total'] ?? 0);
+
+// User list + booking count
+$users = [];
+$sql = "SELECT u.id, u.name, u.email, u.phone, u.role,
+               COUNT(b.id) AS booking_count
+        FROM users u
+        LEFT JOIN bookings b ON b.user_id = u.id
+        WHERE u.role <> 'admin'";
+
+if ($search !== '') {
+    $sql .= " AND (u.name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
+}
+$sql .= " GROUP BY u.id, u.name, u.email, u.phone, u.role ORDER BY u.id DESC";
+
+$stmt = $conn->prepare($sql);
+if ($stmt) {
+    if ($search !== '') {
+        $like = '%' . $search . '%';
+        $stmt->bind_param('sss', $like, $like, $like);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) $users[] = $row;
+    $stmt->close();
+}
+
+// Selected user details (View only)
+$selectedUser = null;
+$selectedBookings = [];
+$viewId = isset($_GET['view']) ? (int)$_GET['view'] : 0;
+
+if ($viewId > 0) {
+    $stmt = $conn->prepare("SELECT id, name, email, phone, role FROM users WHERE id = ? AND role <> 'admin' LIMIT 1");
+    if ($stmt) {
+        $stmt->bind_param('i', $viewId);
+        $stmt->execute();
+        $selectedUser = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    }
+
+    if ($selectedUser) {
+        $stmt = $conn->prepare("SELECT b.id, b.booking_date, b.booking_time, b.duration, b.status, c.court_name
+                                FROM bookings b
+                                LEFT JOIN courts c ON c.id = b.court_id
+                                WHERE b.user_id = ?
+                                ORDER BY b.booking_date DESC, b.booking_time DESC
+                                LIMIT 10");
+        if ($stmt) {
+            $stmt->bind_param('i', $viewId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) $selectedBookings[] = $row;
+            $stmt->close();
+        }
+    }
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="ms">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Badminton Kampung Panji</title>
-
-    <!-- Bootstrap 5 CSS & FontAwesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --sidebar-bg: #1c2434;
-            --sidebar-text: #dee4ee;
-            --sidebar-hover: #333a48;
-            --accent-lime: #ccff00;
-            --text-dark: #111111;
-            --body-bg: #f1f5f9;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--body-bg);
-            color: var(--text-dark);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-        }
-
-        /* CUSTOM SCROLLBAR YANG KEMAS */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* SIDEBAR STYLING */
-        .sidebar {
-            width: 280px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: all 0.3s ease;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .sidebar-brand {
-            padding: 25px 20px;
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            text-decoration: none;
-        }
-
-        .sidebar-menu {
-            padding: 20px 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .menu-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #8a99ad;
-            margin-bottom: 10px;
-            padding-left: 10px;
-            font-weight: 700;
-        }
-
-        .sidebar-nav-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 15px;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            transition: all 0.2s ease;
-        }
-
-        .sidebar-nav-link-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .sidebar-nav-link:hover, .sidebar-nav-link.active {
-            background-color: var(--sidebar-hover);
-            color: #fff;
-        }
-
-        .sidebar-nav-link i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* MAIN CONTENT AREA */
-        .main-content {
-            margin-left: 280px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* TOPBAR STYLING */
-        .topbar {
-            height: 80px;
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
-        .search-form {
-            position: relative;
-            width: 350px;
-        }
-
-        .search-input {
-            background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
-            border-radius: 50px !important;
-            padding: 10px 20px 10px 45px !important;
-            font-size: 0.85rem !important;
-            width: 100% !important;
-            color: #1e293b !important;
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-        .search-form i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            z-index: 5;
-            pointer-events: none;
-        }
-
-        .user-pill {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f8fafc;
-            padding: 6px 16px 6px 6px;
-            border-radius: 50px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: var(--sidebar-bg);
-            color: var(--accent-lime);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 0.9rem;
-        }
-
-        /* CONTENT BODY & CARDS */
-        .content-body {
-            padding: 40px;
-            flex-grow: 1;
-        }
-
-        .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important;
-            background: #ffffff;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-            .sidebar .sidebar-brand span, .sidebar .menu-label, .sidebar .sidebar-nav-link span, .sidebar .badge { display: none; }
-            .main-content { margin-left: 70px; }
-            .topbar { padding: 0 20px; }
-            .search-form { display: none; }
-        }
-    </style>
-    <link rel="stylesheet" href="sidebar.css?v=20260926">
-
-    <!-- Stable shared admin shell -->
-    <style>body.admin-page .sidebar, body.admin-page .main-content { transition: none !important; }</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Users - Badminton Kampung Panji</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sidebar.css?v=20260926">
+<style>
+:root{--sidebar-bg:#1c2434;--sidebar-text:#dee4ee;--sidebar-hover:#333a48;--accent-lime:#ccff00;--body-bg:#f1f5f9;}
+*{box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--body-bg);margin:0;min-height:100vh;color:#0f172a;display:flex}.main-content{margin-left:280px;flex-grow:1;min-height:100vh}.topbar{height:80px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;padding:0 40px;position:sticky;top:0;z-index:99}.search-form{position:relative;width:350px}.search-input{background:#f8fafc!important;border:1px solid #e2e8f0!important;border-radius:50px!important;padding:10px 20px 10px 45px!important;font-size:.85rem!important}.search-form i{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#94a3b8}.user-pill{display:flex;align-items:center;gap:12px;background:#f8fafc;padding:6px 16px 6px 6px;border-radius:50px;border:1px solid #e2e8f0}.user-avatar{width:38px;height:38px;border-radius:50%;background:var(--sidebar-bg);color:var(--accent-lime);display:flex;align-items:center;justify-content:center;font-weight:800}.content-body{padding:40px}.page-title{font-weight:800;margin:0}.page-subtitle{color:#64748b;font-size:.9rem}.stat-card,.panel{background:#fff;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 4px 10px rgba(15,23,42,.03)}.stat-card{padding:20px;height:100%}.stat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}.icon-blue{background:#eff6ff;color:#2563eb}.icon-purple{background:#f5f3ff;color:#7c3aed}.icon-green{background:#f0fdf4;color:#16a34a}.panel{padding:24px}.user-table{width:100%;border-collapse:collapse}.user-table th{padding:13px 12px;font-size:.72rem;text-transform:uppercase;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap}.user-table td{padding:15px 12px;border-bottom:1px solid #f1f5f9;font-size:.84rem;vertical-align:middle}.user-table tr:last-child td{border-bottom:0}.avatar-mini{width:38px;height:38px;border-radius:12px;background:#eef2ff;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-weight:800}.role-chip{display:inline-flex;padding:5px 9px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:.7rem;font-weight:800}.booking-chip{display:inline-flex;min-width:32px;height:28px;padding:0 8px;align-items:center;justify-content:center;border-radius:999px;background:#f1f5f9;font-weight:800}.btn-view{background:rgba(37,99,235,.10);color:#2563eb;border:1px solid rgba(37,99,235,.25);font-weight:700;border-radius:9px;padding:7px 12px;text-decoration:none;display:inline-block}.btn-view:hover{background:#2563eb;color:#fff}.detail-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px}.detail-label{font-size:.7rem;text-transform:uppercase;color:#64748b;font-weight:800}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:800}.approved{background:#dcfce7;color:#166534}.pending{background:#fef3c7;color:#92400e}.rejected{background:#fee2e2;color:#991b1b}.empty-state{text-align:center;padding:40px;color:#94a3b8}@media(max-width:768px){.main-content{margin-left:70px}.topbar{padding:0 20px}.topbar .search-form{display:none}.content-body{padding:20px}}
+</style>
 </head>
-
 <body class="admin-page">
-
-    <!-- SIDEBAR MENU LENGKAP -->
-    <?php include __DIR__ . '/sidebar.php'; ?>
-
-    <!-- MAIN CONTENT CONTAINER -->
-    <div class="main-content">
-        
-        <!-- TOPBAR -->
-        <header class="topbar">
-            <div class="search-form">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" class="form-control search-input" placeholder="Type to search..." autocomplete="off">
-            </div>
-
-            <div class="d-flex align-items-center gap-3">
-                <div class="user-pill">
-                    <div class="user-avatar" style="<?php echo $admin_photo_style; ?>"><?php echo $admin_photo === '' ? htmlspecialchars($admin_initial, ENT_QUOTES, 'UTF-8') : ''; ?></div>
-                    <div class="fw-bold fs-7 pe-2"><?php echo htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin'); ?></div>
-                </div>
-                <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
-                </a>
-            </div>
-        </header>
-
-        <!-- ISI KANDUNGAN UTAMA DASHBOARD -->
-        <div class="content-body">
-            
-            <div class="row g-4 mb-4">
-                <!-- Kad Ringkasan 1 -->
-                <div class="col-md-4">
-                    <div class="card p-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Jumlah Pengguna</p>
-                                <h3 class="fw-bold mb-0"><?php echo $total_users; ?></h3>
-                            </div>
-                            <div class="bg-light p-3 rounded-4 text-primary fs-4">
-                                <i class="fa-solid fa-users"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Kad Ringkasan 2 -->
-                <div class="col-md-4">
-                    <div class="card p-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <p class="text-muted mb-1 text-uppercase fs-7 fw-bold">Mesej Masuk</p>
-                                <h3 class="fw-bold mb-0"><?php echo $total_messages; ?></h3>
-                            </div>
-                            <div class="bg-light p-3 rounded-4 text-success fs-4">
-                                <i class="fa-solid fa-comments"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h2 class="fw-bold mb-1">📊 Dashboard Utama</h2>
-                    <p class="text-muted fs-7 mb-4">Selamat datang ke panel pentadbir Badminton Kampung Panji.</p>
-                    <hr class="text-muted opacity-25 mb-4">
-                    <p class="text-dark">Sila pilih menu di bahagian sidebar sebelah kiri untuk menguruskan pengguna, tempahan gelanggang, atau semakan mesej.</p>
-                </div>
-            </div>
-
+<?php include __DIR__ . '/sidebar.php'; ?>
+<div class="main-content">
+<header class="topbar">
+    <form method="GET" class="search-form">
+        <i class="fa-solid fa-search"></i>
+        <input type="text" name="search" class="form-control search-input" placeholder="Cari nama, email atau telefon..." value="<?= htmlspecialchars($search) ?>" autocomplete="off">
+    </form>
+    <div class="d-flex align-items-center gap-3">
+        <div class="user-pill">
+            <div class="user-avatar" style="<?= $admin_photo_style ?>"><?= $admin_photo === '' ? htmlspecialchars($admin_initial) : '' ?></div>
+            <div class="fw-bold small pe-2"><?= htmlspecialchars($current_admin['name'] ?? $user['name'] ?? 'Admin') ?></div>
         </div>
+        <a href="../auth/logout.php" class="btn btn-danger btn-sm rounded-pill fw-bold px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</a>
+    </div>
+</header>
+
+<main class="content-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div><h2 class="page-title">Manage Users</h2><div class="page-subtitle">Lihat pengguna berdaftar dan sejarah tempahan mereka.</div></div>
+        <?php if ($search !== ''): ?><a href="manage_users.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3"><i class="fa-solid fa-xmark me-1"></i> Reset Search</a><?php endif; ?>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-md-4"><div class="stat-card d-flex align-items-center justify-content-between"><div><div class="text-muted small fw-bold text-uppercase">Total Users</div><h3 class="fw-bold mb-0 mt-1"><?= $totalUsers ?></h3></div><div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div></div></div>
+        <div class="col-12 col-md-4"><div class="stat-card d-flex align-items-center justify-content-between"><div><div class="text-muted small fw-bold text-uppercase">Total Admin</div><h3 class="fw-bold mb-0 mt-1"><?= $totalAdmins ?></h3></div><div class="stat-icon icon-purple"><i class="fa-solid fa-user-shield"></i></div></div></div>
+        <div class="col-12 col-md-4"><div class="stat-card d-flex align-items-center justify-content-between"><div><div class="text-muted small fw-bold text-uppercase">Total Bookings</div><h3 class="fw-bold mb-0 mt-1"><?= $totalBookings ?></h3></div><div class="stat-icon icon-green"><i class="fa-solid fa-calendar-check"></i></div></div></div>
+    </div>
+
+    <?php if ($selectedUser): ?>
+    <div class="panel mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold mb-0"><i class="fa-solid fa-user text-primary me-2"></i>User Details</h5><a href="manage_users.php<?= $search !== '' ? '?search='.urlencode($search) : '' ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Close</a></div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="detail-box"><div class="detail-label">Name</div><div class="fw-bold mt-1"><?= htmlspecialchars($selectedUser['name']) ?></div></div></div>
+            <div class="col-md-3"><div class="detail-box"><div class="detail-label">Email</div><div class="fw-semibold mt-1 text-break"><?= htmlspecialchars($selectedUser['email']) ?></div></div></div>
+            <div class="col-md-3"><div class="detail-box"><div class="detail-label">Phone</div><div class="fw-semibold mt-1"><?= htmlspecialchars($selectedUser['phone'] ?: '-') ?></div></div></div>
+            <div class="col-md-3"><div class="detail-box"><div class="detail-label">Role</div><div class="mt-1"><span class="role-chip"><?= htmlspecialchars(ucfirst($selectedUser['role'])) ?></span></div></div></div>
+        </div>
+        <h6 class="fw-bold mb-3">Latest Bookings</h6>
+        <div class="table-responsive"><table class="user-table"><thead><tr><th>ID</th><th>Court</th><th>Date</th><th>Time</th><th>Duration</th><th>Status</th></tr></thead><tbody>
+        <?php if ($selectedBookings): foreach ($selectedBookings as $b): $cls = strtolower($b['status']); ?>
+            <tr><td>#<?= (int)$b['id'] ?></td><td><?= htmlspecialchars($b['court_name'] ?? '-') ?></td><td><?= date('d/m/Y', strtotime($b['booking_date'])) ?></td><td><?= htmlspecialchars(substr($b['booking_time'],0,5)) ?></td><td><?= (int)$b['duration'] ?> hour<?= (int)$b['duration'] > 1 ? 's' : '' ?></td><td><span class="status <?= in_array($cls,['approved','pending','rejected']) ? $cls : 'pending' ?>"><?= htmlspecialchars($b['status']) ?></span></td></tr>
+        <?php endforeach; else: ?><tr><td colspan="6" class="empty-state">User ini belum mempunyai booking.</td></tr><?php endif; ?>
+        </tbody></table></div>
+    </div>
+    <?php endif; ?>
+
+    <div class="panel">
+        <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold mb-0"><i class="fa-solid fa-users-gear text-primary me-2"></i>User List</h5><span class="text-muted small"><?= count($users) ?> result<?= count($users) === 1 ? '' : 's' ?></span></div>
+        <div class="table-responsive"><table class="user-table"><thead><tr><th>User</th><th>Email</th><th>Phone</th><th>Role</th><th>Bookings</th><th>Action</th></tr></thead><tbody>
+        <?php if ($users): foreach ($users as $u): ?>
+            <tr>
+                <td><div class="d-flex align-items-center gap-2"><div class="avatar-mini"><?= htmlspecialchars(strtoupper(substr($u['name'] ?: 'U',0,1))) ?></div><div><strong><?= htmlspecialchars($u['name']) ?></strong><div class="small text-muted">ID #<?= (int)$u['id'] ?></div></div></div></td>
+                <td><?= htmlspecialchars($u['email']) ?></td><td><?= htmlspecialchars($u['phone'] ?: '-') ?></td><td><span class="role-chip"><?= htmlspecialchars(ucfirst($u['role'])) ?></span></td><td><span class="booking-chip"><?= (int)$u['booking_count'] ?></span></td>
+                <td><a class="btn-view" href="?view=<?= (int)$u['id'] ?><?= $search !== '' ? '&search='.urlencode($search) : '' ?>"><i class="fa-regular fa-eye me-1"></i> View</a></td>
+            </tr>
+        <?php endforeach; else: ?><tr><td colspan="6" class="empty-state"><i class="fa-solid fa-user-slash fs-3 d-block mb-2"></i>Tiada pengguna dijumpai.</td></tr><?php endif; ?>
+        </tbody></table></div>
+    </div>
+</main>
+</div>
 </body>
 </html>
