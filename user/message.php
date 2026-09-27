@@ -747,6 +747,138 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
     .brand-logo-icon img,.brand-logo img{width:45px!important;height:45px!important}
 }
 
+
+/* ===== FLOATING TRANSPARENT GLASS DOCK ===== */
+.nav-center{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    transform:translate(-50%,-50%)!important;
+    height:52px!important;
+    padding:6px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:4px!important;
+    white-space:nowrap!important;
+    border:1px solid rgba(255,255,255,.11)!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025))!important;
+    backdrop-filter:blur(22px) saturate(145%)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(145%)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 10px 30px rgba(0,0,0,.24),0 0 24px rgba(99,102,241,.055)!important;
+}
+.nav-center::before{
+    content:""!important;
+    position:absolute!important;
+    inset:1px!important;
+    border-radius:16px!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 60%)!important;
+    pointer-events:none!important;
+}
+.nav-center a{
+    position:relative!important;
+    z-index:1!important;
+    height:40px!important;
+    min-height:40px!important;
+    padding:0 16px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid transparent!important;
+    border-radius:13px!important;
+    background:transparent!important;
+    color:#aeb9ca!important;
+    text-decoration:none!important;
+    font-family:'Plus Jakarta Sans',sans-serif!important;
+    font-size:.75rem!important;
+    font-weight:800!important;
+    line-height:1!important;
+    letter-spacing:.1px!important;
+    box-shadow:none!important;
+    overflow:hidden!important;
+    transition:transform .2s ease,color .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease!important;
+}
+.nav-center a::before{
+    content:""!important;
+    position:absolute!important;
+    top:-120%!important;
+    left:-70%!important;
+    width:45%!important;
+    height:340%!important;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent)!important;
+    transform:rotate(25deg)!important;
+    transition:left .45s ease!important;
+    pointer-events:none!important;
+}
+.nav-center a::after{
+    content:""!important;
+    position:absolute!important;
+    left:50%!important;
+    bottom:4px!important;
+    width:0!important;
+    height:2px!important;
+    transform:translateX(-50%)!important;
+    border-radius:50px!important;
+    background:linear-gradient(90deg,#818cf8,#c084fc)!important;
+    box-shadow:0 0 10px rgba(168,85,247,.75)!important;
+    transition:width .2s ease!important;
+}
+.nav-center a:hover{
+    color:#fff!important;
+    transform:translateY(-1px)!important;
+    background:rgba(255,255,255,.065)!important;
+    border-color:rgba(255,255,255,.08)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 5px 14px rgba(0,0,0,.15)!important;
+}
+.nav-center a:hover::before{left:135%!important}
+.nav-center a:hover::after{width:30%!important}
+.nav-center a:active{transform:scale(.95)!important;background:rgba(99,102,241,.13)!important}
+.nav-center a.active{
+    color:#fff!important;
+    background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(168,85,247,.13))!important;
+    border-color:rgba(129,140,248,.28)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 16px rgba(0,0,0,.18),0 0 16px rgba(99,102,241,.11)!important;
+}
+.nav-center a.active::after{width:32%!important}
+@media(max-width:900px){
+    .nav-center{height:48px!important;padding:5px!important;gap:2px!important}
+    .nav-center a{height:38px!important;min-height:38px!important;padding:0 11px!important;font-size:.68rem!important}
+}
+@media(max-width:720px){.nav-center{display:none!important}}
+
+
+/* ===== FINAL NO-SHIFT DOCK FIX ===== */
+html{
+    overflow-y:scroll!important;
+    scrollbar-gutter:stable!important;
+}
+.custom-navbar,.nav,.navbar{
+    width:100%!important;
+    max-width:none!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    box-sizing:border-box!important;
+}
+.nav-center,
+.custom-navbar .nav-center,
+.nav .nav-center,
+.navbar .nav-center{
+    position:absolute!important;
+    left:50vw!important;
+    top:39px!important;
+    transform:translate(-50%,-50%)!important;
+    margin:0!important;
+}
+@media(max-width:720px){
+    .nav-center,
+    .custom-navbar .nav-center,
+    .nav .nav-center,
+    .navbar .nav-center{display:none!important}
+}
+
 </style>
 </head>
 <body>
