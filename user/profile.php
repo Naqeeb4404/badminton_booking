@@ -385,6 +385,63 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradi
     .brand-logo-icon img,.brand-logo img{width:45px!important;height:45px!important}
 }
 
+
+/* ===== PROFILE NAVBAR FINAL ALIGNMENT FIX ===== */
+.custom-navbar{
+    font-size:16px!important;
+    line-height:normal!important;
+}
+.custom-navbar .brand-container,
+.custom-navbar .brand-container:hover,
+.custom-navbar .brand-container:focus{
+    position:relative!important;
+    top:0!important;
+    transform:none!important;
+}
+.custom-navbar .brand-text strong{
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:.95rem!important;
+    font-weight:800!important;
+    line-height:1.05!important;
+}
+.custom-navbar .brand-text span{
+    display:block!important;
+    margin:5px 0 0!important;
+    padding:0!important;
+    font-size:.62rem!important;
+    font-weight:800!important;
+    line-height:1!important;
+}
+.custom-navbar .nav-center{
+    position:absolute!important;
+    left:50%!important;
+    top:39px!important;
+    transform:translate(-50%,-50%)!important;
+    margin:0!important;
+}
+.custom-navbar .nav-center a{
+    box-sizing:border-box!important;
+    margin:0!important;
+    vertical-align:middle!important;
+    line-height:1!important;
+}
+.custom-navbar .nav-actions{
+    position:relative!important;
+    top:0!important;
+    transform:none!important;
+}
+.custom-navbar .nav-actions .nav-btn{
+    margin:0!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    text-decoration:none!important;
+}
+@media(max-width:720px){
+    .custom-navbar .nav-center{display:none!important}
+}
+
 </style>
 
 </head>
