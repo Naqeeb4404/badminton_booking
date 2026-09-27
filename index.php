@@ -45,7 +45,10 @@ include __DIR__ . '/config/db.php';
             overflow-x: hidden;
         }
 
-        /* BACKGROUND */
+        /* =========================
+           BACKGROUND
+        ========================= */
+
         .animated-bg-layer {
             position: fixed;
             top: 0;
@@ -87,7 +90,10 @@ include __DIR__ . '/config/db.php';
             }
         }
 
-        /* TOP BAR */
+        /* =========================
+           TOP BAR
+        ========================= */
+
         .top-announcement-bar {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -101,13 +107,16 @@ include __DIR__ . '/config/db.php';
             -webkit-backdrop-filter: blur(10px);
         }
 
-        /* NAVBAR */
+        /* =========================
+           NAVBAR
+        ========================= */
+
         .custom-navbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 9px 40px;
-            min-height: 76px;
+            min-height: 70px;
             border-bottom: 1px solid var(--credix-border);
             background: rgba(9, 10, 15, 0.92);
             backdrop-filter: blur(16px);
@@ -117,7 +126,10 @@ include __DIR__ . '/config/db.php';
             z-index: 1000;
         }
 
-        /* BRAND */
+        /* =========================
+           BRAND
+        ========================= */
+
         .brand-container {
             display: inline-flex;
             align-items: center;
@@ -126,49 +138,43 @@ include __DIR__ . '/config/db.php';
             flex-shrink: 0;
         }
 
-        /* LOGO */
+        /* =========================
+           LOGO - SMALLER
+        ========================= */
+
         .brand-logo-icon {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-
             background: transparent;
             border: none;
-
-            /* BUCU MELENGKUNG */
-            border-radius: 12px;
-
+            border-radius: 10px;
             overflow: hidden;
-
             margin: 0;
             padding: 0;
         }
 
         .brand-logo-icon img {
-            width: 58px;
-            height: 58px;
+            width: 46px;
+            height: 46px;
             display: block;
-
             object-fit: contain;
             object-position: center;
-
             background: transparent;
-
-            /* GAMBAR IKUT MELENGKUNG */
-            border-radius: 10px;
-
+            border-radius: 9px;
             border: none;
             margin: 0;
             padding: 0;
-
-            /* KEKALKAN WARNA ASAL */
             filter: none;
         }
 
-        /* BRAND TEXT */
+        /* =========================
+           BRAND TEXT
+        ========================= */
+
         .brand-text {
             display: flex;
             flex-direction: column;
@@ -200,7 +206,10 @@ include __DIR__ . '/config/db.php';
             text-transform: uppercase;
         }
 
-        /* NAVIGATION */
+        /* =========================
+           NAVIGATION
+        ========================= */
+
         .nav-links {
             display: flex;
             gap: 24px;
@@ -220,7 +229,10 @@ include __DIR__ . '/config/db.php';
             color: var(--text-main);
         }
 
-        /* BOOK NOW */
+        /* =========================
+           BOOK NOW
+        ========================= */
+
         .btn-book-now {
             border: 1px solid var(--credix-border);
             color: var(--text-main);
@@ -242,7 +254,10 @@ include __DIR__ . '/config/db.php';
             transform: translateY(-2px);
         }
 
-        /* HERO */
+        /* =========================
+           HERO
+        ========================= */
+
         .hero-section {
             padding: 50px 0;
             position: relative;
@@ -255,11 +270,9 @@ include __DIR__ . '/config/db.php';
             border: 1px solid var(--credix-border);
             border-radius: 32px;
             padding: 60px 50px;
-
             box-shadow:
                 0 40px 80px rgba(0, 0, 0, 0.8),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-
             position: relative;
             z-index: 2;
             transition: transform 0.2s ease-out;
@@ -294,7 +307,10 @@ include __DIR__ . '/config/db.php';
             margin-bottom: 30px;
         }
 
-        /* BUTTONS */
+        /* =========================
+           BUTTONS
+        ========================= */
+
         .btn-primary-custom {
             background: var(--credix-accent);
             color: #fff;
@@ -337,7 +353,10 @@ include __DIR__ . '/config/db.php';
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* VIDEO */
+        /* =========================
+           VIDEO
+        ========================= */
+
         .hero-video-wrapper {
             width: 100%;
             height: 100%;
@@ -360,7 +379,10 @@ include __DIR__ . '/config/db.php';
             pointer-events: none;
         }
 
-        /* FOOTER */
+        /* =========================
+           FOOTER
+        ========================= */
+
         .site-footer {
             background-color: rgba(19, 21, 31, 0.9);
             backdrop-filter: blur(15px);
@@ -420,7 +442,10 @@ include __DIR__ . '/config/db.php';
             color: var(--text-muted);
         }
 
-        /* TABLET */
+        /* =========================
+           TABLET
+        ========================= */
+
         @media (max-width: 991px) {
             .master-hero-card {
                 padding: 40px 25px;
@@ -431,11 +456,14 @@ include __DIR__ . '/config/db.php';
             }
         }
 
-        /* MOBILE */
+        /* =========================
+           MOBILE
+        ========================= */
+
         @media (max-width: 768px) {
             .custom-navbar {
                 padding: 8px 18px;
-                min-height: 68px;
+                min-height: 62px;
             }
 
             .top-announcement-bar {
@@ -447,16 +475,16 @@ include __DIR__ . '/config/db.php';
             }
 
             .brand-logo-icon {
-                width: 50px;
-                height: 50px;
-                border-radius: 11px;
+                width: 42px;
+                height: 42px;
+                border-radius: 9px;
             }
 
             .brand-logo-icon img {
-                width: 47px;
-                height: 47px;
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
                 object-fit: contain;
-                border-radius: 9px;
                 filter: none;
             }
 
@@ -511,7 +539,6 @@ include __DIR__ . '/config/db.php';
     </div>
 
     <div>
-
         <?php if (isset($_SESSION['user'])): ?>
 
             <a href="user/dashboard.php"
@@ -527,7 +554,6 @@ include __DIR__ . '/config/db.php';
             </a>
 
         <?php endif; ?>
-
     </div>
 
 </div>
@@ -535,6 +561,7 @@ include __DIR__ . '/config/db.php';
 <!-- NAVBAR -->
 <nav class="custom-navbar">
 
+    <!-- BRAND -->
     <a href="index.php" class="brand-container">
 
         <div class="brand-logo-icon">
@@ -551,7 +578,9 @@ include __DIR__ . '/config/db.php';
 
     </a>
 
+    <!-- NAVIGATION -->
     <div class="nav-links d-none d-lg-flex">
+
         <a href="index.php" class="active">Home</a>
         <a href="rates.php">Rates</a>
         <a href="facility.php">Facility</a>
@@ -559,8 +588,10 @@ include __DIR__ . '/config/db.php';
         <a href="faq.php">FAQ</a>
         <a href="rules.php">Rules</a>
         <a href="location.php">Location</a>
+
     </div>
 
+    <!-- BOOK NOW -->
     <?php if (isset($_SESSION['user'])): ?>
 
         <a href="booking.php" class="btn-book-now">
@@ -590,7 +621,9 @@ include __DIR__ . '/config/db.php';
                 <div class="col-lg-6">
 
                     <div class="badge-pill">
-                        <span>NEXT-GEN COURT BOOKING PLATFORM</span>
+                        <span>
+                            NEXT-GEN COURT BOOKING PLATFORM
+                        </span>
                     </div>
 
                     <h1 class="hero-title">
@@ -676,7 +709,7 @@ include __DIR__ . '/config/db.php';
 
     <div class="footer-container">
 
-        <!-- BRAND -->
+        <!-- FOOTER BRAND -->
         <div class="footer-col">
 
             <a href="index.php"
@@ -694,7 +727,6 @@ include __DIR__ . '/config/db.php';
                 <div class="brand-text">
 
                     <span>BADMINTON</span>
-
                     <small>KAMPUNG PANJI</small>
 
                 </div>
@@ -720,25 +752,17 @@ include __DIR__ . '/config/db.php';
             <h6>Pautan Pantas</h6>
 
             <ul>
-
                 <li>
-                    <a href="rates.php">
-                        Rates
-                    </a>
+                    <a href="rates.php">Rates</a>
                 </li>
 
                 <li>
-                    <a href="facility.php">
-                        Facility
-                    </a>
+                    <a href="facility.php">Facility</a>
                 </li>
 
                 <li>
-                    <a href="about.php">
-                        About
-                    </a>
+                    <a href="about.php">About</a>
                 </li>
-
             </ul>
 
         </div>
@@ -749,25 +773,17 @@ include __DIR__ . '/config/db.php';
             <h6>Sokongan</h6>
 
             <ul>
-
                 <li>
-                    <a href="faq.php">
-                        FAQ
-                    </a>
+                    <a href="faq.php">FAQ</a>
                 </li>
 
                 <li>
-                    <a href="rules.php">
-                        Rules
-                    </a>
+                    <a href="rules.php">Rules</a>
                 </li>
 
                 <li>
-                    <a href="location.php">
-                        Location
-                    </a>
+                    <a href="location.php">Location</a>
                 </li>
-
             </ul>
 
         </div>
