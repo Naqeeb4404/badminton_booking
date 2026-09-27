@@ -1,546 +1,310 @@
 <?php
+
 session_start();
+
 include __DIR__ . '/../config/db.php';
 
+
+
 if (!isset($_SESSION['user'])) {
+
     header('Location: ../auth/login.php');
+
     exit();
+
 }
+
+
 
 $date = $_GET['date'] ?? '';
+
 $time = $_GET['time'] ?? '';
+
 $duration = isset($_GET['duration']) ? (int)$_GET['duration'] : 0;
+
 $courtId = isset($_GET['court_id']) ? (int)$_GET['court_id'] : 0;
 
+
+
 if (!$date || !$time || $duration < 1 || $duration > 4 || $courtId < 1) {
+
     header('Location: dashboard.php?error=' . urlencode('Booking information is incomplete. Please choose your slot again.'));
+
     exit();
+
 }
+
+
 
 $stmt = mysqli_prepare($conn, 'SELECT id, court_name, price, status FROM courts WHERE id = ? LIMIT 1');
+
 mysqli_stmt_bind_param($stmt, 'i', $courtId);
+
 mysqli_stmt_execute($stmt);
+
 $court = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
 mysqli_stmt_close($stmt);
 
+
+
 if (!$court || $court['status'] !== 'Available') {
+
     header('Location: dashboard.php?error=' . urlencode('Selected court is not available.'));
+
     exit();
+
 }
+
+
 
 $start = strtotime($date . ' ' . substr($time, 0, 5));
+
 $end = $start + ($duration * 3600);
 
+
+
 if (!$start || $start <= time()) {
+
     header('Location: dashboard.php?error=' . urlencode('Selected time has already passed.'));
+
     exit();
+
 }
 
+
+
 // Check every hour in the selected duration to prevent overlapping bookings.
+
 $conflict = false;
 
+
+
 for ($i = 0; $i < $duration; $i++) {
+
     $slot = date('H:i:s', $start + ($i * 3600));
 
+
+
     $check = mysqli_prepare(
+
         $conn,
+
         "SELECT id
+
          FROM bookings
+
          WHERE court_id = ?
+
          AND booking_date = ?
+
          AND booking_time = ?
+
          AND status IN ('Pending','Approved')
+
          LIMIT 1"
+
     );
 
+
+
     mysqli_stmt_bind_param($check, 'iss', $courtId, $date, $slot);
+
     mysqli_stmt_execute($check);
+
+
 
     $res = mysqli_stmt_get_result($check);
 
+
+
     if (mysqli_fetch_assoc($res)) {
+
         $conflict = true;
+
     }
+
+
 
     mysqli_stmt_close($check);
 
+
+
     if ($conflict) {
+
         break;
+
     }
+
 }
+
+
 
 if ($conflict) {
+
     header('Location: dashboard.php?error=' . urlencode('This court/time is already booked. Please choose another slot.'));
+
     exit();
+
 }
 
+
+
 // Ambil kadar harga terus daripada court yang dipilih.
+
 $pricePerHour = (float)$court['price'];
+
 $total = $pricePerHour * $duration;
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="ms">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Confirm Booking - Badminton Kampung Panji</title>
-
-<link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
->
-
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
->
-
-<link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
->
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-
-:root {
-    --bg: #090a0f;
-    --card: #13151f;
-    --border: rgba(255,255,255,.08);
-    --accent: #6366f1;
-    --muted: #94a3b8;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg);
-    color: #f8fafc;
-    min-height: 100vh;
-    margin: 0;
-}
-
-/* =========================
-   NAVBAR
-========================= */
-
-.nav {
-    padding: 12px 40px;
-    min-height: 78px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(9,10,15,.9);
-    backdrop-filter: blur(16px);
-}
-
-/* =========================
-   BRAND
-========================= */
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #fff;
-    text-decoration: none;
-}
-
-/* =========================
-   LOGO - SAMA MACAM DASHBOARD
-========================= */
-
-.brand-logo-icon {
-    width: 53px;
-    height: 53px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background: transparent;
-    border: none;
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-}
-
-.brand-logo-icon img {
-    width: 51px;
-    height: 51px;
-    display: block;
-    object-fit: contain;
-    object-position: center;
-    background: transparent;
-    border-radius: 9px;
-    border: none;
-    margin: 0;
-    padding: 0;
-    filter: none;
-}
-
-/* =========================
-   BRAND TEXT
-========================= */
-
-.brand-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-}
-
-.brand-text span {
-    display: block;
-    color: #f8fafc;
-    font-size: 0.95rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    line-height: 1.1;
-}
-
-.brand-text small {
-    display: block;
-    color: #a855f7;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    line-height: 1;
-    margin-top: 5px;
-    text-transform: uppercase;
-}
-
-/* =========================
-   MY BOOKING
-========================= */
-
-.my-booking-link {
-    color: #f8fafc;
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 700;
-    transition: color .2s ease;
-}
-
-.my-booking-link:hover {
-    color: #a855f7;
-}
-
-/* =========================
-   CONTENT
-========================= */
-
-.wrap {
-    max-width: 720px;
-    margin: 60px auto;
-    padding: 0 20px;
-}
-
-.cardx {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 28px;
-    padding: 36px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.45);
-}
-
-.detail {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border);
-    color: var(--muted);
-}
-
-.detail strong {
-    color: #fff;
-    text-align: right;
-}
-
-.total {
-    font-size: 1.8rem;
-    color: #fff !important;
-}
-
-/* =========================
-   BUTTON
-========================= */
-
-.btn-confirm {
-    background: linear-gradient(135deg,#6366f1,#a855f7);
-    border: 0;
-    color: #fff;
-    border-radius: 50px;
-    font-weight: 800;
-    padding: 14px 24px;
-    transition: all .2s ease;
-}
-
-.btn-confirm:hover {
-    opacity: .92;
-    transform: translateY(-1px);
-}
-
-.btn-back {
-    border: 1px solid var(--border);
-    color: #fff;
-    border-radius: 50px;
-    text-decoration: none;
-    padding: 14px 24px;
-    text-align: center;
-    transition: all .2s ease;
-}
-
-.btn-back:hover {
-    background: rgba(255,255,255,.05);
-    color: #fff;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 768px) {
-
-    .nav {
-        padding: 10px 18px;
-        min-height: 70px;
-    }
-
-    .brand-logo-icon {
-        width: 47px;
-        height: 47px;
-        border-radius: 9px;
-    }
-
-    .brand-logo-icon img {
-        width: 45px;
-        height: 45px;
-        border-radius: 8px;
-    }
-
-    .brand-text span {
-        font-size: 0.85rem;
-    }
-
-    .brand-text small {
-        font-size: 0.57rem;
-        letter-spacing: 1px;
-    }
-
-    .wrap {
-        margin: 35px auto;
-        padding: 0 15px;
-    }
-
-    .cardx {
-        padding: 25px 20px;
-        border-radius: 22px;
-    }
-
-    .detail {
-        gap: 15px;
-    }
-}
-
+:root{--bg:#090a0f;--card:#13151f;--border:rgba(255,255,255,.09);--accent:#6366f1;--purple:#a855f7;--muted:#94a3b8;--green:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:#090a0f;color:#fff;min-height:100vh;overflow-x:hidden}
+.bg-video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:-3;filter:brightness(.22) saturate(.8)}
+.bg-overlay{position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 15% 20%,rgba(99,102,241,.25),transparent 35%),radial-gradient(circle at 85% 70%,rgba(168,85,247,.20),transparent 35%),linear-gradient(180deg,rgba(9,10,15,.45),rgba(9,10,15,.94));pointer-events:none}
+.glow{position:fixed;width:350px;height:350px;border-radius:50%;background:#6366f1;filter:blur(150px);opacity:.12;z-index:-1;pointer-events:none}.glow-one{top:80px;left:-120px}.glow-two{bottom:-100px;right:-100px;background:#a855f7}
+.nav{min-height:78px;padding:12px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(9,10,15,.80);border-bottom:1px solid var(--border);backdrop-filter:blur(18px);position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo-icon{width:53px;height:53px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:10px;overflow:hidden}.brand-logo-icon img{width:51px;height:51px;display:block;object-fit:contain;border-radius:9px}
+.brand-text{display:flex;flex-direction:column}.brand-text span{color:#f8fafc;font-size:.95rem;font-weight:800;letter-spacing:.5px;line-height:1.1}.brand-text small{color:#a855f7;font-size:.65rem;font-weight:700;letter-spacing:1.5px;margin-top:5px;text-transform:uppercase}
+.my-booking-link{color:#cbd5e1;text-decoration:none;font-size:.82rem;font-weight:700;padding:9px 16px;border:1px solid var(--border);border-radius:50px;background:rgba(255,255,255,.03);transition:.2s}.my-booking-link:hover{color:#fff;background:rgba(255,255,255,.08)}
+.page{width:100%;display:flex;justify-content:center;padding:45px 20px 70px}.containerx{width:100%;max-width:650px}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:22px}.step-item{display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:700;color:#64748b;white-space:nowrap}.step-item.active{color:#fff}.step-number{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:.65rem}.step-item.active .step-number{background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;box-shadow:0 0 20px rgba(99,102,241,.35)}.step-line{width:28px;height:1px;margin:0 8px;background:rgba(255,255,255,.10)}
+.cardx{position:relative;background:linear-gradient(145deg,rgba(24,26,39,.94),rgba(15,16,25,.94));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.10);border-radius:26px;padding:30px;box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}.cardx:before{content:"";position:absolute;top:-80px;right:-80px;width:180px;height:180px;border-radius:50%;background:#6366f1;filter:blur(80px);opacity:.12;pointer-events:none}
+.badge-step{width:max-content;margin:0 auto 12px;display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:50px;background:rgba(99,102,241,.09);border:1px solid rgba(99,102,241,.22);color:#a5b4fc;font-size:.65rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase}
+.title{text-align:center;font-size:1.55rem;font-weight:800;letter-spacing:-.5px;margin:0 0 7px}.subtitle{text-align:center;color:var(--muted);font-size:.78rem;line-height:1.5;margin-bottom:22px}
+.booking-highlight{display:flex;align-items:center;gap:13px;background:rgba(99,102,241,.07);border:1px solid rgba(99,102,241,.16);border-radius:15px;padding:14px 15px;margin-bottom:16px}.booking-highlight .icon{width:38px;height:38px;flex-shrink:0;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(99,102,241,.15);color:#a5b4fc}.booking-highlight small{display:block;color:#94a3b8;font-size:.65rem;margin-bottom:2px}.booking-highlight strong{font-size:.8rem}
+.details{background:rgba(255,255,255,.025);border:1px solid var(--border);padding:7px 16px;border-radius:15px}.detail{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:.78rem}.detail:last-child{border-bottom:0}.detail-label{display:flex;align-items:center;gap:9px}.detail-label i{width:18px;text-align:center;color:#818cf8}.detail strong{color:#fff;text-align:right;font-weight:700}.detail.total-row{padding:15px 0}.detail .total{font-size:1.25rem;color:var(--green)!important;font-weight:800}
+.actions{display:grid;grid-template-columns:1fr 1.35fr;gap:10px;margin-top:20px}.btn-confirm,.btn-back{min-height:48px;border-radius:50px;font-family:inherit;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:.2s}.btn-confirm{background:linear-gradient(135deg,#6366f1,#a855f7);border:0;color:#fff;box-shadow:0 8px 25px rgba(99,102,241,.25)}.btn-confirm:hover{transform:translateY(-2px);color:#fff;box-shadow:0 12px 30px rgba(99,102,241,.35)}.btn-back{border:1px solid var(--border);color:#cbd5e1;background:rgba(255,255,255,.025)}.btn-back:hover{color:#fff;background:rgba(255,255,255,.07)}
+.security-note{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:14px;color:#64748b;font-size:.62rem}.security-note i{color:#4ade80}
+@media(max-width:768px){.nav{min-height:70px;padding:10px 18px}.brand-logo-icon{width:47px;height:47px}.brand-logo-icon img{width:45px;height:45px}.brand-text span{font-size:.85rem}.brand-text small{font-size:.57rem}.page{padding:30px 14px 50px}.cardx{padding:24px 18px;border-radius:22px}.step-line{width:18px;margin:0 5px}.step-item{font-size:.6rem}}
+@media(max-width:480px){.brand-text{display:none}.nav{padding-left:14px;padding-right:14px}.cardx{padding:22px 16px}.title{font-size:1.35rem}.actions{grid-template-columns:1fr}.btn-confirm{order:1}.btn-back{order:2}}
 </style>
-
 </head>
-
 <body>
 
-<!-- NAVBAR -->
+<video autoplay loop muted playsinline class="bg-video">
+    <source src="sports.mp4" type="video/mp4">
+</video>
+<div class="bg-overlay"></div>
+<div class="glow glow-one"></div>
+<div class="glow glow-two"></div>
+
 <nav class="nav">
-
     <a class="brand" href="dashboard.php">
-
         <div class="brand-logo-icon">
-            <img
-                src="../logo-badminton.png"
-                alt="Badminton Kampung Panji"
-            >
+            <img src="../logo-badminton.png" alt="Badminton Kampung Panji">
         </div>
-
         <div class="brand-text">
             <span>BADMINTON</span>
             <small>KAMPUNG PANJI</small>
         </div>
-
     </a>
-
-    <a
-        class="my-booking-link"
-        href="my_booking.php"
-    >
-        My Booking
+    <a class="my-booking-link" href="my_booking.php">
+        <i class="fa-solid fa-calendar-check"></i> My Booking
     </a>
-
 </nav>
 
-<!-- CONTENT -->
-<div class="wrap">
+<div class="page">
+<div class="containerx">
 
-    <div class="cardx">
-
-        <div
-            class="text-uppercase fw-bold mb-2"
-            style="
-                color:#818cf8;
-                font-size:.75rem;
-                letter-spacing:1.5px;
-            "
-        >
-            Final Step
-        </div>
-
-        <h2 class="fw-bold mb-2">
+    <div class="steps">
+        <div class="step-item active">
+            <div class="step-number">1</div>
             Confirm Booking
-        </h2>
-
-        <p
-            class="mb-4"
-            style="color:var(--muted)"
-        >
-            Semak pilihan anda. Court tidak perlu dipilih semula.
-        </p>
-
-        <div class="detail">
-
-            <span>Name</span>
-
-            <strong>
-                <?= htmlspecialchars($_SESSION['user']['name']) ?>
-            </strong>
-
         </div>
-
-        <div class="detail">
-
-            <span>Court</span>
-
-            <strong>
-                <?= htmlspecialchars($court['court_name']) ?>
-            </strong>
-
+        <div class="step-line"></div>
+        <div class="step-item">
+            <div class="step-number">2</div>
+            Payment
         </div>
-
-        <div class="detail">
-
-            <span>Date</span>
-
-            <strong>
-                <?= htmlspecialchars(
-                    date('D, d M Y', strtotime($date))
-                ) ?>
-            </strong>
-
+        <div class="step-line"></div>
+        <div class="step-item">
+            <div class="step-number">3</div>
+            Receipt
         </div>
-
-        <div class="detail">
-
-            <span>Time</span>
-
-            <strong>
-                <?= htmlspecialchars(date('H:i', $start)) ?>
-                -
-                <?= htmlspecialchars(date('H:i', $end)) ?>
-            </strong>
-
-        </div>
-
-        <div class="detail">
-
-            <span>Duration</span>
-
-            <strong>
-                <?= $duration ?>
-                Hour<?= $duration > 1 ? 's' : '' ?>
-            </strong>
-
-        </div>
-
-        <div class="detail">
-
-            <span>Rate</span>
-
-            <strong>
-                RM <?= number_format($pricePerHour, 2) ?> / hour
-            </strong>
-
-        </div>
-
-        <div class="detail">
-
-            <span>Total</span>
-
-            <strong class="total">
-                RM <?= number_format($total, 2) ?>
-            </strong>
-
-        </div>
-
-        <form
-            method="POST"
-            action="create_booking.php"
-            class="mt-4"
-        >
-
-            <input
-                type="hidden"
-                name="date"
-                value="<?= htmlspecialchars($date) ?>"
-            >
-
-            <input
-                type="hidden"
-                name="time"
-                value="<?= htmlspecialchars($time) ?>"
-            >
-
-            <input
-                type="hidden"
-                name="duration"
-                value="<?= $duration ?>"
-            >
-
-            <input
-                type="hidden"
-                name="court_id"
-                value="<?= $courtId ?>"
-            >
-
-            <div class="d-grid gap-3">
-
-                <button
-                    type="submit"
-                    class="btn-confirm"
-                >
-                    Confirm Booking →
-                </button>
-
-                <a
-                    href="dashboard.php"
-                    class="btn-back"
-                >
-                    ← Change Selection
-                </a>
-
-            </div>
-
-        </form>
-
     </div>
 
-</div>
+    <div class="cardx">
+        <div class="badge-step">
+            <i class="fa-solid fa-circle-check"></i>
+            Final Booking Check
+        </div>
 
+        <h2 class="title">Confirm Booking</h2>
+        <div class="subtitle">
+            Semak maklumat tempahan anda sebelum meneruskan ke pembayaran.
+        </div>
+
+        <div class="booking-highlight">
+            <div class="icon"><i class="fa-solid fa-badminton"></i></div>
+            <div>
+                <small>Selected Court</small>
+                <strong><?= htmlspecialchars($court['court_name']) ?></strong>
+            </div>
+        </div>
+
+        <div class="details">
+            <div class="detail">
+                <div class="detail-label"><i class="fa-solid fa-user"></i><span>Name</span></div>
+                <strong><?= htmlspecialchars($_SESSION['user']['name']) ?></strong>
+            </div>
+            <div class="detail">
+                <div class="detail-label"><i class="fa-solid fa-calendar-days"></i><span>Date</span></div>
+                <strong><?= htmlspecialchars(date('D, d M Y', strtotime($date))) ?></strong>
+            </div>
+            <div class="detail">
+                <div class="detail-label"><i class="fa-regular fa-clock"></i><span>Time</span></div>
+                <strong><?= htmlspecialchars(date('H:i', $start)) ?> - <?= htmlspecialchars(date('H:i', $end)) ?></strong>
+            </div>
+            <div class="detail">
+                <div class="detail-label"><i class="fa-solid fa-hourglass-half"></i><span>Duration</span></div>
+                <strong><?= $duration ?> Hour<?= $duration > 1 ? 's' : '' ?></strong>
+            </div>
+            <div class="detail">
+                <div class="detail-label"><i class="fa-solid fa-tag"></i><span>Rate</span></div>
+                <strong>RM <?= number_format($pricePerHour,2) ?> / hour</strong>
+            </div>
+            <div class="detail total-row">
+                <div class="detail-label"><i class="fa-solid fa-wallet"></i><span>Total</span></div>
+                <strong class="total">RM <?= number_format($total,2) ?></strong>
+            </div>
+        </div>
+
+        <form method="POST" action="create_booking.php">
+            <input type="hidden" name="date" value="<?= htmlspecialchars($date) ?>">
+            <input type="hidden" name="time" value="<?= htmlspecialchars($time) ?>">
+            <input type="hidden" name="duration" value="<?= $duration ?>">
+            <input type="hidden" name="court_id" value="<?= $courtId ?>">
+
+            <div class="actions">
+                <a href="dashboard.php" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i> Change Selection
+                </a>
+                <button type="submit" class="btn-confirm">
+                    Confirm & Continue <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+
+        <div class="security-note">
+            <i class="fa-solid fa-lock"></i>
+            Your booking details are securely processed
+        </div>
+    </div>
+</div>
+</div>
 </body>
 </html>
