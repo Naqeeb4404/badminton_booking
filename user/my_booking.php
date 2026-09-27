@@ -476,7 +476,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-logo{width:53px;height:53px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center}.brand-logo img{width:51px;height:51px;object-fit:contain;border-radius:9px}.brand-text{display:flex;flex-direction:column}.brand-text strong{font-size:.95rem;color:#fff;line-height:1.05}.brand-text span{font-size:.62rem;color:#a855f7;font-weight:800;letter-spacing:1.5px;margin-top:5px}
 
-.nav-actions{display:flex;align-items:center;gap:8px}.nav-btn{height:40px;padding:0 14px;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,.035);color:#dbe3ef;text-decoration:none;display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;transition:transform .22s ease,background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease}.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateY(-2px);border-color:rgba(99,102,241,.25);box-shadow:0 7px 20px rgba(99,102,241,.10)}.nav-btn.active{background:rgba(99,102,241,.11);border-color:rgba(99,102,241,.25);color:#c4b5fd}.nav-btn.logout{border-color:rgba(251,113,133,.2);color:#fda4af;background:rgba(251,113,133,.06)}.nav-btn.logout:hover{background:rgba(251,113,133,.11);border-color:rgba(251,113,133,.3)}.bell{position:relative;width:40px;padding:0;justify-content:center}.notification-count{position:absolute;right:-4px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:30px;background:#ef4444;color:#fff;border:2px solid #090a0f;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800}
+.nav-actions{display:flex;align-items:center;gap:8px}.nav-btn{height:40px;padding:0 14px;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,.035);color:#dbe3ef;text-decoration:none;display:flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;transition:transform .22s ease,background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease}.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateY(-2px);border-color:rgba(99,102,241,.25);box-shadow:0 7px 20px rgba(99,102,241,.10)}.nav-btn.active{background:rgba(99,102,241,.11);border-color:rgba(99,102,241,.25);color:#c4b5fd}.nav-btn.logout{border-color:rgba(251,113,133,.2);color:#fda4af;background:rgba(251,113,133,.06)}.nav-btn.logout:hover{background:rgba(251,113,133,.11);border-color:rgba(251,113,133,.3)}.bell{position:relative;justify-content:center}.notification-count{position:absolute;right:-4px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:30px;background:#ef4444;color:#fff;border:2px solid #090a0f;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800}
 
 .wrapper{width:min(1180px,calc(100% - 30px));margin:0 auto;padding:38px 0 70px}
 
@@ -504,7 +504,7 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
 
 .pagination-wrap{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:15px}.page-btn{min-width:94px;height:40px;padding:0 15px;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,.035);color:#e2e8f0;font-family:inherit;font-size:.67rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:.2s}.page-btn:hover:not(:disabled){background:linear-gradient(135deg,#6366f1,#a855f7);border-color:transparent;color:#fff;transform:translateY(-1px)}.page-btn:disabled{opacity:.35;cursor:not-allowed}.page-indicator{min-width:82px;text-align:center;color:#94a3b8;font-size:.65rem;font-weight:800}.booking-card.page-hidden{display:none}
 
-@media(max-width:800px){.nav{height:70px;padding:8px 15px}.brand-logo{width:47px;height:47px}.brand-logo img{width:45px;height:45px}.brand-text{display:none}.nav-btn span{display:none}.nav-btn{width:40px;padding:0;justify-content:center}.nav-actions{gap:5px}.wrapper{width:min(100% - 20px,1180px);padding-top:24px}.hero{padding:23px 19px}.hero h1{font-size:1.55rem}.stats{grid-template-columns:1fr}.booking-grid{grid-template-columns:1fr}.booking-info{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:800px){.nav{height:70px;padding:8px 15px}.brand-logo{width:47px;height:47px}.brand-logo img{width:45px;height:45px}.brand-text{display:none}.nav-btn span:not(.notification-count){display:none}.nav-btn{width:40px;padding:0;justify-content:center}.nav-actions{gap:5px}.wrapper{width:min(100% - 20px,1180px);padding-top:24px}.hero{padding:23px 19px}.hero h1{font-size:1.55rem}.stats{grid-template-columns:1fr}.booking-grid{grid-template-columns:1fr}.booking-info{grid-template-columns:1fr 1fr 1fr}}
 
 @media(max-width:480px){.section-head{align-items:flex-start}.notice-actions{flex-direction:column;align-items:flex-end}.booking-info{grid-template-columns:1fr}.hero:after{display:none}}
 
@@ -529,17 +529,29 @@ body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradi
     </a>
 
     <div class="nav-actions">
-
-        <a href="#notifications" class="nav-btn bell" title="Notifications">
-
-            <i class="fa-solid fa-bell"></i>
-
-            <?php if($unreadCount > 0): ?><span class="notification-count"><?= $unreadCount ?></span><?php endif; ?>
-
+        <a href="feedback_report.php" class="nav-btn">
+            <i class="fa-solid fa-star"></i><span>Feedback</span>
         </a>
 
-        <a href="dashboard.php" class="nav-btn"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+        <a href="my_booking.php" class="nav-btn active">
+            <i class="fa-solid fa-calendar-check"></i><span>My Booking</span>
+        </a>
 
+        <a href="#notifications" class="nav-btn bell" title="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="nav-notification-text">Notification</span>
+            <?php if($unreadCount > 0): ?>
+                <span class="notification-count"><?= $unreadCount ?></span>
+            <?php endif; ?>
+        </a>
+
+        <a href="dashboard.php" class="nav-btn">
+            <i class="fa-solid fa-house"></i><span>Dashboard</span>
+        </a>
+
+        <a href="../auth/logout.php" class="nav-btn logout">
+            <i class="fa-solid fa-right-from-bracket"></i><span>Log Out</span>
+        </a>
     </div>
 
 </nav>
