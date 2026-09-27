@@ -1,1685 +1,3493 @@
 <?php
+
 session_start();
+
 include __DIR__ . '/../config/db.php';
 
+
+
 // =====================================================
+
 // SEMAK AKSES ADMIN
+
 // =====================================================
+
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != "admin") {
+
     header("Location: ../auth/login.php");
+
     exit();
+
 }
+
+
 
 $user = $_SESSION['user'];
 
 
+
+
+
 // =====================================================
+
 // MAKLUMAT ADMIN
+
 // =====================================================
+
 $current_admin = $user;
 
+
+
 $admin_initial = strtoupper(
+
     substr($user['name'] ?? 'A', 0, 1)
+
 );
 
+
+
 $admin_photo = '';
+
 $admin_photo_style = '';
 
 
+
+
+
 // =====================================================
+
 // JUMLAH MESEJ UNTUK NOTIFIKASI
+
 // =====================================================
+
 $total_messages = 0;
 
+
+
 $msg_query = mysqli_query(
+
     $conn,
+
     "SELECT COUNT(*) AS total FROM messages"
+
 );
 
+
+
 if ($msg_query) {
+
     $msg_row = mysqli_fetch_assoc($msg_query);
+
     $total_messages = (int)($msg_row['total'] ?? 0);
 
+
+
     mysqli_free_result($msg_query);
+
 }
 
 
+
+
+
 // =====================================================
+
 // 1. TAMBAH GELANGGANG
+
 // =====================================================
+
 if (isset($_POST['add'])) {
+
+
 
     $court_name = trim($_POST['court_name'] ?? '');
 
+
+
     $status = $_POST['status'] ?? 'Available';
 
+
+
     $allowed_statuses = [
+
         'Available',
+
         'Unavailable',
+
         'Disabled',
+
         'Deleted'
+
     ];
 
+
+
     if (!in_array($status, $allowed_statuses, true)) {
+
         $status = 'Available';
+
     }
+
+
 
     $price = (float)($_POST['price'] ?? 0);
 
 
+
+
+
     if ($court_name !== '') {
 
+
+
         $stmt = $conn->prepare("
+
             INSERT INTO courts
+
             (court_name, status, price)
+
             VALUES (?, ?, ?)
+
         ");
+
+
 
         if ($stmt) {
 
+
+
             $stmt->bind_param(
+
                 "ssd",
+
                 $court_name,
+
                 $status,
+
                 $price
+
             );
+
+
 
             $stmt->execute();
 
+
+
             $stmt->close();
+
         }
+
     }
 
+
+
     header("Location: manage_court.php");
+
     exit();
+
 }
 
 
+
+
+
 // =====================================================
+
 // 2. KEMASKINI GELANGGANG
+
 // =====================================================
+
 if (isset($_POST['edit'])) {
+
+
 
     $id = (int)($_POST['id'] ?? 0);
 
+
+
     $court_name = trim(
+
         $_POST['court_name'] ?? ''
+
     );
 
+
+
     $price = (float)(
+
         $_POST['price'] ?? 0
+
     );
+
+
+
 
 
     if ($id > 0 && $court_name !== '') {
 
+
+
         $stmt = $conn->prepare("
+
             UPDATE courts
+
             SET court_name = ?, price = ?
+
             WHERE id = ?
+
         ");
+
+
 
         if ($stmt) {
 
+
+
             $stmt->bind_param(
+
                 "sdi",
+
                 $court_name,
+
                 $price,
+
                 $id
+
             );
+
+
 
             $stmt->execute();
 
+
+
             $stmt->close();
+
         }
+
     }
 
+
+
     header("Location: manage_court.php");
+
     exit();
+
 }
 
 
+
+
+
 // =====================================================
+
 // 3. DELETE GELANGGANG
+
 // =====================================================
+
 // Soft delete supaya tidak melanggar foreign key
+
 // pada table bookings.
+
 if (isset($_GET['delete'])) {
+
+
 
     $id = (int)$_GET['delete'];
 
 
+
+
+
     if ($id > 0) {
 
+
+
         $stmt = $conn->prepare("
+
             UPDATE courts
+
             SET status = 'Deleted'
+
             WHERE id = ?
+
         ");
+
+
 
         if ($stmt) {
 
+
+
             $stmt->bind_param(
+
                 "i",
+
                 $id
+
             );
+
+
 
             $stmt->execute();
 
+
+
             $stmt->close();
+
         }
+
     }
 
+
+
     header("Location: manage_court.php");
+
     exit();
+
 }
 
 
+
+
+
 // =====================================================
+
 // 4. TUKAR STATUS GELANGGANG
+
 // =====================================================
+
 if (
+
     isset($_GET['status']) &&
+
     isset($_GET['id'])
+
 ) {
 
+
+
     $id = (int)$_GET['id'];
+
+
 
     $status = $_GET['status'];
 
 
+
+
+
     // Status yang dibenarkan oleh database
+
     $allowed_statuses = [
+
         'Available',
+
         'Unavailable',
+
         'Disabled',
+
         'Deleted'
+
     ];
 
 
+
+
+
     // Elakkan status pelik masuk database
+
     if (!in_array($status, $allowed_statuses, true)) {
 
+
+
         $status = 'Available';
+
     }
+
+
+
 
 
     if ($id > 0) {
 
+
+
         $stmt = $conn->prepare("
+
             UPDATE courts
+
             SET status = ?
+
             WHERE id = ?
+
         ");
+
+
 
         if ($stmt) {
 
+
+
             $stmt->bind_param(
+
                 "si",
+
                 $status,
+
                 $id
+
             );
+
+
 
             $stmt->execute();
 
+
+
+            $stmt->close();
+
+        }
+
+    }
+
+
+
+
+
+    header("Location: manage_court.php");
+
+    exit();
+
+}
+
+
+
+
+
+// =====================================================
+
+// =====================================================
+// 5. SET COURT NOT AVAILABLE IKUT TARIKH
+// =====================================================
+if (isset($_POST['set_date_unavailable'])) {
+    $unavailable_court_id = (int)($_POST['unavailable_court_id'] ?? 0);
+    $unavailable_date = trim($_POST['unavailable_date'] ?? '');
+    $unavailable_reason = trim($_POST['unavailable_reason'] ?? '');
+
+    $valid_date = DateTime::createFromFormat('Y-m-d', $unavailable_date);
+    $valid_date = $valid_date && $valid_date->format('Y-m-d') === $unavailable_date;
+
+    if ($unavailable_court_id > 0 && $valid_date && $unavailable_date >= date('Y-m-d')) {
+        $stmt = $conn->prepare("\n            INSERT INTO court_unavailability (court_id, unavailable_date, reason)\n            VALUES (?, ?, ?)\n            ON DUPLICATE KEY UPDATE reason = VALUES(reason)\n        ");
+        if ($stmt) {
+            $stmt->bind_param("iss", $unavailable_court_id, $unavailable_date, $unavailable_reason);
+            $stmt->execute();
             $stmt->close();
         }
     }
 
-
-    header("Location: manage_court.php");
+    header("Location: manage_court.php#date-unavailability");
     exit();
 }
 
+if (isset($_GET['remove_unavailable'])) {
+    $remove_unavailable_id = (int)$_GET['remove_unavailable'];
+    if ($remove_unavailable_id > 0) {
+        $stmt = $conn->prepare("DELETE FROM court_unavailability WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $remove_unavailable_id);
+            $stmt->execute();
+            $stmt->close();
+        }
+    }
+    header("Location: manage_court.php#date-unavailability");
+    exit();
+}
+
+// Senarai court untuk dropdown tarikh.
+$date_courts = mysqli_query($conn, "\n    SELECT id, court_name\n    FROM courts\n    WHERE status NOT IN ('Disabled', 'Deleted')\n    ORDER BY court_name ASC, id ASC\n");
+
+// Senarai tarikh yang admin sudah block.
+$unavailable_dates = mysqli_query($conn, "\n    SELECT cu.id, cu.court_id, cu.unavailable_date, cu.reason, c.court_name\n    FROM court_unavailability cu\n    JOIN courts c ON c.id = cu.court_id\n    WHERE cu.unavailable_date >= CURDATE()\n      AND c.status NOT IN ('Deleted')\n    ORDER BY cu.unavailable_date ASC, c.court_name ASC\n");
+
 
 // =====================================================
-// 5. AMBIL DATA COURT UNTUK EDIT
+// 6. AMBIL DATA COURT UNTUK EDIT
+
 // =====================================================
+
 $editCourt = null;
+
+
+
 
 
 if (isset($_GET['edit_id'])) {
 
+
+
     $edit_id = (int)$_GET['edit_id'];
+
+
+
 
 
     if ($edit_id > 0) {
 
+
+
         $edit_stmt = $conn->prepare("
+
             SELECT *
+
             FROM courts
+
             WHERE id = ?
+
         ");
+
+
 
         if ($edit_stmt) {
 
+
+
             $edit_stmt->bind_param(
+
                 "i",
+
                 $edit_id
+
             );
+
+
 
             $edit_stmt->execute();
 
+
+
             $edit_result = $edit_stmt->get_result();
+
+
 
             $editCourt = $edit_result->fetch_assoc();
 
+
+
             $edit_stmt->close();
+
         }
+
     }
+
 }
 
 
+
+
+
 // =====================================================
+
 // 6. AMBIL SENARAI COURT
+
 // =====================================================
+
 // Disabled dan Deleted disembunyikan daripada senarai aktif.
+
 $result = mysqli_query(
+
     $conn,
+
     "
+
     SELECT *
+
     FROM courts
+
     WHERE status NOT IN ('Disabled', 'Deleted')
+
     ORDER BY id DESC
+
     "
+
 );
 
+
+
 ?>
+
 <!DOCTYPE html>
+
 <html lang="ms">
+
+
 
 <head>
 
+
+
     <meta charset="UTF-8">
 
+
+
     <meta
+
         name="viewport"
+
         content="width=device-width, initial-scale=1.0"
+
     >
 
+
+
     <title>
+
         Manage Court - Badminton Kampung Panji
+
     </title>
 
 
+
+
+
     <!-- Bootstrap -->
+
     <link
+
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+
         rel="stylesheet"
+
     >
+
+
+
 
 
     <!-- FontAwesome -->
+
     <link
+
         rel="stylesheet"
+
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+
     >
+
+
+
 
 
     <!-- Google Font -->
+
     <link
+
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+
         rel="stylesheet"
+
     >
+
+
+
 
 
     <style>
 
+
+
         :root {
+
+
 
             --sidebar-bg: #1c2434;
 
+
+
             --sidebar-text: #dee4ee;
+
+
 
             --sidebar-hover: #333a48;
 
+
+
             --accent-lime: #ccff00;
+
+
 
             --text-dark: #111111;
 
+
+
             --body-bg: #f1f5f9;
+
         }
+
+
+
 
 
         body {
 
+
+
             font-family:
+
                 'Plus Jakarta Sans',
+
                 sans-serif;
 
+
+
             background-color:
+
                 var(--body-bg);
 
+
+
             color:
+
                 var(--text-dark);
+
+
 
             min-height: 100vh;
 
+
+
             margin: 0;
 
+
+
             display: flex;
+
         }
+
+
+
 
 
         /* ================================
+
            SCROLLBAR
+
         ================================= */
+
+
 
         ::-webkit-scrollbar {
 
+
+
             width: 6px;
 
+
+
             height: 6px;
+
         }
+
+
+
 
 
         ::-webkit-scrollbar-track {
 
+
+
             background: transparent;
+
         }
+
+
+
 
 
         ::-webkit-scrollbar-thumb {
 
+
+
             background: #cbd5e1;
 
+
+
             border-radius: 10px;
+
         }
+
+
+
 
 
         ::-webkit-scrollbar-thumb:hover {
 
+
+
             background: #94a3b8;
+
         }
+
+
+
 
 
         /* ================================
+
            SIDEBAR
+
         ================================= */
+
+
 
         .sidebar {
 
+
+
             width: 280px;
 
+
+
             background-color:
+
                 var(--sidebar-bg);
 
+
+
             color:
+
                 var(--sidebar-text);
+
+
 
             position: fixed;
 
+
+
             top: 0;
+
+
 
             left: 0;
 
+
+
             height: 100vh;
+
+
 
             display: flex;
 
+
+
             flex-direction: column;
+
+
 
             z-index: 100;
 
+
+
             transition: all 0.3s ease;
 
+
+
             box-shadow:
+
                 4px 0 10px rgba(0,0,0,0.05);
+
         }
+
+
+
 
 
         .sidebar-brand {
 
+
+
             padding: 25px 20px;
+
+
 
             font-size: 1.25rem;
 
+
+
             font-weight: 800;
+
+
 
             color: #fff;
 
+
+
             display: flex;
+
+
 
             align-items: center;
 
+
+
             gap: 12px;
 
+
+
             border-bottom:
+
                 1px solid rgba(255,255,255,0.08);
 
+
+
             text-decoration: none;
+
         }
+
+
+
 
 
         .sidebar-menu {
 
+
+
             padding: 20px 15px;
+
+
 
             overflow-y: auto;
 
+
+
             flex-grow: 1;
+
         }
+
+
+
 
 
         .menu-label {
 
+
+
             font-size: 0.75rem;
+
+
 
             text-transform: uppercase;
 
+
+
             letter-spacing: 1px;
+
+
 
             color: #8a99ad;
 
+
+
             margin-bottom: 10px;
+
+
 
             padding-left: 10px;
 
+
+
             font-weight: 700;
+
         }
+
+
+
 
 
         .sidebar-nav-link {
 
+
+
             display: flex;
+
+
 
             align-items: center;
 
+
+
             justify-content: space-between;
+
+
 
             padding: 12px 15px;
 
+
+
             color: var(--sidebar-text);
+
+
 
             text-decoration: none;
 
+
+
             border-radius: 10px;
+
+
 
             font-weight: 500;
 
+
+
             font-size: 0.9rem;
+
+
 
             margin-bottom: 5px;
 
+
+
             transition: all 0.2s ease;
+
         }
+
+
+
 
 
         .sidebar-nav-link-content {
 
+
+
             display: flex;
+
+
 
             align-items: center;
 
+
+
             gap: 12px;
+
         }
+
+
+
 
 
         .sidebar-nav-link:hover,
+
         .sidebar-nav-link.active {
 
+
+
             background-color:
+
                 var(--sidebar-hover);
 
+
+
             color: #fff;
+
         }
+
+
+
 
 
         .sidebar-nav-link i {
 
+
+
             font-size: 1.1rem;
+
+
 
             width: 20px;
 
+
+
             text-align: center;
+
         }
 
 
+
+
+
         /* ================================
+
            MAIN CONTENT
+
         ================================= */
+
+
 
         .main-content {
 
+
+
             margin-left: 280px;
+
+
 
             flex-grow: 1;
 
+
+
             display: flex;
+
+
 
             flex-direction: column;
 
+
+
             min-height: 100vh;
+
         }
+
+
+
 
 
         /* ================================
+
            TOPBAR
+
         ================================= */
+
+
 
         .topbar {
 
+
+
             height: 80px;
+
+
 
             background: #ffffff;
 
+
+
             border-bottom:
+
                 1px solid #e2e8f0;
+
+
 
             display: flex;
 
+
+
             align-items: center;
+
+
 
             justify-content: space-between;
 
+
+
             padding: 0 40px;
+
+
 
             position: sticky;
 
+
+
             top: 0;
 
+
+
             z-index: 99;
+
         }
+
+
+
 
 
         .search-form {
 
+
+
             position: relative;
 
+
+
             width: 350px;
+
         }
+
+
+
 
 
         .search-input {
 
+
+
             background: #f8fafc !important;
 
+
+
             border:
+
                 1px solid #e2e8f0 !important;
+
+
 
             border-radius: 50px !important;
 
+
+
             padding:
+
                 10px 20px 10px 45px !important;
+
+
 
             font-size: 0.85rem !important;
 
+
+
             width: 100% !important;
+
+
 
             color: #1e293b !important;
 
+
+
             box-shadow: none !important;
 
+
+
             outline: none !important;
+
         }
+
+
+
 
 
         .search-form i {
 
+
+
             position: absolute;
+
+
 
             left: 18px;
 
+
+
             top: 50%;
 
+
+
             transform:
+
                 translateY(-50%);
+
+
 
             color: #94a3b8;
 
+
+
             z-index: 5;
 
+
+
             pointer-events: none;
+
         }
+
+
+
 
 
         /* ================================
+
            USER PILL
+
         ================================= */
+
+
 
         .user-pill {
 
+
+
             display: flex;
+
+
 
             align-items: center;
 
+
+
             gap: 12px;
+
+
 
             background: #f8fafc;
 
+
+
             padding:
+
                 6px 16px 6px 6px;
+
+
 
             border-radius: 50px;
 
+
+
             border:
+
                 1px solid #e2e8f0;
+
         }
+
+
+
 
 
         .user-avatar {
 
+
+
             width: 38px;
+
+
 
             height: 38px;
 
+
+
             border-radius: 50%;
 
+
+
             background:
+
                 var(--sidebar-bg);
 
+
+
             color:
+
                 var(--accent-lime);
+
+
 
             display: flex;
 
+
+
             align-items: center;
+
+
 
             justify-content: center;
 
+
+
             font-weight: 800;
 
+
+
             font-size: 0.9rem;
+
         }
 
 
+
+
+
         /* ================================
+
            CONTENT
+
         ================================= */
+
+
 
         .content-body {
 
+
+
             padding: 40px;
 
+
+
             flex-grow: 1;
+
         }
 
 
+
+
+
         /* ================================
+
            CARD
+
         ================================= */
+
+
 
         .card {
 
+
+
             border:
+
                 1px solid #e2e8f0;
+
+
 
             border-radius: 20px;
 
+
+
             box-shadow:
+
                 0 4px 6px rgba(0,0,0,0.02)
+
                 !important;
 
+
+
             background: #ffffff;
+
         }
 
 
+
+
+
         /* ================================
+
            GRAY BOX
+
         ================================= */
+
+
 
         .gray-box {
 
+
+
             background-color:
+
                 #f8fafc;
 
+
+
             border:
+
                 1px solid #e2e8f0;
+
+
 
             border-radius: 16px;
 
+
+
             padding: 24px;
+
         }
+
+
+
 
 
         /* ================================
+
            BUTTON
+
         ================================= */
+
+
 
         .btn-minimal {
 
+
+
             background-color:
+
                 #f1f5f9;
 
+
+
             border:
+
                 1px solid #cbd5e1;
 
+
+
             color:
+
                 #334155;
+
+
 
             font-size: 0.8rem;
 
+
+
             font-weight: 600;
 
+
+
             padding:
+
                 6px 12px;
+
+
 
             border-radius: 8px;
 
+
+
             transition:
+
                 all 0.2s ease;
+
         }
+
+
+
 
 
         .btn-minimal:hover {
 
+
+
             background-color:
+
                 #e2e8f0;
 
+
+
             border-color:
+
                 #94a3b8;
 
+
+
             color:
+
                 #0f172a;
+
         }
+
+
+
 
 
         .btn-minimal-dark {
 
+
+
             background-color:
+
                 #334155;
 
+
+
             border:
+
                 1px solid #334155;
 
+
+
             color:
+
                 #ffffff;
+
+
 
             font-size: 0.85rem;
 
+
+
             font-weight: 600;
 
+
+
             padding:
+
                 8px 16px;
+
+
 
             border-radius: 8px;
 
+
+
             transition:
+
                 all 0.2s ease;
+
         }
+
+
+
 
 
         .btn-minimal-dark:hover {
 
+
+
             background-color:
+
                 #1e293b;
 
+
+
             color: #ffffff;
+
         }
 
 
+
+
+
         /* ================================
+
            TABLE
+
         ================================= */
 
+
+
         .table td,
+
         .table th {
+
+
 
             vertical-align: middle;
 
+
+
             padding: 14px 16px;
+
         }
 
 
+
+
+
         /* ================================
+
            RESPONSIVE
+
         ================================= */
+
+
 
         @media (max-width: 768px) {
 
+
+
             .sidebar {
 
+
+
                 width: 70px;
+
             }
+
+
+
 
 
             .sidebar .sidebar-brand span,
+
             .sidebar .menu-label,
+
             .sidebar .sidebar-nav-link span,
+
             .sidebar .badge {
 
+
+
                 display: none;
+
             }
+
+
+
 
 
             .main-content {
 
+
+
                 margin-left: 70px;
+
             }
+
+
+
 
 
             .topbar {
 
+
+
                 padding: 0 20px;
+
             }
+
+
+
 
 
             .search-form {
 
+
+
                 display: none;
+
             }
+
+
+
 
 
             .content-body {
 
+
+
                 padding: 20px;
+
             }
+
         }
+
+
 
     </style>
 
 
+
+
+
     <link
+
         rel="stylesheet"
+
         href="sidebar.css?v=20260926"
+
     >
+
+
+
 
 
     <style>
 
+
+
         body.admin-page .sidebar,
+
         body.admin-page .main-content {
 
+
+
             transition: none !important;
+
         }
+
+
 
     </style>
 
+
+
 </head>
+
+
+
 
 
 <body class="admin-page">
 
 
+
+
+
     <!-- =================================
+
          SIDEBAR
+
     ================================== -->
 
+
+
     <?php
+
     include __DIR__ . '/sidebar.php';
+
     ?>
 
 
+
+
+
     <!-- =================================
+
          MAIN CONTENT
+
     ================================== -->
+
+
 
     <div class="main-content">
 
 
+
+
+
         <!-- =================================
+
              TOPBAR
+
         ================================== -->
+
+
 
         <header class="topbar">
 
 
+
+
+
             <div class="search-form">
+
+
 
                 <i class="fa-solid fa-search"></i>
 
+
+
                 <input
+
                     type="text"
+
                     class="form-control search-input"
+
                     placeholder="Type to search..."
+
                     autocomplete="off"
+
                 >
 
+
+
             </div>
+
+
+
 
 
             <div class="d-flex align-items-center gap-3">
 
 
+
+
+
                 <div class="user-pill">
 
 
+
+
+
                     <div
+
                         class="user-avatar"
+
                         style="<?php echo $admin_photo_style; ?>"
+
                     >
+
+
 
                         <?php
 
+
+
                         echo htmlspecialchars(
+
                             $admin_initial,
+
                             ENT_QUOTES,
+
                             'UTF-8'
+
                         );
+
+
 
                         ?>
 
+
+
                     </div>
+
+
+
 
 
                     <div class="fw-bold fs-7 pe-2">
 
+
+
                         <?php
 
+
+
                         echo htmlspecialchars(
+
                             $current_admin['name']
+
                             ?? $user['name']
+
                             ?? 'Admin'
+
                         );
+
+
 
                         ?>
 
+
+
                     </div>
+
+
 
                 </div>
 
 
+
+
+
                 <a
+
                     href="../auth/logout.php"
+
                     class="btn btn-danger btn-sm rounded-pill fw-bold px-3"
+
                 >
 
+
+
                     <i
+
                         class="fa-solid fa-right-from-bracket me-1"
+
                     ></i>
 
+
+
                     Logout
+
+
 
                 </a>
 
 
+
+
+
             </div>
+
+
 
         </header>
 
 
+
+
+
         <!-- =================================
+
              CONTENT
+
         ================================== -->
 
+
+
         <div class="content-body">
+
+
+
 
 
             <div class="card shadow">
 
 
+
+
+
                 <div class="card-body p-4">
+
+
+
 
 
                     <!-- PAGE TITLE -->
 
+
+
                     <h2 class="fw-bold mb-1">
 
+
+
                         🏸 Manage Badminton Court
+
+
 
                     </h2>
 
 
+
+
+
                     <p class="text-muted fs-7 mb-4">
 
+
+
                         Tambah, padam, atau kemas kini
+
                         status ketersediaan gelanggang sukan.
+
+
 
                     </p>
 
 
+
+
+
                     <hr
+
                         class="text-muted opacity-25 mb-4"
+
                     >
 
 
 
+
+
+
+
                     <!-- =================================
+
                          EDIT COURT
+
                     ================================== -->
 
+
+
                     <?php if ($editCourt): ?>
+
+
+
 
 
                         <div class="gray-box mb-5">
 
 
+
+
+
                             <h5
+
                                 class="fw-bold mb-3 text-secondary fs-6"
+
                             >
 
+
+
                                 <i
+
                                     class="fa-solid fa-pen me-1"
+
                                 ></i>
+
+
 
                                 Edit Court #
 
+
+
                                 <?php
+
                                 echo (int)$editCourt['id'];
+
                                 ?>
+
+
 
                             </h5>
 
 
+
+
+
                             <form
+
                                 method="POST"
+
                                 class="row g-3"
+
                             >
 
 
+
+
+
                                 <input
+
                                     type="hidden"
+
                                     name="id"
+
                                     value="<?php
+
                                     echo (int)$editCourt['id'];
+
                                     ?>"
+
                                 >
+
+
+
 
 
                                 <!-- COURT NAME -->
 
+
+
                                 <div class="col-md-6">
 
 
+
+
+
                                     <label
+
                                         class="form-label fw-semibold fs-7 text-muted"
+
                                     >
 
+
+
                                         Nama Gelanggang
+
+
 
                                     </label>
 
 
+
+
+
                                     <input
+
                                         type="text"
+
                                         name="court_name"
+
                                         class="form-control bg-white"
+
                                         value="<?php
+
                                         echo htmlspecialchars(
+
                                             $editCourt['court_name'] ?? ''
+
                                         );
+
                                         ?>"
+
                                         required
+
                                     >
 
+
+
                                 </div>
+
+
+
 
 
                                 <!-- PRICE -->
 
+
+
                                 <div class="col-md-3">
 
 
+
+
+
                                     <label
+
                                         class="form-label fw-semibold fs-7 text-muted"
+
                                     >
 
+
+
                                         Price (RM/hr)
+
+
 
                                     </label>
 
 
+
+
+
                                     <input
+
                                         type="number"
+
                                         name="price"
+
                                         step="0.01"
+
                                         min="0"
+
                                         class="form-control bg-white"
+
                                         value="<?php
+
                                         echo htmlspecialchars(
+
                                             $editCourt['price'] ?? '0'
+
                                         );
+
                                         ?>"
+
                                         required
+
                                     >
 
+
+
                                 </div>
+
+
+
 
 
                                 <!-- BUTTON -->
 
+
+
                                 <div
+
                                     class="col-md-3 d-flex align-items-end gap-2"
+
                                 >
 
 
+
+
+
                                     <button
+
                                         name="edit"
+
                                         value="1"
+
                                         class="btn btn-minimal-dark w-100"
+
                                     >
 
+
+
                                         <i
+
                                             class="fa-solid fa-check me-1"
+
                                         ></i>
 
+
+
                                         Save
+
+
 
                                     </button>
 
 
+
+
+
                                     <a
+
                                         href="manage_court.php"
+
                                         class="btn btn-minimal"
+
                                     >
+
+
 
                                         Cancel
 
+
+
                                     </a>
+
+
+
 
 
                                 </div>
 
 
+
+
+
                             </form>
 
+
+
                         </div>
+
+
+
 
 
                     <?php else: ?>
 
 
+
+
+
                         <!-- =================================
+
                              ADD COURT
+
                         ================================== -->
+
+
 
                         <div class="gray-box mb-5">
 
 
+
+
+
                             <h5
+
                                 class="fw-bold mb-3 text-secondary fs-6"
+
                             >
 
+
+
                                 <i
+
                                     class="fa-solid fa-circle-plus me-1"
+
                                 ></i>
 
+
+
                                 Tambah Gelanggang Baharu
+
+
 
                             </h5>
 
 
+
+
+
                             <form
+
                                 method="POST"
+
                                 class="row g-3"
+
                             >
+
+
+
 
 
                                 <!-- COURT NAME -->
 
+
+
                                 <div class="col-md-4">
 
 
+
+
+
                                     <label
+
                                         class="form-label fw-semibold fs-7 text-muted"
+
                                     >
 
+
+
                                         Nama Gelanggang
+
+
 
                                     </label>
 
 
+
+
+
                                     <input
+
                                         type="text"
+
                                         name="court_name"
+
                                         class="form-control bg-white"
+
                                         placeholder="Example: Court 5"
+
                                         required
+
                                     >
 
+
+
                                 </div>
+
+
+
 
 
                                 <!-- PRICE -->
 
+
+
                                 <div class="col-md-2">
 
 
+
+
+
                                     <label
+
                                         class="form-label fw-semibold fs-7 text-muted"
+
                                     >
 
+
+
                                         Price (RM/hr)
+
+
 
                                     </label>
 
 
+
+
+
                                     <input
+
                                         type="number"
+
                                         name="price"
+
                                         step="0.01"
+
                                         min="0"
+
                                         class="form-control bg-white"
+
                                         placeholder="20.00"
+
                                         required
+
                                     >
 
+
+
                                 </div>
+
+
+
 
 
                                 <!-- STATUS -->
 
+
+
                                 <div class="col-md-3">
 
 
+
+
+
                                     <label
+
                                         class="form-label fw-semibold fs-7 text-muted"
+
                                     >
 
+
+
                                         Status Awal
+
+
 
                                     </label>
 
 
+
+
+
                                     <select
+
                                         name="status"
+
                                         class="form-select bg-white"
+
                                     >
 
+
+
                                         <option value="Available">
+
                                             Available
+
                                         </option>
 
+
+
                                         <option value="Unavailable">
+
                                             Unavailable
+
                                         </option>
+
+
 
                                     </select>
 
 
+
+
+
                                 </div>
+
+
+
 
 
                                 <!-- ADD BUTTON -->
 
+
+
                                 <div
+
                                     class="col-md-3 d-flex align-items-end"
+
                                 >
 
 
+
+
+
                                     <button
+
                                         type="submit"
+
                                         name="add"
+
                                         value="1"
+
                                         class="btn btn-minimal-dark w-100"
+
                                     >
 
+
+
                                         <i
+
                                             class="fa-solid fa-plus me-1"
+
                                         ></i>
+
+
 
                                         Add Court
 
+
+
                                     </button>
+
+
+
 
 
                                 </div>
 
 
+
+
+
                             </form>
 
+
+
                         </div>
+
+
+
 
 
                     <?php endif; ?>
 
 
 
+
+
+
+
+                    <!-- =================================
+                         COURT UNAVAILABLE BY DATE
+                    ================================== -->
+                    <div id="date-unavailability" class="gray-box mb-5" style="scroll-margin-top:100px;">
+                        <h5 class="fw-bold mb-1 text-secondary fs-6">
+                            <i class="fa-solid fa-calendar-xmark me-1"></i>
+                            Set Court Not Available by Date
+                        </h5>
+                        <p class="text-muted small mb-4">
+                            Pilih gelanggang dan tarikh tertentu. Court hanya akan ditutup pada tarikh tersebut.
+                        </p>
+
+                        <form method="POST" class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7 text-muted">Court</label>
+                                <select name="unavailable_court_id" class="form-select bg-white" required>
+                                    <option value="">Choose Court</option>
+                                    <?php if ($date_courts): ?>
+                                        <?php while ($dateCourt = mysqli_fetch_assoc($date_courts)): ?>
+                                            <option value="<?php echo (int)$dateCourt['id']; ?>">
+                                                <?php echo htmlspecialchars($dateCourt['court_name']); ?> (#<?php echo (int)$dateCourt['id']; ?>)
+                                            </option>
+                                        <?php endwhile; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold fs-7 text-muted">Date</label>
+                                <input type="date" name="unavailable_date" min="<?php echo date('Y-m-d'); ?>" class="form-control bg-white" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold fs-7 text-muted">Reason</label>
+                                <input type="text" name="unavailable_reason" maxlength="255" class="form-control bg-white" placeholder="Example: Maintenance">
+                            </div>
+
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" name="set_date_unavailable" value="1" class="btn btn-minimal-dark w-100">
+                                    <i class="fa-solid fa-ban me-1"></i> Set
+                                </button>
+                            </div>
+                        </form>
+
+                        <h6 class="fw-bold mb-3">Upcoming Unavailable Dates</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center align-middle bg-white mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Court</th>
+                                        <th>Date</th>
+                                        <th>Reason</th>
+                                        <th style="width:120px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php if ($unavailable_dates && mysqli_num_rows($unavailable_dates) > 0): ?>
+                                    <?php while ($blocked = mysqli_fetch_assoc($unavailable_dates)): ?>
+                                        <tr>
+                                            <td class="fw-bold"><?php echo htmlspecialchars($blocked['court_name']); ?></td>
+                                            <td><?php echo htmlspecialchars(date('d M Y', strtotime($blocked['unavailable_date']))); ?></td>
+                                            <td><?php echo htmlspecialchars($blocked['reason'] ?: '-'); ?></td>
+                                            <td>
+                                                <a href="?remove_unavailable=<?php echo (int)$blocked['id']; ?>#date-unavailability"
+                                                   class="btn btn-minimal text-danger"
+                                                   onclick="return confirm('Remove this unavailable date?');">
+                                                    <i class="fa-solid fa-trash me-1"></i> Remove
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="4" class="text-muted py-4">Tiada tarikh court yang disekat.</td></tr>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
                     <!-- =================================
                          COURT LIST
                     ================================== -->
 
+
+
                     <h4 class="fw-bold mb-3">
 
 
+
+
+
                         <i
+
                             class="fa-solid fa-list-ul me-2 text-dark"
+
                         ></i>
 
 
+
+
+
                         Court List
+
+
+
 
 
                     </h4>
 
 
 
+
+
+
+
                     <div class="table-responsive">
 
 
+
+
+
                         <table
+
                             class="table table-bordered table-hover text-center align-middle"
+
                         >
+
+
+
 
 
                             <thead class="table-dark">
 
 
+
+
+
                                 <tr>
+
+
 
                                     <th>ID</th>
 
+
+
                                     <th>Court Name</th>
+
+
 
                                     <th>Price (RM/hr)</th>
 
+
+
                                     <th>Status</th>
+
+
 
                                     <th>Action</th>
 
+
+
                                 </tr>
+
+
+
 
 
                             </thead>
 
 
+
+
+
                             <tbody>
+
+
+
 
 
                                 <?php if ($result && mysqli_num_rows($result) > 0): ?>
 
 
+
+
+
                                     <?php while ($row = mysqli_fetch_assoc($result)): ?>
+
+
+
 
 
                                         <tr>
 
 
+
+
+
                                             <!-- ID -->
 
+
+
                                             <td
+
                                                 class="fw-semibold text-muted"
+
                                             >
 
+
+
                                                 <?php
+
                                                 echo (int)$row['id'];
+
                                                 ?>
 
+
+
                                             </td>
+
+
+
+
 
 
 
                                             <!-- COURT NAME -->
 
+
+
                                             <td class="fw-bold">
+
+
 
                                                 🏸
 
+
+
                                                 <?php
 
+
+
                                                 echo htmlspecialchars(
+
                                                     $row['court_name'] ?? ''
+
                                                 );
+
+
 
                                                 ?>
 
+
+
                                             </td>
+
+
+
+
 
 
 
                                             <!-- PRICE -->
 
+
+
                                             <td>
+
+
 
                                                 RM
 
+
+
                                                 <?php
 
+
+
                                                 echo number_format(
+
                                                     (float)($row['price'] ?? 0),
+
                                                     2
+
                                                 );
+
+
 
                                                 ?>
 
+
+
                                             </td>
+
+
+
+
 
 
 
                                             <!-- STATUS -->
 
+
+
                                             <td>
+
+
+
 
 
                                                 <?php
 
+
+
                                                 $courtStatus =
+
                                                     $row['status'] ?? 'Available';
 
 
+
+
+
                                                 if (
+
                                                     $courtStatus
+
                                                     === 'Available'
+
                                                 ) {
 
+
+
                                                     echo '
+
                                                     <span class="badge bg-success px-3 py-2">
+
                                                         Available
+
                                                     </span>
+
                                                     ';
 
+
+
                                                 } elseif (
+
                                                     $courtStatus
+
                                                     === 'Unavailable'
+
                                                 ) {
 
+
+
                                                     echo '
+
                                                     <span class="badge bg-danger px-3 py-2">
+
                                                         Unavailable
+
                                                     </span>
+
                                                     ';
 
+
+
                                                 } elseif (
+
                                                     $courtStatus
+
                                                     === 'Disabled'
+
                                                 ) {
 
+
+
                                                     echo '
+
                                                     <span class="badge bg-secondary px-3 py-2">
+
                                                         Disabled
+
                                                     </span>
+
                                                     ';
+
+
 
                                                 } elseif (
+
                                                     $courtStatus
+
                                                     === 'Deleted'
+
                                                 ) {
 
+
+
                                                     echo '
+
                                                     <span class="badge bg-dark px-3 py-2">
+
                                                         Deleted
+
                                                     </span>
+
                                                     ';
+
+
 
                                                 } else {
 
+
+
                                                     echo '
+
                                                     <span class="badge bg-warning text-dark px-3 py-2">
+
                                                         Unknown
+
                                                     </span>
+
                                                     ';
 
+
+
                                                 }
+
+
 
                                                 ?>
 
 
+
+
+
                                             </td>
+
+
+
+
 
 
 
                                             <!-- ACTION -->
 
+
+
                                             <td>
 
 
+
+
+
                                                 <div
+
                                                     class="d-flex justify-content-center flex-wrap gap-1"
+
                                                 >
+
+
+
 
 
                                                     <!-- EDIT -->
 
+
+
                                                     <a
+
                                                         href="?edit_id=<?php
+
                                                         echo (int)$row['id'];
+
                                                         ?>"
+
                                                         class="btn btn-minimal"
+
                                                     >
 
+
+
                                                         <i
+
                                                             class="fa-solid fa-pen me-1"
+
                                                         ></i>
+
+
 
                                                         Edit
 
+
+
                                                     </a>
+
+
+
+
 
 
 
                                                     <!-- AVAILABLE -->
 
+
+
                                                     <?php
+
                                                     if (
+
                                                         $courtStatus
+
                                                         !== 'Available'
+
                                                     ):
+
                                                     ?>
 
+
+
                                                         <a
+
                                                             href="?status=Available&id=<?php
+
                                                             echo (int)$row['id'];
+
                                                             ?>"
+
                                                             class="btn btn-minimal"
+
                                                         >
 
+
+
                                                             <i
+
                                                                 class="fa-solid fa-check me-1"
+
                                                             ></i>
+
+
 
                                                             Available
 
+
+
                                                         </a>
 
+
+
                                                     <?php endif; ?>
+
+
+
+
 
 
 
                                                     <!-- UNAVAILABLE -->
 
+
+
                                                     <?php
+
                                                     if (
+
                                                         $courtStatus
+
                                                         !== 'Unavailable'
+
                                                     ):
+
                                                     ?>
 
+
+
                                                         <a
+
                                                             href="?status=Unavailable&id=<?php
+
                                                             echo (int)$row['id'];
+
                                                             ?>"
+
                                                             class="btn btn-minimal"
+
                                                         >
 
+
+
                                                             <i
+
                                                                 class="fa-solid fa-ban me-1"
+
                                                             ></i>
+
+
 
                                                             Unavailable
 
+
+
                                                         </a>
+
+
 
                                                     <?php endif; ?>
 
 
 
+
+
+
+
                                                     <!-- DISABLE -->
 
+
+
                                                     <a
+
                                                         href="?status=Disabled&id=<?php
+
                                                         echo (int)$row['id'];
+
                                                         ?>"
+
                                                         class="btn btn-minimal"
+
                                                         onclick="return confirm('Disable this court?');"
+
                                                     >
 
+
+
                                                         <i
+
                                                             class="fa-solid fa-toggle-off me-1"
+
                                                         ></i>
+
+
 
                                                         Disable
 
+
+
                                                     </a>
+
+
+
+
 
 
 
                                                     <!-- DELETE -->
 
+
+
                                                     <a
+
                                                         href="?delete=<?php
+
                                                         echo (int)$row['id'];
+
                                                         ?>"
+
                                                         class="btn btn-minimal text-danger"
+
                                                         onclick="return confirm('Delete court?');"
+
                                                     >
 
+
+
                                                         <i
+
                                                             class="fa-solid fa-trash me-1"
+
                                                         ></i>
+
+
 
                                                         Delete
 
+
+
                                                     </a>
+
+
+
 
 
                                                 </div>
 
 
+
+
+
                                             </td>
+
+
+
 
 
                                         </tr>
 
 
+
+
+
                                     <?php endwhile; ?>
+
+
+
 
 
                                 <?php else: ?>
 
 
+
+
+
                                     <tr>
 
 
+
+
+
                                         <td
+
                                             colspan="5"
+
                                             class="text-center py-5 text-muted"
+
                                         >
 
+
+
                                             <i
+
                                                 class="fa-solid fa-table-tennis-paddle-ball fa-2x mb-3 d-block"
+
                                             ></i>
+
+
 
                                             Tiada gelanggang tersedia.
 
+
+
                                         </td>
+
+
+
 
 
                                     </tr>
 
 
+
+
+
                                 <?php endif; ?>
+
+
+
 
 
                             </tbody>
 
 
+
+
+
                         </table>
+
+
+
 
 
                     </div>
 
 
+
+
+
                 </div>
+
+
+
 
 
             </div>
 
 
+
+
+
         </div>
+
+
+
 
 
     </div>
 
+
+
 </body>
+
+
 
 </html>
