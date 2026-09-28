@@ -639,9 +639,13 @@ include __DIR__ . '/config/db.php';
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <div>&copy; Sports Center • Badminton court booking</div>
-            <div>Powered by aestivo.ai</div>
+       <div>
+            &copy; <?php echo date('Y'); ?>
+            Badminton Kampung Panji
+        </div>
+
+        <div>
+            Badminton Court Booking System
         </div>
     </footer>
 
