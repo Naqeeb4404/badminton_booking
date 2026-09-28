@@ -1155,13 +1155,12 @@ include __DIR__ . '/config/db.php';
 
         </div>
 
-        <div>
-            &copy; <?php echo date('Y'); ?>
-            Badminton Kampung Panji
-        </div>
+        <div class="footer-bottom">
 
-        <div>
-            Badminton Court Booking System
+            <div>&copy; Sports Center • Badminton court booking</div>
+
+            <div>Badminton Court Booking System</div>
+
         </div>
 
     </footer>
