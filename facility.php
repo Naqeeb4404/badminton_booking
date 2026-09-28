@@ -1156,11 +1156,8 @@ include __DIR__ . '/config/db.php';
         </div>
 
         <div class="footer-bottom">
-
-            <div>&copy; Sports Center • Badminton court booking</div>
-
+            <div>&copy;Badminton Kampung Panji</div>
             <div>Badminton Court Booking System</div>
-
         </div>
 
     </footer>
